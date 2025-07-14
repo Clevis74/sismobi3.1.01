@@ -243,58 +243,6 @@ export const calculateConsumptionStats = (bills: EnergyBill[]) => {
     };
   }
 
-  // Calcular totais consolidados para cada conta
-  const billTotals = bills.map(bill => ({
-    totalConsumption: bill.groupBills?.reduce((sum, gb) => sum + gb.totalGroupConsumption, 0) || 0,
-    totalValue: bill.groupBills?.reduce((sum, gb) => sum + gb.totalGroupValue, 0) || 0
-  }));
-
-  const totalConsumption = billTotals.reduce((sum, bill) => sum + bill.totalConsumption, 0);
-  const totalValue = billTotals.reduce((sum, bill) => sum + bill.totalValue, 0);
-  const averageConsumption = totalConsumption / bills.length;
-  const averageValue = totalValue / bills.length;
-
-  let trend: 'increasing' | 'decreasing' | 'stable' = 'stable';
-  let monthlyVariation = 0;
-
-  if (bills.length >= 2) {
-    const recent = billTotals.slice(-3); // Últimos 3 meses
-    const older = billTotals.slice(-6, -3); // 3 meses anteriores
-
-    if (recent.length > 0 && older.length > 0) {
-      const recentAvg = recent.reduce((sum, bill) => sum + bill.totalConsumption, 0) / recent.length;
-      const olderAvg = older.reduce((sum, bill) => sum + bill.totalConsumption, 0) / older.length;
-      
-      if (olderAvg > 0) {
-        monthlyVariation = ((recentAvg - olderAvg) / olderAvg) * 100;
-        
-        if (monthlyVariation > 5) trend = 'increasing';
-        else if (monthlyVariation < -5) trend = 'decreasing';
-      }
-    }
-  }
-
-  return {
-    averageConsumption,
-    averageValue,
-    trend,
-    monthlyVariation
-  };
-};
-
-/**
- * Calcula estatísticas do histórico de consumo
- */
-export const calculateConsumptionStats = (bills: EnergyBill[]) => {
-  if (bills.length === 0) {
-    return {
-      averageConsumption: 0,
-      averageValue: 0,
-      trend: 'stable' as 'increasing' | 'decreasing' | 'stable',
-      monthlyVariation: 0
-    };
-  }
-
   const totalConsumption = bills.reduce((sum, bill) => sum + bill.totalConsumption, 0);
   const totalValue = bills.reduce((sum, bill) => sum + bill.totalValue, 0);
   const averageConsumption = totalConsumption / bills.length;
