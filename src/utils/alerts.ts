@@ -1,9 +1,11 @@
 import { Alert, Property, Tenant, Transaction } from '../types';
+import { EnergyBill } from '../types';
 
 export const generateAutomaticAlerts = (
   properties: Property[],
   tenants: Tenant[],
-  transactions: Transaction[]
+  transactions: Transaction[],
+  energyBills: EnergyBill[] = []
 ): Alert[] => {
   const alerts: Alert[] = [];
   const now = new Date();
@@ -69,6 +71,31 @@ export const generateAutomaticAlerts = (
         date: now,
         priority: 'medium',
         resolved: false
+      });
+    }
+  });
+
+  // Alertas de contas de energia pendentes
+  energyBills.forEach(bill => {
+    if (bill.groupBills) {
+      bill.groupBills.forEach(groupBill => {
+        groupBill.propertiesInGroup.forEach(property => {
+          if (property.paymentStatus === 'pending' && property.tenantId) {
+            const tenant = tenants.find(t => t.id === property.tenantId);
+            const linkedProperty = properties.find(p => p.id === property.propertyId);
+            
+            alerts.push({
+              id: `energy_pending_${property.id}_${bill.date.getTime()}`,
+              type: 'energy_bill_pending',
+              propertyId: property.propertyId || '',
+              tenantId: property.tenantId,
+              message: `Conta de energia pendente - ${property.name}${tenant ? ` (${tenant.name})` : ''}`,
+              date: bill.date,
+              priority: 'medium',
+              resolved: false
+            });
+          }
+        });
       });
     }
   });

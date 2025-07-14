@@ -135,10 +135,14 @@ export const createSharedPropertyConsumption = (
   name: string,
   groupId: string,
   hasMeter: boolean = true,
-  isResidualReceiver: boolean = false
+  isResidualReceiver: boolean = false,
+  propertyId?: string,
+  tenantId?: string
 ): Omit<SharedPropertyConsumption, 'id'> => {
   return {
     name,
+    propertyId,
+    tenantId,
     currentReading: 0,
     previousReading: 0,
     monthlyConsumption: 0,
@@ -146,7 +150,8 @@ export const createSharedPropertyConsumption = (
     proportionalValue: 0,
     proportionalConsumption: 0,
     groupId,
-    isResidualReceiver
+    isResidualReceiver,
+    paymentStatus: 'pending'
   };
 };
 
