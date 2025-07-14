@@ -89,7 +89,9 @@ export const generateAutomaticAlerts = (
               type: 'energy_bill_pending',
               propertyId: property.propertyId || '',
               tenantId: property.tenantId,
-              message: `Conta de energia pendente - ${property.name}${tenant ? ` (${tenant.name})` : ''}`,
+              message: `Conta de energia pendente - ${property.name}` +
+                       `${linkedProperty ? ` (${linkedProperty.name})` : ''}` +
+                       `${tenant ? ` (${tenant.name})` : ''}`,
               date: bill.date,
               priority: 'medium',
               resolved: false
