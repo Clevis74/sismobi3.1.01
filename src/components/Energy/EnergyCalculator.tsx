@@ -487,5 +487,3 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
     </div>
   );
 };
-
-export { EnergyCalculator }
