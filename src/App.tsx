@@ -8,11 +8,12 @@ import { TransactionManager } from './components/Transactions/TransactionManager
 import { AlertManager } from './components/Alerts/AlertManager';
 import { ReportManager } from './components/Reports/ReportManager';
 import { DocumentManager } from './components/Documents/DocumentManager';
+import { EnergyCalculator } from './components/Energy/EnergyCalculator';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { calculateFinancialSummary } from './utils/calculations';
 import { generateAutomaticAlerts, processRecurringTransactions } from './utils/alerts';
 import { createBackup, exportBackup, importBackup, validateBackup, BackupData } from './utils/dataBackup';
-import { Property, Tenant, Transaction, Alert, Document } from './types';
+import { Property, Tenant, Transaction, Alert, Document, EnergyBill } from './types';
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -21,6 +22,7 @@ function App() {
   const [transactions, setTransactions] = useLocalStorage<Transaction[]>('transactions', []);
   const [alerts, setAlerts] = useLocalStorage<Alert[]>('alerts', []);
   const [documents, setDocuments] = useLocalStorage<Document[]>('documents', []);
+  const [energyBills, setEnergyBills] = useLocalStorage<EnergyBill[]>('energyBills', []);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Gerar alertas automáticos
@@ -170,9 +172,32 @@ function App() {
     setDocuments(prev => prev.filter(d => d.id !== id));
   };
 
+  // Funções para gerenciar contas de energia
+  const addEnergyBill = (billData: Omit<EnergyBill, 'id' | 'createdAt' | 'lastUpdated'>) => {
+    const newBill: EnergyBill = {
+      ...billData,
+      id: Date.now().toString(),
+      createdAt: new Date(),
+      lastUpdated: new Date()
+    };
+    setEnergyBills(prev => [...prev, newBill]);
+  };
+
+  const updateEnergyBill = (id: string, updates: Partial<EnergyBill>) => {
+    setEnergyBills(prev => prev.map(bill => 
+      bill.id === id 
+        ? { ...bill, ...updates, lastUpdated: new Date() }
+        : bill
+    ));
+  };
+
+  const deleteEnergyBill = (id: string) => {
+    setEnergyBills(prev => prev.filter(bill => bill.id !== id));
+  };
+
   // Funções para backup
   const handleExport = () => {
-    const backup = createBackup(properties, tenants, transactions, alerts, documents);
+    const backup = createBackup(properties, tenants, transactions, alerts, documents, energyBills);
     exportBackup(backup);
   };
 
@@ -191,6 +216,7 @@ function App() {
             setTransactions(backupData.transactions);
             setAlerts(backupData.alerts);
             setDocuments(backupData.documents || []);
+            setEnergyBills(backupData.energyBills || []);
             alert('Backup importado com sucesso!');
           } else {
             alert('Arquivo de backup inválido!');
@@ -262,6 +288,15 @@ function App() {
             onAddDocument={addDocument}
             onUpdateDocument={updateDocument}
             onDeleteDocument={deleteDocument}
+          />
+        );
+      case 'energy':
+        return (
+          <EnergyCalculator
+            energyBills={energyBills}
+            onAddEnergyBill={addEnergyBill}
+            onUpdateEnergyBill={updateEnergyBill}
+            onDeleteEnergyBill={deleteEnergyBill}
           />
         );
       default:

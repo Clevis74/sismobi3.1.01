@@ -6,7 +6,8 @@ import {
   DollarSign, 
   TrendingUp, 
   Bell, 
-  Settings, 
+  Settings,
+  Zap,
   FileText 
 } from 'lucide-react';
 
@@ -22,6 +23,7 @@ const menuItems = [
   { id: 'transactions', label: 'Transações', icon: DollarSign },
   { id: 'reports', label: 'Relatórios', icon: TrendingUp },
   { id: 'alerts', label: 'Alertas', icon: Bell },
+  { id: 'energy', label: 'Energia Compartilhada', icon: Zap },
   { id: 'documents', label: 'Documentos', icon: FileText },
   { id: 'settings', label: 'Configurações', icon: Settings },
 ];

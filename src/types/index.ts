@@ -68,6 +68,38 @@ export interface Document {
   lastUpdated: Date;
 }
 
+export interface SharedPropertyConsumption {
+  id: string;
+  name: string; // Ex: 802-Ca 01
+  currentReading: number; // kWh atual
+  previousReading: number; // kWh anterior
+  monthlyConsumption: number; // Calculado automaticamente
+  hasMeter: boolean; // Se possui medidor
+  proportionalValue: number; // Valor em R$ proporcional
+  proportionalConsumption: number; // kWh proporcional
+  groupId: string; // Identificador do grupo
+  isResidualReceiver: boolean; // Se recebe o valor residual
+}
+
+export interface EnergyBill {
+  id: string;
+  date: Date;
+  totalValue: number; // Valor total da conta em R$
+  totalConsumption: number; // Consumo total em kWh
+  properties: SharedPropertyConsumption[];
+  observations: string;
+  isPaid: boolean;
+  createdAt: Date;
+  lastUpdated: Date;
+}
+
+export interface EnergyGroup {
+  id: string;
+  name: string;
+  properties: string[]; // IDs das propriedades
+  residualReceiver: string; // ID da propriedade que recebe o residual
+}
+
 export interface FinancialSummary {
   totalIncome: number;
   totalExpenses: number;

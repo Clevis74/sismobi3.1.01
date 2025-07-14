@@ -1,4 +1,4 @@
-import { Property, Tenant, Transaction, Alert, Document } from '../types';
+import { Property, Tenant, Transaction, Alert, Document, EnergyBill } from '../types';
 
 export interface BackupData {
   properties: Property[];
@@ -6,6 +6,7 @@ export interface BackupData {
   transactions: Transaction[];
   alerts: Alert[];
   documents: Document[];
+  energyBills: EnergyBill[];
   timestamp: Date;
   version: string;
 }
@@ -15,7 +16,8 @@ export const createBackup = (
   tenants: Tenant[],
   transactions: Transaction[],
   alerts: Alert[],
-  documents: Document[]
+  documents: Document[],
+  energyBills: EnergyBill[]
 ): BackupData => {
   return {
     properties,
@@ -23,6 +25,7 @@ export const createBackup = (
     transactions,
     alerts,
     documents,
+    energyBills,
     timestamp: new Date(),
     version: '1.0.0'
   };
@@ -57,6 +60,11 @@ export const importBackup = (file: File): Promise<BackupData> => {
         // Garantir que documents existe (para compatibilidade com backups antigos)
         if (!data.documents) {
           data.documents = [];
+        }
+        
+        // Garantir que energyBills existe (para compatibilidade com backups antigos)
+        if (!data.energyBills) {
+          data.energyBills = [];
         }
         
         // Converter strings de data de volta para objetos Date
@@ -97,6 +105,16 @@ export const importBackup = (file: File): Promise<BackupData> => {
           lastUpdated: new Date(d.lastUpdated)
         }));
         
+        data.energyBills = data.energyBills.map(bill => ({
+          ...bill,
+          date: new Date(bill.date),
+          createdAt: new Date(bill.createdAt),
+          lastUpdated: new Date(bill.lastUpdated),
+          properties: bill.properties.map(prop => ({
+            ...prop
+          }))
+        }));
+        
         data.timestamp = new Date(data.timestamp);
         
         resolve(data);
@@ -120,8 +138,12 @@ export const validateBackup = (data: BackupData): boolean => {
       return false;
     }
     
-    // documents é opcional para compatibilidade com backups antigos
+    // documents e energyBills são opcionais para compatibilidade com backups antigos
     if (data.documents && !Array.isArray(data.documents)) {
+      return false;
+    }
+    
+    if (data.energyBills && !Array.isArray(data.energyBills)) {
       return false;
     }
     
