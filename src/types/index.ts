@@ -1,0 +1,79 @@
+export interface Property {
+  id: string;
+  name: string;
+  address: string;
+  type: 'apartment' | 'house' | 'commercial';
+  purchasePrice: number;
+  rentValue: number;
+  tenant?: Tenant;
+  status: 'rented' | 'vacant' | 'maintenance';
+  createdAt: Date;
+}
+
+export interface Tenant {
+  id: string;
+  propertyId: string;
+  name: string;
+  email: string;
+  cpf: string;
+  phone: string;
+  startDate: Date;
+  agreedPaymentDate?: Date;
+  monthlyRent: number;
+  deposit: number; // Será renomeado para "Calção" na interface
+  paymentMethod?: 'À vista' | 'A prazo';
+  installments?: '2x' | '3x';
+  depositPaidInstallments?: boolean[];
+  formalizedContract?: boolean;
+  status: 'active' | 'inactive';
+}
+
+export interface Transaction {
+  id: string;
+  propertyId: string;
+  type: 'income' | 'expense';
+  category: string;
+  amount: number;
+  description: string;
+  date: Date;
+  recurring?: {
+    frequency: 'monthly' | 'quarterly' | 'yearly';
+    nextDate: Date;
+  };
+}
+
+export interface Alert {
+  id: string;
+  type: 'rent_due' | 'contract_expiring' | 'maintenance' | 'tax_due';
+  propertyId: string;
+  message: string;
+  date: Date;
+  priority: 'low' | 'medium' | 'high';
+  resolved: boolean;
+}
+
+export interface Document {
+  id: string;
+  type: 'Contrato de locação' | 'Comprovante de pagamento' | 'RG' | 'CPF' | 'Laudo técnico' | 'Outros';
+  issueDate: Date;
+  hasValidity: boolean;
+  validityDate?: Date;
+  fileName?: string;
+  fileUrl?: string;
+  observations: string;
+  propertyId: string;
+  tenantId?: string;
+  status: 'Válido' | 'Expirado' | 'Pendente' | 'Revisão';
+  contractSigned: boolean;
+  lastUpdated: Date;
+}
+
+export interface FinancialSummary {
+  totalIncome: number;
+  totalExpenses: number;
+  netIncome: number;
+  occupancyRate: number;
+  totalProperties: number;
+  rentedProperties: number;
+  monthlyROI: number;
+}
