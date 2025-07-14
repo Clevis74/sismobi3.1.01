@@ -27,14 +27,14 @@ function App() {
 
   // Gerar alertas automáticos
   useEffect(() => {
-    const automaticAlerts = generateAutomaticAlerts(properties, tenants, transactions, energyBills);
+    const automaticAlerts = generateAutomaticAlerts(properties, tenants, transactions);
     const existingAlertIds = alerts.map(a => a.id);
     const newAlerts = automaticAlerts.filter(a => !existingAlertIds.includes(a.id));
     
     if (newAlerts.length > 0) {
       setAlerts(prev => [...prev, ...newAlerts]);
     }
-  }, [properties, tenants, transactions, energyBills]);
+  }, [properties, tenants, transactions]);
 
   // Processar transações recorrentes
   useEffect(() => {
@@ -294,8 +294,6 @@ function App() {
         return (
           <EnergyCalculator
             energyBills={energyBills}
-            properties={properties}
-            tenants={tenants}
             onAddEnergyBill={addEnergyBill}
             onUpdateEnergyBill={updateEnergyBill}
             onDeleteEnergyBill={deleteEnergyBill}
