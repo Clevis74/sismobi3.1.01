@@ -65,12 +65,12 @@ export const validateConsumptionData = (
 /**
  * Distribui a conta de energia proporcionalmente entre os imóveis
  */
-export const distributeEnergyBill = (
-  totalValue: number,
-  totalConsumption: number,
+export const distributeEnergyGroupBill = (
+  groupTotalValue: number,
+  groupTotalConsumption: number,
   properties: SharedPropertyConsumption[]
 ): SharedPropertyConsumption[] => {
-  if (totalConsumption === 0 || totalValue === 0) {
+  if (groupTotalConsumption === 0 || groupTotalValue === 0) {
     return properties.map(prop => ({
       ...prop,
       proportionalValue: 0,
@@ -78,63 +78,51 @@ export const distributeEnergyBill = (
     }));
   }
 
-  const valuePerKwh = totalValue / totalConsumption;
+  const valuePerKwh = groupTotalValue / groupTotalConsumption;
   const updatedProperties = [...properties];
 
-  // Agrupar propriedades por grupo
-  const groups = DEFAULT_ENERGY_GROUPS.reduce((acc, group) => {
-    acc[group.id] = {
-      ...group,
-      properties: properties.filter(prop => group.properties.includes(prop.name))
-    };
-    return acc;
-  }, {} as Record<string, EnergyGroup & { properties: SharedPropertyConsumption[] }>);
+  // Encontrar o grupo correspondente
+  const group = DEFAULT_ENERGY_GROUPS.find(g => 
+    properties.some(prop => g.properties.includes(prop.name))
+  );
 
-  // Processar cada grupo
-  Object.values(groups).forEach(group => {
-    const groupProperties = group.properties;
-    const propertiesWithMeter = groupProperties.filter(prop => prop.hasMeter);
-    const residualProperty = groupProperties.find(prop => prop.name === group.residualReceiver);
+  if (!group) return updatedProperties;
 
-    if (!residualProperty) return;
+  const propertiesWithMeter = properties.filter(prop => prop.hasMeter);
+  const residualProperty = properties.find(prop => prop.name === group.residualReceiver);
 
-    // Calcular consumo total do grupo
-    const groupTotalConsumption = groupProperties.reduce(
-      (sum, prop) => sum + prop.monthlyConsumption,
-      0
-    );
+  if (!residualProperty) return updatedProperties;
 
-    // Calcular consumo dos imóveis com medidor
-    const meterConsumption = propertiesWithMeter.reduce(
-      (sum, prop) => sum + prop.monthlyConsumption,
-      0
-    );
+  // Calcular consumo dos imóveis com medidor
+  const meterConsumption = propertiesWithMeter.reduce(
+    (sum, prop) => sum + prop.monthlyConsumption,
+    0
+  );
 
-    // Consumo residual para o imóvel sem medidor
-    const residualConsumption = groupTotalConsumption - meterConsumption;
+  // Consumo residual para o imóvel sem medidor
+  const residualConsumption = groupTotalConsumption - meterConsumption;
 
-    // Distribuir valores proporcionalmente
-    groupProperties.forEach(prop => {
-      const propIndex = updatedProperties.findIndex(p => p.id === prop.id);
-      
-      if (prop.hasMeter) {
-        // Imóvel com medidor: valor proporcional ao consumo
-        const proportionalValue = prop.monthlyConsumption * valuePerKwh;
-        updatedProperties[propIndex] = {
-          ...updatedProperties[propIndex],
-          proportionalValue,
-          proportionalConsumption: prop.monthlyConsumption
-        };
-      } else if (prop.name === group.residualReceiver) {
-        // Imóvel sem medidor: recebe o residual
-        const residualValue = residualConsumption * valuePerKwh;
-        updatedProperties[propIndex] = {
-          ...updatedProperties[propIndex],
-          proportionalValue: residualValue,
-          proportionalConsumption: residualConsumption
-        };
-      }
-    });
+  // Distribuir valores proporcionalmente
+  properties.forEach(prop => {
+    const propIndex = updatedProperties.findIndex(p => p.id === prop.id);
+    
+    if (prop.hasMeter) {
+      // Imóvel com medidor: valor proporcional ao consumo
+      const proportionalValue = prop.monthlyConsumption * valuePerKwh;
+      updatedProperties[propIndex] = {
+        ...updatedProperties[propIndex],
+        proportionalValue,
+        proportionalConsumption: prop.monthlyConsumption
+      };
+    } else if (prop.name === group.residualReceiver) {
+      // Imóvel sem medidor: recebe o residual
+      const residualValue = residualConsumption * valuePerKwh;
+      updatedProperties[propIndex] = {
+        ...updatedProperties[propIndex],
+        proportionalValue: residualValue,
+        proportionalConsumption: residualConsumption
+      };
+    }
   });
 
   return updatedProperties;
@@ -165,14 +153,19 @@ export const createSharedPropertyConsumption = (
 /**
  * Importa dados do mês anterior
  */
-export const importPreviousMonthData = (
-  currentProperties: SharedPropertyConsumption[],
+export const importPreviousMonthDataForGroup = (
+  currentGroupBill: any,
   previousBill: EnergyBill | null
-): SharedPropertyConsumption[] => {
+): any => {
   if (!previousBill) return currentProperties;
 
-  return currentProperties.map(prop => {
-    const previousProp = previousBill.properties.find(p => p.name === prop.name);
+  // Encontrar o grupo correspondente na conta anterior
+  const previousGroupBill = previousBill.groupBills?.find(gb => gb.groupId === currentGroupBill.groupId);
+  
+  if (!previousGroupBill) return currentGroupBill;
+
+  const updatedProperties = currentGroupBill.propertiesInGroup.map((prop: SharedPropertyConsumption) => {
+    const previousProp = previousGroupBill.propertiesInGroup.find(p => p.name === prop.name);
     if (previousProp) {
       return {
         ...prop,
@@ -185,6 +178,11 @@ export const importPreviousMonthData = (
     }
     return prop;
   });
+
+  return {
+    ...currentGroupBill,
+    propertiesInGroup: updatedProperties
+  };
 };
 
 /**
@@ -199,8 +197,13 @@ export const generateConsumptionInsights = (
   if (previousBills.length === 0) return insights;
 
   const lastBill = previousBills[previousBills.length - 1];
-  const consumptionIncrease = currentBill.totalConsumption - lastBill.totalConsumption;
-  const percentageIncrease = (consumptionIncrease / lastBill.totalConsumption) * 100;
+  
+  // Calcular totais consolidados
+  const currentTotalConsumption = currentBill.groupBills?.reduce((sum, gb) => sum + gb.totalGroupConsumption, 0) || 0;
+  const lastTotalConsumption = lastBill.groupBills?.reduce((sum, gb) => sum + gb.totalGroupConsumption, 0) || 0;
+  
+  const consumptionIncrease = currentTotalConsumption - lastTotalConsumption;
+  const percentageIncrease = lastTotalConsumption > 0 ? (consumptionIncrease / lastTotalConsumption) * 100 : 0;
 
   if (percentageIncrease > 20) {
     insights.push(`Consumo ${percentageIncrease.toFixed(1)}% maior que o mês anterior. Possível uso intensivo de ar-condicionado ou novos equipamentos.`);
@@ -208,18 +211,75 @@ export const generateConsumptionInsights = (
     insights.push(`Consumo ${Math.abs(percentageIncrease).toFixed(1)}% menor que o mês anterior. Possível ausência dos moradores ou economia de energia.`);
   }
 
-  // Verificar propriedades com consumo muito alto
-  currentBill.properties.forEach(prop => {
-    const previousProp = lastBill.properties.find(p => p.name === prop.name);
-    if (previousProp) {
-      const propIncrease = ((prop.monthlyConsumption - previousProp.monthlyConsumption) / previousProp.monthlyConsumption) * 100;
-      if (propIncrease > 50) {
-        insights.push(`${prop.name}: Consumo ${propIncrease.toFixed(1)}% maior. Verificar possíveis problemas ou novos equipamentos.`);
-      }
+  // Verificar propriedades com consumo muito alto por grupo
+  currentBill.groupBills?.forEach(currentGroupBill => {
+    const lastGroupBill = lastBill.groupBills?.find(gb => gb.groupId === currentGroupBill.groupId);
+    if (lastGroupBill) {
+      currentGroupBill.propertiesInGroup.forEach(prop => {
+        const previousProp = lastGroupBill.propertiesInGroup.find(p => p.name === prop.name);
+        if (previousProp && previousProp.monthlyConsumption > 0) {
+          const propIncrease = ((prop.monthlyConsumption - previousProp.monthlyConsumption) / previousProp.monthlyConsumption) * 100;
+          if (propIncrease > 50) {
+            insights.push(`${prop.name}: Consumo ${propIncrease.toFixed(1)}% maior. Verificar possíveis problemas ou novos equipamentos.`);
+          }
+        }
+      });
     }
   });
 
   return insights;
+};
+
+/**
+ * Calcula estatísticas do histórico de consumo
+ */
+export const calculateConsumptionStats = (bills: EnergyBill[]) => {
+  if (bills.length === 0) {
+    return {
+      averageConsumption: 0,
+      averageValue: 0,
+      trend: 'stable' as 'increasing' | 'decreasing' | 'stable',
+      monthlyVariation: 0
+    };
+  }
+
+  // Calcular totais consolidados para cada conta
+  const billTotals = bills.map(bill => ({
+    totalConsumption: bill.groupBills?.reduce((sum, gb) => sum + gb.totalGroupConsumption, 0) || 0,
+    totalValue: bill.groupBills?.reduce((sum, gb) => sum + gb.totalGroupValue, 0) || 0
+  }));
+
+  const totalConsumption = billTotals.reduce((sum, bill) => sum + bill.totalConsumption, 0);
+  const totalValue = billTotals.reduce((sum, bill) => sum + bill.totalValue, 0);
+  const averageConsumption = totalConsumption / bills.length;
+  const averageValue = totalValue / bills.length;
+
+  let trend: 'increasing' | 'decreasing' | 'stable' = 'stable';
+  let monthlyVariation = 0;
+
+  if (bills.length >= 2) {
+    const recent = billTotals.slice(-3); // Últimos 3 meses
+    const older = billTotals.slice(-6, -3); // 3 meses anteriores
+
+    if (recent.length > 0 && older.length > 0) {
+      const recentAvg = recent.reduce((sum, bill) => sum + bill.totalConsumption, 0) / recent.length;
+      const olderAvg = older.reduce((sum, bill) => sum + bill.totalConsumption, 0) / older.length;
+      
+      if (olderAvg > 0) {
+        monthlyVariation = ((recentAvg - olderAvg) / olderAvg) * 100;
+        
+        if (monthlyVariation > 5) trend = 'increasing';
+        else if (monthlyVariation < -5) trend = 'decreasing';
+      }
+    }
+  }
+
+  return {
+    averageConsumption,
+    averageValue,
+    trend,
+    monthlyVariation
+  };
 };
 
 /**

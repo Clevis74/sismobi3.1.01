@@ -84,15 +84,20 @@ export interface SharedPropertyConsumption {
 export interface EnergyBill {
   id: string;
   date: Date;
-  totalValue: number; // Valor total da conta em R$
-  totalConsumption: number; // Consumo total em kWh
-  properties: SharedPropertyConsumption[];
+  groupBills: EnergyGroupBill[]; // Array de contas por grupo
   observations: string;
   isPaid: boolean;
   createdAt: Date;
   lastUpdated: Date;
 }
 
+export interface EnergyGroupBill {
+  groupId: string;
+  groupName: string;
+  totalGroupValue: number; // Valor total da conta do grupo em R$
+  totalGroupConsumption: number; // Consumo total do grupo em kWh
+  propertiesInGroup: SharedPropertyConsumption[]; // Propriedades deste grupo
+}
 export interface EnergyGroup {
   id: string;
   name: string;
