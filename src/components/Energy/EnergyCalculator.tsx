@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Calculator, TrendingUp, TrendingDown, Minus, AlertTriangle, CheckCircle, Import, Save, Eye, EyeOff } from 'lucide-react';
-import { EnergyBill, SharedPropertyConsumption, EnergyGroupBill } from '../../types';
+import { Plus, Calculator, TrendingUp, TrendingDown, Minus, AlertTriangle, CheckCircle, Import, Save, Eye, EyeOff, Filter, User, Home } from 'lucide-react';
+import { EnergyBill, SharedPropertyConsumption, EnergyGroupBill, Property, Tenant } from '../../types';
 import { 
   calculateMonthlyConsumption, 
   distributeEnergyGroupBill, 
@@ -15,6 +15,8 @@ import { formatCurrency, formatDate } from '../../utils/calculations';
 
 interface EnergyCalculatorProps {
   energyBills: EnergyBill[];
+  properties: Property[];
+  tenants: Tenant[];
   onAddEnergyBill: (bill: Omit<EnergyBill, 'id' | 'createdAt' | 'lastUpdated'>) => void;
   onUpdateEnergyBill: (id: string, bill: Partial<EnergyBill>) => void;
   onDeleteEnergyBill: (id: string) => void;
@@ -22,6 +24,8 @@ interface EnergyCalculatorProps {
 
 export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
   energyBills,
+  properties,
+  tenants,
   onAddEnergyBill,
   onUpdateEnergyBill,
   onDeleteEnergyBill
@@ -29,6 +33,7 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
   const [showForm, setShowForm] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [editingBill, setEditingBill] = useState<EnergyBill | null>(null);
+  const [selectedGroups, setSelectedGroups] = useState<string[]>(['group1']); // Grupos selecionados para exibição
   
   // Estados do formulário
   const [formData, setFormData] = useState({
@@ -41,16 +46,36 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
   const [groupBills, setGroupBills] = useState<EnergyGroupBill[]>(() => {
     const defaultGroupBills: EnergyGroupBill[] = [];
     
+    // Função para encontrar propriedade e inquilino por nome
+    const findPropertyAndTenant = (propName: string) => {
+      // Buscar propriedade que contenha o nome (ex: "802-Ca 01" pode estar em "Apartamento 802-Ca 01")
+      const property = properties.find(p => 
+        p.name.includes(propName) || propName.includes(p.name)
+      );
+      
+      const tenant = property?.tenant || tenants.find(t => t.propertyId === property?.id);
+      
+      return { property, tenant };
+    };
+    
     DEFAULT_ENERGY_GROUPS.forEach(group => {
       const propertiesInGroup: SharedPropertyConsumption[] = [];
       
       group.properties.forEach(propName => {
         const hasMeter = propName !== group.residualReceiver;
         const isResidualReceiver = propName === group.residualReceiver;
+        const { property, tenant } = findPropertyAndTenant(propName);
         
         propertiesInGroup.push({
           id: `${group.id}-${propName}`,
-          ...createSharedPropertyConsumption(propName, group.id, hasMeter, isResidualReceiver)
+          ...createSharedPropertyConsumption(
+            propName, 
+            group.id, 
+            hasMeter, 
+            isResidualReceiver,
+            property?.id,
+            tenant?.id
+          )
         });
       });
       
@@ -71,6 +96,11 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
     message: string;
     difference: number;
   }>>({});
+
+  // Filtrar grupos selecionados
+  const filteredGroupBills = groupBills.filter(groupBill => 
+    selectedGroups.includes(groupBill.groupId)
+  );
 
   // Recalcular consumo mensal quando leituras mudarem
   useEffect(() => {
@@ -165,12 +195,28 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
     }));
   };
 
+  const handlePaymentStatusChange = (groupId: string, propertyId: string, status: 'paid' | 'pending') => {
+    setGroupBills(prev => prev.map(groupBill => 
+      groupBill.groupId === groupId 
+        ? {
+            ...groupBill,
+            propertiesInGroup: groupBill.propertiesInGroup.map(prop => 
+              prop.id === propertyId ? { ...prop, paymentStatus: status } : prop
+            )
+          }
+        : groupBill
+    ));
+  };
+
   const handleImportPreviousMonth = () => {
     const previousBill = energyBills.length > 0 ? energyBills[energyBills.length - 1] : null;
     
-    setGroupBills(prev => prev.map(groupBill => 
-      importPreviousMonthDataForGroup(groupBill, previousBill)
-    ));
+    setGroupBills(prev => prev.map(groupBill => {
+      if (selectedGroups.includes(groupBill.groupId)) {
+        return importPreviousMonthDataForGroup(groupBill, previousBill);
+      }
+      return groupBill;
+    }));
   };
 
   const handleImportPreviousMonthForGroup = (groupId: string) => {
@@ -205,6 +251,12 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
     resetForm();
   };
 
+  const handleGroupSelectionChange = (groupId: string, selected: boolean) => {
+    setSelectedGroups(prev => 
+      selected ? [...prev, groupId] : prev.filter(id => id !== groupId)
+    );
+  };
+
   const resetForm = () => {
     setFormData({
       date: new Date().toISOString().split('T')[0],
@@ -212,7 +264,7 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
       isPaid: false
     });
     
-    setGroupBills(prev => prev.map(groupBill => ({
+    setGroupBills(prev => prev.map(groupBill => selectedGroups.includes(groupBill.groupId) ? ({
       ...groupBill,
       totalGroupValue: 0,
       totalGroupConsumption: 0,
@@ -224,7 +276,7 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
         proportionalValue: 0,
         proportionalConsumption: 0
       }))
-    })));
+    }) : groupBill));
   };
 
   const handleEditBill = (bill: EnergyBill) => {
@@ -238,6 +290,10 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
     if (bill.groupBills) {
       setGroupBills(bill.groupBills);
     }
+    
+    // Selecionar automaticamente os grupos que têm dados
+    const groupsWithData = bill.groupBills?.map(gb => gb.groupId) || [];
+    setSelectedGroups(groupsWithData);
     
     setShowForm(true);
   };
@@ -269,19 +325,46 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
         
         <div className="flex space-x-3">
           <button
-            onClick={() => setShowHistory(!showHistory)}
-            className="flex items-center px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            {showHistory ? <EyeOff className="w-4 h-4 mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
-            {showHistory ? 'Ocultar' : 'Ver'} Histórico
-          </button>
-          <button
             onClick={() => setShowForm(true)}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
           >
             <Plus className="w-4 h-4 mr-2" />
             Nova Conta
           </button>
+          <button
+            onClick={() => setShowHistory(!showHistory)}
+            className="flex items-center px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            {showHistory ? <EyeOff className="w-4 h-4 mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
+            {showHistory ? 'Ocultar' : 'Ver'} Histórico
+          </button>
+        </div>
+      </div>
+
+      {/* Seleção de Grupos */}
+      <div className="bg-white rounded-lg shadow-md p-4 border border-gray-200">
+        <div className="flex items-center space-x-4 mb-4">
+          <div className="flex items-center space-x-2">
+            <Filter className="w-4 h-4 text-gray-600" />
+            <span className="text-sm font-medium text-gray-700">Grupos para exibir:</span>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {DEFAULT_ENERGY_GROUPS.map(group => (
+            <div key={group.id} className="flex items-center">
+              <input
+                type="checkbox"
+                id={`group-${group.id}`}
+                checked={selectedGroups.includes(group.id)}
+                onChange={(e) => handleGroupSelectionChange(group.id, e.target.checked)}
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              />
+              <label htmlFor={`group-${group.id}`} className="ml-2 block text-sm text-gray-900">
+                {group.name}
+              </label>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -414,7 +497,7 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
             </div>
 
             {/* Contas por Grupo */}
-            {groupBills.map((groupBill, groupIndex) => (
+            {filteredGroupBills.map((groupBill, groupIndex) => (
               <div key={groupBill.groupId} className="border-b border-gray-200 pb-6">
                 <div className="flex items-center justify-between mb-4">
                   <h4 className="text-md font-medium text-gray-800">{groupBill.groupName}</h4>
@@ -459,64 +542,112 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
 
                 {/* Leituras dos Imóveis do Grupo */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-                  {groupBill.propertiesInGroup.map(property => (
-                    <div key={property.id} className="border border-gray-200 rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <h6 className="font-medium text-gray-900">{property.name}</h6>
-                        <div className="flex items-center space-x-2">
-                          {property.hasMeter ? (
-                            <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                              Com medidor
-                            </span>
-                          ) : (
-                            <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
-                              Sem medidor (residual)
-                            </span>
-                          )}
+                  {groupBill.propertiesInGroup.map(property => {
+                    const tenant = tenants.find(t => t.id === property.tenantId);
+                    const linkedProperty = properties.find(p => p.id === property.propertyId);
+                    
+                    return (
+                      <div key={property.id} className="border border-gray-200 rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <div>
+                            <h6 className="font-medium text-gray-900">{property.name}</h6>
+                            {tenant && (
+                              <div className="flex items-center text-xs text-gray-600 mt-1">
+                                <User className="w-3 h-3 mr-1" />
+                                <span>{tenant.name}</span>
+                              </div>
+                            )}
+                            {linkedProperty && (
+                              <div className="flex items-center text-xs text-gray-500 mt-1">
+                                <Home className="w-3 h-3 mr-1" />
+                                <span>{linkedProperty.name}</span>
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            {property.hasMeter ? (
+                              <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                                Com medidor
+                              </span>
+                            ) : (
+                              <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
+                                Sem medidor (residual)
+                              </span>
+                            )}
+                          </div>
                         </div>
+                        
+                        {/* Status de Pagamento */}
+                        <div className="mb-3">
+                          <label className="block text-xs font-medium text-gray-600 mb-2">Status de Pagamento</label>
+                          <div className="flex space-x-4">
+                            <label className="flex items-center">
+                              <input
+                                type="radio"
+                                name={`payment-${property.id}`}
+                                value="paid"
+                                checked={property.paymentStatus === 'paid'}
+                                onChange={() => handlePaymentStatusChange(groupBill.groupId, property.id, 'paid')}
+                                className="h-3 w-3 text-green-600 focus:ring-green-500 border-gray-300"
+                              />
+                              <span className="ml-1 text-xs text-green-700">Pago</span>
+                            </label>
+                            <label className="flex items-center">
+                              <input
+                                type="radio"
+                                name={`payment-${property.id}`}
+                                value="pending"
+                                checked={property.paymentStatus === 'pending'}
+                                onChange={() => handlePaymentStatusChange(groupBill.groupId, property.id, 'pending')}
+                                className="h-3 w-3 text-red-600 focus:ring-red-500 border-gray-300"
+                              />
+                              <span className="ml-1 text-xs text-red-700">Pendente</span>
+                            </label>
+                          </div>
+                        </div>
+                        
+                        {property.hasMeter ? (
+                          <div className="grid grid-cols-3 gap-3">
+                            <div>
+                              <label className="block text-xs font-medium text-gray-600 mb-1">kWh Anterior</label>
+                              <input
+                                type="number"
+                                value={property.previousReading}
+                                onChange={(e) => handlePropertyChange(groupBill.groupId, property.id, 'previousReading', Number(e.target.value))}
+                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                placeholder="0"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-600 mb-1">kWh Atual</label>
+                              <input
+                                type="number"
+                                value={property.currentReading}
+                                onChange={(e) => handlePropertyChange(groupBill.groupId, property.id, 'currentReading', Number(e.target.value))}
+                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                placeholder="0"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-600 mb-1">Consumo</label>
+                              <input
+                                type="number"
+                                value={property.monthlyConsumption}
+                                readOnly
+                                className="w-full px-2 py-1 text-sm border border-gray-200 rounded bg-gray-50 text-gray-600"
+                              />
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="text-center py-4 bg-gray-50 rounded">
+                            <p className="text-sm text-gray-600">
+                              Consumo: {property.proportionalConsumption.toFixed(2)} kWh (residual)
+                            </p>
+                          </div>
+                        )}
                       </div>
-                      
-                      {property.hasMeter ? (
-                        <div className="grid grid-cols-3 gap-3">
-                          <div>
-                            <label className="block text-xs font-medium text-gray-600 mb-1">kWh Anterior</label>
-                            <input
-                              type="number"
-                              value={property.previousReading}
-                              onChange={(e) => handlePropertyChange(groupBill.groupId, property.id, 'previousReading', Number(e.target.value))}
-                              className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                              placeholder="0"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-medium text-gray-600 mb-1">kWh Atual</label>
-                            <input
-                              type="number"
-                              value={property.currentReading}
-                              onChange={(e) => handlePropertyChange(groupBill.groupId, property.id, 'currentReading', Number(e.target.value))}
-                              className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                              placeholder="0"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-medium text-gray-600 mb-1">Consumo</label>
-                            <input
-                              type="number"
-                              value={property.monthlyConsumption}
-                              readOnly
-                              className="w-full px-2 py-1 text-sm border border-gray-200 rounded bg-gray-50 text-gray-600"
-                            />
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="text-center py-4 bg-gray-50 rounded">
-                          <p className="text-sm text-gray-600">
-                            Consumo: {property.proportionalConsumption.toFixed(2)} kWh (residual)
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 {/* Validação do Grupo */}
@@ -541,11 +672,20 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
                         <div key={property.id} className="border border-gray-200 rounded-lg p-4">
                           <div className="flex items-center justify-between mb-2">
                             <h6 className="font-medium text-gray-900">{property.name}</h6>
-                            {property.isResidualReceiver && (
-                              <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
-                                Residual
+                            <div className="flex space-x-1">
+                              {property.isResidualReceiver && (
+                                <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
+                                  Residual
+                                </span>
+                              )}
+                              <span className={`text-xs px-2 py-1 rounded-full ${
+                                property.paymentStatus === 'paid' 
+                                  ? 'bg-green-100 text-green-800' 
+                                  : 'bg-red-100 text-red-800'
+                              }`}>
+                                {property.paymentStatus === 'paid' ? 'Pago' : 'Pendente'}
                               </span>
-                            )}
+                            </div>
                           </div>
                           <div className="space-y-1 text-sm">
                             <div className="flex justify-between">
@@ -636,6 +776,9 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
                 {energyBills.map((bill) => {
                   const totalValue = bill.groupBills?.reduce((sum, gb) => sum + gb.totalGroupValue, 0) || 0;
                   const totalConsumption = bill.groupBills?.reduce((sum, gb) => sum + gb.totalGroupConsumption, 0) || 0;
+                  const pendingPayments = bill.groupBills?.reduce((count, gb) => 
+                    count + gb.propertiesInGroup.filter(p => p.paymentStatus === 'pending').length, 0
+                  ) || 0;
                   
                   return (
                     <tr key={bill.id} className="hover:bg-gray-50">
@@ -656,6 +799,13 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
                         }`}>
                           {bill.isPaid ? 'Pago' : 'Pendente'}
                         </span>
+                        {pendingPayments > 0 && (
+                          <div className="mt-1">
+                            <span className="text-xs text-red-600">
+                              {pendingPayments} pagamento{pendingPayments !== 1 ? 's' : ''} pendente{pendingPayments !== 1 ? 's' : ''}
+                            </span>
+                          </div>
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <button
