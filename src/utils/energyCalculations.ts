@@ -135,10 +135,16 @@ export const createSharedPropertyConsumption = (
   name: string,
   groupId: string,
   hasMeter: boolean = true,
-  isResidualReceiver: boolean = false
+  isResidualReceiver: boolean = false,
+  propertyId?: string,
+  tenantId?: string,
+  tenantName?: string
 ): Omit<SharedPropertyConsumption, 'id'> => {
   return {
     name,
+    propertyId,
+    tenantId,
+    tenantName,
     currentReading: 0,
     previousReading: 0,
     monthlyConsumption: 0,

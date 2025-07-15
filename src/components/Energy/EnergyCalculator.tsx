@@ -15,6 +15,7 @@ import { formatCurrency, formatDate, createLocalDate } from '../../utils/calcula
 
 interface EnergyCalculatorProps {
   energyBills: EnergyBill[];
+  properties: any[]; // Lista de propriedades para vinculação
   onAddEnergyBill: (bill: Omit<EnergyBill, 'id' | 'createdAt' | 'lastUpdated'>) => void;
   onUpdateEnergyBill: (id: string, bill: Partial<EnergyBill>) => void;
   onDeleteEnergyBill: (id: string) => void;
@@ -22,6 +23,7 @@ interface EnergyCalculatorProps {
 
 export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
   energyBills,
+  properties,
   onAddEnergyBill,
   onUpdateEnergyBill,
   onDeleteEnergyBill
@@ -68,17 +70,31 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
     if (!selectedGroupData) return;
     
     const newProperties = selectedGroupData.properties.map(propName => {
+      // Buscar propriedade correspondente pelo nome
+      const matchingProperty = properties.find(prop => prop.name === propName);
+      const propertyId = matchingProperty?.id;
+      const tenant = matchingProperty?.tenant;
+      const tenantId = tenant?.id;
+      const tenantName = tenant?.name;
+      
       const hasMeter = propName !== selectedGroupData.residualReceiver;
       const isResidualReceiver = propName === selectedGroupData.residualReceiver;
       
       return {
         id: `${selectedGroupData.id}-${propName}`,
-        ...createSharedPropertyConsumption(propName, selectedGroupData.id, hasMeter, isResidualReceiver)
+        ...createSharedPropertyConsumption(
+          propName, 
+          selectedGroupData.id, 
+          hasMeter, 
+          isResidualReceiver,
+          propertyId,
+          tenantId,
+          tenantName
+        )
       };
     });
     
     setPropertiesInGroup(newProperties);
-  }, [selectedGroup]);
 
   // Recalcular consumo mensal quando leituras mudarem
   useEffect(() => {

@@ -71,6 +71,9 @@ export interface Document {
 export interface SharedPropertyConsumption {
   id: string;
   name: string; // Ex: 802-Ca 01
+  propertyId?: string; // ID da propriedade vinculada
+  tenantId?: string; // ID do inquilino vinculado
+  tenantName?: string; // Nome do inquilino para exibição
   currentReading: number; // kWh atual
   previousReading: number; // kWh anterior
   monthlyConsumption: number; // Calculado automaticamente
