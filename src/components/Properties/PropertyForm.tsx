@@ -33,11 +33,13 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({ property, onSubmit, 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('PropertyForm - handleSubmit - formData completo:', formData);
     onSubmit(formData);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    console.log('PropertyForm - handleChange - campo:', name, 'valor:', value);
     setFormData(prev => ({
       ...prev,
       [name]: name === 'purchasePrice' || name === 'rentValue' ? Number(value) : value

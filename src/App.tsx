@@ -53,10 +53,12 @@ function App() {
       id: Date.now().toString(),
       createdAt: new Date()
     };
+    console.log('App - addProperty - newProperty completo:', newProperty);
     setProperties(prev => [...prev, newProperty]);
   };
 
   const updateProperty = (id: string, updates: Partial<Property>) => {
+    console.log('App - updateProperty - updates recebido:', updates);
     setProperties(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));
   };
 
