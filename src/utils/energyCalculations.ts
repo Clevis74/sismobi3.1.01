@@ -153,19 +153,16 @@ export const createSharedPropertyConsumption = (
 /**
  * Importa dados do mês anterior
  */
-export const importPreviousMonthDataForGroup = (
-  currentGroupBill: any,
+export const importPreviousMonthData = (
+  currentBill: EnergyBill,
   previousBill: EnergyBill | null
-): any => {
-  if (!previousBill) return currentProperties;
+): EnergyBill => {
+  if (!previousBill || previousBill.groupId !== currentBill.groupId) {
+    return currentBill;
+  }
 
-  // Encontrar o grupo correspondente na conta anterior
-  const previousGroupBill = previousBill.groupBills?.find(gb => gb.groupId === currentGroupBill.groupId);
-  
-  if (!previousGroupBill) return currentGroupBill;
-
-  const updatedProperties = currentGroupBill.propertiesInGroup.map((prop: SharedPropertyConsumption) => {
-    const previousProp = previousGroupBill.propertiesInGroup.find(p => p.name === prop.name);
+  const updatedProperties = currentBill.propertiesInGroup.map((prop: SharedPropertyConsumption) => {
+    const previousProp = previousBill.propertiesInGroup.find(p => p.name === prop.name);
     if (previousProp) {
       return {
         ...prop,
@@ -180,7 +177,7 @@ export const importPreviousMonthDataForGroup = (
   });
 
   return {
-    ...currentGroupBill,
+    ...currentBill,
     propertiesInGroup: updatedProperties
   };
 };
@@ -190,17 +187,21 @@ export const importPreviousMonthDataForGroup = (
  */
 export const generateConsumptionInsights = (
   currentBill: EnergyBill,
-  previousBills: EnergyBill[]
+  previousBills: EnergyBill[],
+  groupId: string
 ): string[] => {
   const insights: string[] = [];
 
-  if (previousBills.length === 0) return insights;
+  // Filtrar apenas contas do mesmo grupo
+  const groupBills = previousBills.filter(bill => bill.groupId === groupId);
+  
+  if (groupBills.length === 0) return insights;
 
-  const lastBill = previousBills[previousBills.length - 1];
+  const lastBill = groupBills[groupBills.length - 1];
   
   // Calcular totais consolidados
-  const currentTotalConsumption = currentBill.groupBills?.reduce((sum, gb) => sum + gb.totalGroupConsumption, 0) || 0;
-  const lastTotalConsumption = lastBill.groupBills?.reduce((sum, gb) => sum + gb.totalGroupConsumption, 0) || 0;
+  const currentTotalConsumption = currentBill.totalGroupConsumption;
+  const lastTotalConsumption = lastBill.totalGroupConsumption;
   
   const consumptionIncrease = currentTotalConsumption - lastTotalConsumption;
   const percentageIncrease = lastTotalConsumption > 0 ? (consumptionIncrease / lastTotalConsumption) * 100 : 0;
@@ -212,18 +213,13 @@ export const generateConsumptionInsights = (
   }
 
   // Verificar propriedades com consumo muito alto por grupo
-  currentBill.groupBills?.forEach(currentGroupBill => {
-    const lastGroupBill = lastBill.groupBills?.find(gb => gb.groupId === currentGroupBill.groupId);
-    if (lastGroupBill) {
-      currentGroupBill.propertiesInGroup.forEach(prop => {
-        const previousProp = lastGroupBill.propertiesInGroup.find(p => p.name === prop.name);
-        if (previousProp && previousProp.monthlyConsumption > 0) {
-          const propIncrease = ((prop.monthlyConsumption - previousProp.monthlyConsumption) / previousProp.monthlyConsumption) * 100;
-          if (propIncrease > 50) {
-            insights.push(`${prop.name}: Consumo ${propIncrease.toFixed(1)}% maior. Verificar possíveis problemas ou novos equipamentos.`);
-          }
-        }
-      });
+  currentBill.propertiesInGroup.forEach(prop => {
+    const previousProp = lastBill.propertiesInGroup.find(p => p.name === prop.name);
+    if (previousProp && previousProp.monthlyConsumption > 0) {
+      const propIncrease = ((prop.monthlyConsumption - previousProp.monthlyConsumption) / previousProp.monthlyConsumption) * 100;
+      if (propIncrease > 50) {
+        insights.push(`${prop.name}: Consumo ${propIncrease.toFixed(1)}% maior. Verificar possíveis problemas ou novos equipamentos.`);
+      }
     }
   });
 
@@ -231,10 +227,13 @@ export const generateConsumptionInsights = (
 };
 
 /**
- * Calcula estatísticas do histórico de consumo
+ * Calcula estatísticas do histórico de consumo para um grupo específico
  */
-export const calculateConsumptionStats = (bills: EnergyBill[]) => {
-  if (bills.length === 0) {
+export const calculateConsumptionStats = (bills: EnergyBill[], groupId: string) => {
+  // Filtrar apenas contas do grupo específico
+  const groupBills = bills.filter(bill => bill.groupId === groupId);
+  
+  if (groupBills.length === 0) {
     return {
       averageConsumption: 0,
       averageValue: 0,
@@ -243,21 +242,21 @@ export const calculateConsumptionStats = (bills: EnergyBill[]) => {
     };
   }
 
-  const totalConsumption = bills.reduce((sum, bill) => sum + bill.totalConsumption, 0);
-  const totalValue = bills.reduce((sum, bill) => sum + bill.totalValue, 0);
-  const averageConsumption = totalConsumption / bills.length;
-  const averageValue = totalValue / bills.length;
+  const totalConsumption = groupBills.reduce((sum, bill) => sum + bill.totalGroupConsumption, 0);
+  const totalValue = groupBills.reduce((sum, bill) => sum + bill.totalGroupValue, 0);
+  const averageConsumption = totalConsumption / groupBills.length;
+  const averageValue = totalValue / groupBills.length;
 
   let trend: 'increasing' | 'decreasing' | 'stable' = 'stable';
   let monthlyVariation = 0;
 
-  if (bills.length >= 2) {
-    const recent = bills.slice(-3); // Últimos 3 meses
-    const older = bills.slice(-6, -3); // 3 meses anteriores
+  if (groupBills.length >= 2) {
+    const recent = groupBills.slice(-3); // Últimos 3 meses
+    const older = groupBills.slice(-6, -3); // 3 meses anteriores
 
     if (recent.length > 0 && older.length > 0) {
-      const recentAvg = recent.reduce((sum, bill) => sum + bill.totalConsumption, 0) / recent.length;
-      const olderAvg = older.reduce((sum, bill) => sum + bill.totalConsumption, 0) / older.length;
+      const recentAvg = recent.reduce((sum, bill) => sum + bill.totalGroupConsumption, 0) / recent.length;
+      const olderAvg = older.reduce((sum, bill) => sum + bill.totalGroupConsumption, 0) / older.length;
       
       monthlyVariation = ((recentAvg - olderAvg) / olderAvg) * 100;
       
