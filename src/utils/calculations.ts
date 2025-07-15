@@ -51,6 +51,15 @@ export const formatDate = (date: Date): string => {
   return new Intl.DateTimeFormat('pt-BR').format(date);
 };
 
+export const createLocalDate = (dateString: string): Date => {
+  // Para strings no formato YYYY-MM-DD, criar data local
+  if (dateString.includes('-') && dateString.length === 10) {
+    const [year, month, day] = dateString.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  }
+  return new Date(dateString);
+};
+
 export const isDateInCurrentMonth = (date: Date): boolean => {
   const now = new Date();
   return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Property } from '../../types';
+import { createLocalDate } from '../../utils/calculations';
 
 interface PropertyFormProps {
   property?: Property | null;

@@ -11,7 +11,7 @@ import {
   calculateConsumptionStats,
   DEFAULT_ENERGY_GROUPS
 } from '../../utils/energyCalculations';
-import { formatCurrency, formatDate } from '../../utils/calculations';
+import { formatCurrency, formatDate, createLocalDate } from '../../utils/calculations';
 
 interface EnergyCalculatorProps {
   energyBills: EnergyBill[];
@@ -187,7 +187,7 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
     e.preventDefault();
     
     const billData: Omit<EnergyBill, 'id' | 'createdAt' | 'lastUpdated'> = {
-      date: new Date(formData.date),
+      date: createLocalDate(formData.date),
       groupBills: groupBills,
       observations: formData.observations,
       isPaid: formData.isPaid

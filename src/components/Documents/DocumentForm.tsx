@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Document, Property, Tenant } from '../../types';
+import { createLocalDate } from '../../utils/calculations';
 
 interface DocumentFormProps {
   document?: Document | null;
@@ -67,9 +68,9 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
     
     const documentData: Omit<Document, 'id' | 'lastUpdated'> = {
       type: formData.type,
-      issueDate: new Date(formData.issueDate),
+      issueDate: createLocalDate(formData.issueDate),
       hasValidity: formData.hasValidity,
-      validityDate: formData.hasValidity && formData.validityDate ? new Date(formData.validityDate) : undefined,
+      validityDate: formData.hasValidity && formData.validityDate ? createLocalDate(formData.validityDate) : undefined,
       fileName: formData.fileName || undefined,
       fileUrl: formData.fileName ? `documents/${formData.fileName}` : undefined,
       observations: formData.observations,

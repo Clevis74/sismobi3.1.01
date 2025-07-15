@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Tenant, Property } from '../../types';
+import { createLocalDate } from '../../utils/calculations';
 
 // Função para aplicar máscara de CPF
 const formatCPF = (value: string): string => {
@@ -90,8 +91,8 @@ export const TenantForm: React.FC<TenantFormProps> = ({ tenant, properties, onSu
       email: formData.email,
       cpf: formData.cpf,
       phone: formData.phone,
-      startDate: new Date(formData.startDate),
-      agreedPaymentDate: formData.agreedPaymentDate ? new Date(formData.agreedPaymentDate) : undefined,
+      startDate: createLocalDate(formData.startDate),
+      agreedPaymentDate: formData.agreedPaymentDate ? createLocalDate(formData.agreedPaymentDate) : undefined,
       monthlyRent: formData.monthlyRent,
       deposit: formData.deposit,
       paymentMethod: formData.paymentMethod,

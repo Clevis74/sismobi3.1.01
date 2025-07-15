@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Transaction, Property } from '../../types';
+import { createLocalDate } from '../../utils/calculations';
 
 interface TransactionFormProps {
   transaction?: Transaction | null;
@@ -69,7 +70,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
       category: formData.category,
       amount: formData.amount,
       description: formData.description,
-      date: new Date(formData.date),
+      date: createLocalDate(formData.date),
       ...(formData.recurring && {
         recurring: {
           frequency: formData.frequency,
