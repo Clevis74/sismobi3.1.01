@@ -1,6 +1,3 @@
-Here's the fixed version with all missing closing brackets added:
-
-```typescript
 import React, { useState, useEffect } from 'react';
 import { Plus, Calculator, TrendingUp, TrendingDown, Minus, AlertTriangle, CheckCircle, Import, Save, Eye, EyeOff, User } from 'lucide-react';
 import { EnergyBill, SharedPropertyConsumption } from '../../types';
@@ -498,6 +495,12 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
                     <div className="flex items-center justify-between mb-3">
                       <h6 className="font-medium text-gray-900">{property.name}</h6>
                       <div className="flex items-center space-x-2">
+                        {property.tenantName && (
+                          <div className="flex items-center text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                            <User className="w-3 h-3 mr-1" />
+                            {property.tenantName}
+                          </div>
+                        )}
                         {property.hasMeter ? (
                           <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
                             Com medidor
@@ -576,11 +579,19 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
                     <div key={property.id} className="border border-gray-200 rounded-lg p-4">
                       <div className="flex items-center justify-between mb-2">
                         <h6 className="font-medium text-gray-900">{property.name}</h6>
-                        {property.isResidualReceiver && (
-                          <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
-                            Residual
-                          </span>
-                        )}
+                        <div className="flex items-center space-x-1">
+                          {property.tenantName && (
+                            <div className="flex items-center text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                              <User className="w-3 h-3 mr-1" />
+                              {property.tenantName}
+                            </div>
+                          )}
+                          {property.isResidualReceiver && (
+                            <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
+                              Residual
+                            </span>
+                          )}
+                        </div>
                       </div>
                       <div className="space-y-1 text-sm">
                         <div className="flex justify-between">
@@ -664,3 +675,56 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Ações
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {selectedGroupBills.map((bill) => (
+                  <tr key={bill.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {formatDate(bill.date)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {formatCurrency(bill.totalGroupValue)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {bill.totalGroupConsumption.toFixed(0)} kWh
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                        bill.isPaid 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {bill.isPaid ? 'Pago' : 'Pendente'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                      <button
+                        onClick={() => handleEditBill(bill)}
+                        className="text-blue-600 hover:text-blue-900"
+                      >
+                        Editar
+                      </button>
+                      <button
+                        onClick={() => onDeleteEnergyBill(bill.id)}
+                        className="text-red-600 hover:text-red-900"
+                      >
+                        Excluir
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {selectedGroupBills.length === 0 && (
+              <div className="text-center py-8 text-gray-500">
+                Nenhuma conta registrada para este grupo
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
