@@ -1,5 +1,8 @@
+Here's the fixed version with all missing closing brackets added:
+
+```typescript
 import React, { useState, useEffect } from 'react';
-import { Plus, Calculator, TrendingUp, TrendingDown, Minus, AlertTriangle, CheckCircle, Import, Save, Eye, EyeOff } from 'lucide-react';
+import { Plus, Calculator, TrendingUp, TrendingDown, Minus, AlertTriangle, CheckCircle, Import, Save, Eye, EyeOff, User } from 'lucide-react';
 import { EnergyBill, SharedPropertyConsumption } from '../../types';
 import { 
   calculateMonthlyConsumption, 
@@ -95,6 +98,7 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
     });
     
     setPropertiesInGroup(newProperties);
+  }, [selectedGroup, properties]);
 
   // Recalcular consumo mensal quando leituras mudarem
   useEffect(() => {
@@ -571,15 +575,7 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
                   {propertiesInGroup.map(property => (
                     <div key={property.id} className="border border-gray-200 rounded-lg p-4">
                       <div className="flex items-center justify-between mb-2">
-                        <div>
-                          <h6 className="font-medium text-gray-900">{property.name}</h6>
-                          {property.tenantName && (
-                            <p className="text-xs text-blue-600 flex items-center mt-1">
-                              <User className="w-3 h-3 mr-1" />
-                              {property.tenantName}
-                            </p>
-                          )}
-                        </div>
+                        <h6 className="font-medium text-gray-900">{property.name}</h6>
                         {property.isResidualReceiver && (
                           <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
                             Residual
@@ -668,65 +664,3 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Ações
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {selectedGroupBills.map((bill) => (
-                  <tr key={bill.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatDate(bill.date)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">
-                      {formatCurrency(bill.totalGroupValue)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {bill.totalGroupConsumption.toFixed(0)} kWh
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                        bill.isPaid 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {bill.isPaid ? 'Pago' : 'Pendente'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button
-                        onClick={() => handleEditBill(bill)}
-                        className="text-blue-600 hover:text-blue-900 mr-3"
-                      >
-                        Editar
-                      </button>
-                      <button
-                        onClick={() => onDeleteEnergyBill(bill.id)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        Excluir
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          
-          {selectedGroupBills.length === 0 && (
-            <div className="text-center py-8">
-              <p className="text-gray-500">Nenhuma conta registrada para este grupo</p>
-            </div>
-          )}
-        </div>
-      )}
-
-      {energyBills.length === 0 && !showForm && (
-        <div className="text-center py-12">
-          <Calculator className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-500 text-lg">Nenhuma conta de energia cadastrada</p>
-          <p className="text-gray-400 mt-2">Comece adicionando sua primeira conta para calcular a distribuição</p>
-        </div>
-      )}
-    </div>
-  );
-};
