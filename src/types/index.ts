@@ -26,6 +26,7 @@ export interface Tenant {
   depositPaidInstallments?: boolean[];
   formalizedContract?: boolean;
   status: 'active' | 'inactive';
+  paymentStatus: 'paid' | 'pending';
 }
 
 export interface Transaction {

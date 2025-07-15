@@ -69,7 +69,8 @@ function App() {
   const addTenant = (tenantData: Omit<Tenant, 'id'>) => {
     const newTenant: Tenant = {
       ...tenantData,
-      id: Date.now().toString()
+      status: tenantData.status,
+      paymentStatus: tenantData.paymentStatus || 'pending'
     };
     setTenants(prev => [...prev, newTenant]);
     
