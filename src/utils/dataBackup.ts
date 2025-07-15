@@ -110,11 +110,8 @@ export const importBackup = (file: File): Promise<BackupData> => {
           date: new Date(bill.date),
           createdAt: new Date(bill.createdAt),
           lastUpdated: new Date(bill.lastUpdated),
-          groupBills: bill.groupBills ? bill.groupBills.map(groupBill => ({
-            ...groupBill,
-            propertiesInGroup: groupBill.propertiesInGroup.map(prop => ({
-              ...prop
-            }))
+          propertiesInGroup: bill.propertiesInGroup ? bill.propertiesInGroup.map(prop => ({
+            ...prop
           })) : []
         }));
         
