@@ -571,7 +571,15 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
                   {propertiesInGroup.map(property => (
                     <div key={property.id} className="border border-gray-200 rounded-lg p-4">
                       <div className="flex items-center justify-between mb-2">
-                        <h6 className="font-medium text-gray-900">{property.name}</h6>
+                        <div>
+                          <h6 className="font-medium text-gray-900">{property.name}</h6>
+                          {property.tenantName && (
+                            <p className="text-xs text-blue-600 flex items-center mt-1">
+                              <User className="w-3 h-3 mr-1" />
+                              {property.tenantName}
+                            </p>
+                          )}
+                        </div>
                         {property.isResidualReceiver && (
                           <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
                             Residual

@@ -294,6 +294,7 @@ function App() {
         return (
           <EnergyCalculator
             energyBills={energyBills}
+            properties={properties}
             onAddEnergyBill={addEnergyBill}
             onUpdateEnergyBill={updateEnergyBill}
             onDeleteEnergyBill={deleteEnergyBill}
