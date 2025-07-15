@@ -2,6 +2,7 @@ export interface Property {
   id: string;
   name: string;
   address: string;
+  energyUnitName?: string; // Identificador da unidade de energia (ex: "802-Ca 01")
   type: 'apartment' | 'house' | 'commercial';
   purchasePrice: number;
   rentValue: number;
