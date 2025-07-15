@@ -40,8 +40,7 @@ export const TenantForm: React.FC<TenantFormProps> = ({ tenant, properties, onSu
     paymentMethod: 'À vista' as const,
     installments: '2x' as const,
     formalizedContract: false,
-    status: 'active' as const,
-    paymentStatus: 'pending' as const
+    status: 'active' as const
   });
 
   const [depositPaidInstallments, setDepositPaidInstallments] = useState<boolean[]>([false]);
@@ -61,8 +60,7 @@ export const TenantForm: React.FC<TenantFormProps> = ({ tenant, properties, onSu
         paymentMethod: tenant.paymentMethod || 'À vista',
         installments: tenant.installments || '2x',
         formalizedContract: tenant.formalizedContract || false,
-        status: tenant.status,
-        paymentStatus: tenant.paymentStatus
+        status: tenant.status
       });
       
       // Configurar checkboxes do calção baseado nos dados existentes
@@ -100,8 +98,7 @@ export const TenantForm: React.FC<TenantFormProps> = ({ tenant, properties, onSu
       paymentMethod: formData.paymentMethod,
       formalizedContract: formData.formalizedContract,
       depositPaidInstallments: depositPaidInstallments,
-      status: formData.status,
-      paymentStatus: formData.paymentStatus
+      status: formData.status
     };
 
     // Incluir installments apenas se paymentMethod for 'A prazo'
@@ -259,18 +256,7 @@ export const TenantForm: React.FC<TenantFormProps> = ({ tenant, properties, onSu
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Status de Pagamento</label>
-            <select
-              name="paymentStatus"
-              value={formData.paymentStatus}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="pending">Pendente</option>
-              <option value="paid">Pago</option>
-            </select>
-          </div>
+          <div></div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

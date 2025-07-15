@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Edit, Trash2, User, Phone, Mail, Calendar, CheckCircle, Clock } from 'lucide-react';
+import { Plus, Edit, Trash2, User, Phone, Mail, Calendar } from 'lucide-react';
 import { Tenant } from '../../types';
 import { TenantForm } from './TenantForm';
 import { formatDate, formatCurrency } from '../../utils/calculations';
@@ -56,30 +56,6 @@ export const TenantManager: React.FC<TenantManagerProps> = ({
     }
   };
 
-  const getPaymentStatusColor = (paymentStatus: string) => {
-    switch (paymentStatus) {
-      case 'paid': return 'bg-green-100 text-green-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getPaymentStatusText = (paymentStatus: string) => {
-    switch (paymentStatus) {
-      case 'paid': return 'Pago';
-      case 'pending': return 'Pendente';
-      default: return 'Indefinido';
-    }
-  };
-
-  const getPaymentStatusIcon = (paymentStatus: string) => {
-    switch (paymentStatus) {
-      case 'paid': return <CheckCircle className="w-4 h-4 text-green-600" />;
-      case 'pending': return <Clock className="w-4 h-4 text-yellow-600" />;
-      default: return <Clock className="w-4 h-4 text-gray-600" />;
-    }
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -118,15 +94,9 @@ export const TenantManager: React.FC<TenantManagerProps> = ({
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900">{tenant.name}</h3>
-                      <div className="flex items-center space-x-2 mt-1">
-                        <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(tenant.status)}`}>
-                          {getStatusText(tenant.status)}
-                        </span>
-                        <span className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${getPaymentStatusColor(tenant.paymentStatus)}`}>
-                          {getPaymentStatusIcon(tenant.paymentStatus)}
-                          <span className="ml-1">{getPaymentStatusText(tenant.paymentStatus)}</span>
-                        </span>
-                      </div>
+                      <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(tenant.status)}`}>
+                        {getStatusText(tenant.status)}
+                      </span>
                     </div>
                   </div>
                 </div>
