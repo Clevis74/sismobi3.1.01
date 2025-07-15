@@ -71,7 +71,7 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
     
     const newProperties = selectedGroupData.properties.map(propName => {
       // Buscar propriedade correspondente pelo nome
-      const matchingProperty = properties.find(prop => prop.name === propName);
+      const matchingProperty = properties.find(prop => prop.energyUnitName === propName);
       const propertyId = matchingProperty?.id;
       const tenant = matchingProperty?.tenant;
       const tenantId = tenant?.id;
