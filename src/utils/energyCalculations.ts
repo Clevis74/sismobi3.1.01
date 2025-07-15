@@ -4,19 +4,19 @@ import { SharedPropertyConsumption, EnergyBill, EnergyGroup } from '../types';
 export const DEFAULT_ENERGY_GROUPS: EnergyGroup[] = [
   {
     id: 'group1',
-    name: 'Grupo 1 (802-Ca)',
+    name: 'Grupo 1 (802-SUP)',
     properties: ['802-Ca 01', '802-Ca 02', '802-Ca 06'],
     residualReceiver: '802-Ca 02'
   },
   {
     id: 'group2',
-    name: 'Grupo 2 (802-Ca)',
+    name: 'Grupo 2 (802-INF)',
     properties: ['802-Ca 03', '802-Ca 04', '802-Ca 05'],
     residualReceiver: '802-Ca 05'
   },
   {
     id: 'group3',
-    name: 'Grupo 3 (117-Ca)',
+    name: 'Grupo 3 (117-ONE)',
     properties: ['117-Ca 01', '117-Ca 03'],
     residualReceiver: '117-Ca 01'
   }
