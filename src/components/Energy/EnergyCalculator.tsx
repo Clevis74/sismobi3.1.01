@@ -69,13 +69,22 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
     const selectedGroupData = DEFAULT_ENERGY_GROUPS.find(g => g.id === selectedGroup);
     if (!selectedGroupData) return;
     
+    console.log('=== DEBUG: Atualizando propriedades do grupo ===');
+    console.log('Grupo selecionado:', selectedGroupData);
+    console.log('Todas as propriedades disponíveis:', properties);
+    
     const newProperties = selectedGroupData.properties.map(propName => {
       // Buscar propriedade correspondente pelo nome
       const matchingProperty = properties.find(prop => prop.energyUnitName === propName);
+      console.log(`Buscando propriedade para "${propName}":`, matchingProperty);
+      
       const propertyId = matchingProperty?.id;
       const tenant = matchingProperty?.tenant;
+      console.log(`Inquilino encontrado para "${propName}":`, tenant);
+      
       const tenantId = tenant?.id;
       const tenantName = tenant?.name;
+      console.log(`Nome do inquilino para "${propName}":`, tenantName);
       
       const hasMeter = propName !== selectedGroupData.residualReceiver;
       const isResidualReceiver = propName === selectedGroupData.residualReceiver;
@@ -93,6 +102,9 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
         )
       };
     });
+    
+    console.log('Propriedades finais do grupo:', newProperties);
+    console.log('=== FIM DEBUG ===');
     
     setPropertiesInGroup(newProperties);
   }, [selectedGroup, properties]);
