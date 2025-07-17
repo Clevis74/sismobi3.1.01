@@ -170,6 +170,17 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
     }));
   };
 
+  const handlePropertyPaymentChange = (propertyId: string, isPaid: boolean) => {
+    setPropertiesInGroup(prev => prev.map(prop => 
+      prop.id === propertyId ? { ...prop, isPaid } : prop
+    ));
+  };
+
+  const handlePropertyDueDateChange = (propertyId: string, dueDate: string) => {
+    setPropertiesInGroup(prev => prev.map(prop => 
+      prop.id === propertyId ? { ...prop, dueDate: createLocalDate(dueDate) } : prop
+    ));
+  };
   const handleImportPreviousMonth = () => {
     const groupBills = energyBills.filter(bill => bill.groupId === selectedGroup);
     const previousBill = groupBills.length > 0 ? groupBills[groupBills.length - 1] : null;
@@ -615,6 +626,52 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
                           <span className="font-medium text-green-600">
                             {formatCurrency(property.proportionalValue)}
                           </span>
+                        </div>
+                        
+                        {/* Status de Pagamento */}
+                        <div className="pt-2 border-t border-gray-100">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-xs font-medium text-gray-600">Status do Pagamento:</span>
+                            <div className="flex items-center">
+                              <input
+                                type="checkbox"
+                                id={`payment-${property.id}`}
+                                checked={property.isPaid}
+                                onChange={(e) => handlePropertyPaymentChange(property.id, e.target.checked)}
+                                className="h-3 w-3 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                              />
+                              <label htmlFor={`payment-${property.id}`} className="ml-1 text-xs text-gray-700">
+                                Pago
+                              </label>
+                            </div>
+                          </div>
+                          
+                          <div className="mb-2">
+                            <label className="block text-xs font-medium text-gray-600 mb-1">Vencimento:</label>
+                            <input
+                              type="date"
+                              value={property.dueDate ? new Date(property.dueDate).toISOString().split('T')[0] : ''}
+                              onChange={(e) => handlePropertyDueDateChange(property.id, e.target.value)}
+                              className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            />
+                          </div>
+                          
+                          <div className="flex items-center">
+                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                              property.isPaid 
+                                ? 'bg-green-100 text-green-800' 
+                                : property.dueDate && new Date(property.dueDate) < new Date()
+                                  ? 'bg-red-100 text-red-800'
+                                  : 'bg-yellow-100 text-yellow-800'
+                            }`}>
+                              {property.isPaid 
+                                ? 'Pago' 
+                                : property.dueDate && new Date(property.dueDate) < new Date()
+                                  ? 'Vencido'
+                                  : 'Pendente'
+                              }
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>

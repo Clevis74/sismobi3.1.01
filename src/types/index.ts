@@ -45,8 +45,10 @@ export interface Transaction {
 
 export interface Alert {
   id: string;
-  type: 'rent_due' | 'contract_expiring' | 'maintenance' | 'tax_due';
+  type: 'rent_due' | 'contract_expiring' | 'maintenance' | 'tax_due' | 'energy_bill_pending';
   propertyId: string;
+  tenantId?: string; // ID do inquilino relacionado ao alerta
+  tenantName?: string; // Nome do inquilino para exibição
   message: string;
   date: Date;
   priority: 'low' | 'medium' | 'high';
@@ -83,6 +85,8 @@ export interface SharedPropertyConsumption {
   proportionalConsumption: number; // kWh proporcional
   groupId: string; // Identificador do grupo
   isResidualReceiver: boolean; // Se recebe o valor residual
+  isPaid: boolean; // Se a conta proporcional foi paga
+  dueDate?: Date; // Data de vencimento da conta proporcional
 }
 
 export interface EnergyBill {

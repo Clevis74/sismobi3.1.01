@@ -140,6 +140,10 @@ export const createSharedPropertyConsumption = (
   tenantId?: string,
   tenantName?: string
 ): Omit<SharedPropertyConsumption, 'id'> => {
+  // Calcular data de vencimento padrão (15 dias após a data atual)
+  const defaultDueDate = new Date();
+  defaultDueDate.setDate(defaultDueDate.getDate() + 15);
+
   return {
     name,
     propertyId,
@@ -152,7 +156,9 @@ export const createSharedPropertyConsumption = (
     proportionalValue: 0,
     proportionalConsumption: 0,
     groupId,
-    isResidualReceiver
+    isResidualReceiver,
+    isPaid: false,
+    dueDate: defaultDueDate
   };
 };
 

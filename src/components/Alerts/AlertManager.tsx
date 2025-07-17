@@ -50,6 +50,7 @@ export const AlertManager: React.FC<AlertManagerProps> = ({
       case 'contract_expiring': return 'Contrato expirando';
       case 'maintenance': return 'Manutenção necessária';
       case 'tax_due': return 'Impostos a pagar';
+      case 'energy_bill_pending': return 'Conta de energia vencida';
       default: return 'Alerta';
     }
   };
