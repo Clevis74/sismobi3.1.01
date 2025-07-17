@@ -42,25 +42,28 @@ export const generateAutomaticAlerts = (
   // Alertas de contas de energia pendentes
   if (energyBills) {
     energyBills.forEach(bill => {
-      bill.propertiesInGroup.forEach((property: any) => {
-        // Verificar se a conta proporcional está pendente e vencida
-        if (!property.isPaid && property.dueDate && new Date(property.dueDate) < now) {
-          const linkedProperty = properties.find(p => p.id === property.propertyId);
-          const tenant = tenants.find(t => t.id === property.tenantId);
-          
-          alerts.push({
-            id: `energy_bill_pending_${property.id}_${bill.id}`,
-            type: 'energy_bill_pending',
-            propertyId: property.propertyId || '',
-            tenantId: property.tenantId,
-            tenantName: property.tenantName || tenant?.name,
-            message: `Conta de energia de ${property.name} vencida - ${property.tenantName || 'Inquilino não identificado'}`,
-            date: now,
-            priority: 'high',
-            resolved: false
-          });
-        }
-      });
+      // Verificar se o bill existe e tem propertiesInGroup válido
+      if (bill && bill.propertiesInGroup && Array.isArray(bill.propertiesInGroup)) {
+        bill.propertiesInGroup.forEach((property: any) => {
+          // Verificar se a conta proporcional está pendente e vencida
+          if (!property.isPaid && property.dueDate && new Date(property.dueDate) < now) {
+            const linkedProperty = properties.find(p => p.id === property.propertyId);
+            const tenant = tenants.find(t => t.id === property.tenantId);
+            
+            alerts.push({
+              id: `energy_bill_pending_${property.id}_${bill.id}`,
+              type: 'energy_bill_pending',
+              propertyId: property.propertyId || '',
+              tenantId: property.tenantId,
+              tenantName: property.tenantName || tenant?.name,
+              message: `Conta de energia de ${property.name} vencida - ${property.tenantName || 'Inquilino não identificado'}`,
+              date: now,
+              priority: 'high',
+              resolved: false
+            });
+          }
+        });
+      }
     });
   }
   // Alertas de manutenção
