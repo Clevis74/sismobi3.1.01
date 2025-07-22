@@ -1,4 +1,4 @@
-import { Property, Tenant, Transaction, Alert, Document, EnergyBill } from '../types';
+import { Property, Tenant, Transaction, Alert, Document, EnergyBill, WaterBill } from '../types';
 
 export interface BackupData {
   properties: Property[];
@@ -7,6 +7,7 @@ export interface BackupData {
   alerts: Alert[];
   documents: Document[];
   energyBills: EnergyBill[];
+  waterBills: WaterBill[];
   timestamp: Date;
   version: string;
 }
@@ -17,7 +18,8 @@ export const createBackup = (
   transactions: Transaction[],
   alerts: Alert[],
   documents: Document[],
-  energyBills: EnergyBill[]
+  energyBills: EnergyBill[],
+  waterBills: WaterBill[]
 ): BackupData => {
   return {
     properties,
@@ -26,6 +28,7 @@ export const createBackup = (
     alerts,
     documents,
     energyBills,
+    waterBills,
     timestamp: new Date(),
     version: '1.0.0'
   };
@@ -65,6 +68,11 @@ export const importBackup = (file: File): Promise<BackupData> => {
         // Garantir que energyBills existe (para compatibilidade com backups antigos)
         if (!data.energyBills) {
           data.energyBills = [];
+        }
+        
+        // Garantir que waterBills existe (para compatibilidade com backups antigos)
+        if (!data.waterBills) {
+          data.waterBills = [];
         }
         
         // Converter strings de data de volta para objetos Date
@@ -115,6 +123,17 @@ export const importBackup = (file: File): Promise<BackupData> => {
           })) : []
         }));
         
+        data.waterBills = data.waterBills.map(bill => ({
+          ...bill,
+          date: new Date(bill.date),
+          createdAt: new Date(bill.createdAt),
+          lastUpdated: new Date(bill.lastUpdated),
+          propertiesInGroup: bill.propertiesInGroup ? bill.propertiesInGroup.map(prop => ({
+            ...prop,
+            dueDate: prop.dueDate ? new Date(prop.dueDate) : undefined
+          })) : []
+        }));
+        
         data.timestamp = new Date(data.timestamp);
         
         resolve(data);
@@ -144,6 +163,10 @@ export const validateBackup = (data: BackupData): boolean => {
     }
     
     if (data.energyBills && !Array.isArray(data.energyBills)) {
+      return false;
+    }
+    
+    if (data.waterBills && !Array.isArray(data.waterBills)) {
       return false;
     }
     

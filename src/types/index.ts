@@ -110,6 +110,40 @@ export interface EnergyGroup {
   residualReceiver: string; // ID da propriedade que recebe o residual
 }
 
+export interface WaterPropertyConsumption {
+  id: string;
+  name: string; // Ex: 802-Ca 01
+  propertyId?: string; // ID da propriedade vinculada
+  tenantId?: string; // ID do inquilino vinculado
+  tenantName?: string; // Nome do inquilino para exibição
+  numberOfPeople: number; // Quantidade de pessoas na unidade
+  proportionalValue: number; // Valor em R$ proporcional
+  groupId: string; // Identificador do grupo
+  isPaid: boolean; // Se a conta proporcional foi paga
+  dueDate?: Date; // Data de vencimento da conta proporcional
+}
+
+export interface WaterBill {
+  id: string;
+  date: Date;
+  observations: string;
+  isPaid: boolean;
+  createdAt: Date;
+  lastUpdated: Date;
+  // Campos do grupo
+  groupId: string;
+  groupName: string;
+  totalGroupValue: number; // Valor total da conta do grupo em R$
+  totalGroupPeople: number; // Total de pessoas no grupo
+  propertiesInGroup: WaterPropertyConsumption[]; // Propriedades deste grupo
+}
+
+export interface WaterGroup {
+  id: string;
+  name: string;
+  properties: string[]; // IDs das propriedades
+}
+
 export interface FinancialSummary {
   totalIncome: number;
   totalExpenses: number;

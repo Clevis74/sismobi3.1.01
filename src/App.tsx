@@ -9,11 +9,12 @@ import { AlertManager } from './components/Alerts/AlertManager';
 import { ReportManager } from './components/Reports/ReportManager';
 import { DocumentManager } from './components/Documents/DocumentManager';
 import { EnergyCalculator } from './components/Energy/EnergyCalculator';
+import { WaterCalculator } from './components/Water/WaterCalculator';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { calculateFinancialSummary } from './utils/calculations';
 import { generateAutomaticAlerts, processRecurringTransactions } from './utils/alerts';
 import { createBackup, exportBackup, importBackup, validateBackup, BackupData } from './utils/dataBackup';
-import { Property, Tenant, Transaction, Alert, Document, EnergyBill } from './types';
+import { Property, Tenant, Transaction, Alert, Document, EnergyBill, WaterBill } from './types';
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -23,18 +24,19 @@ function App() {
   const [alerts, setAlerts] = useLocalStorage<Alert[]>('alerts', []);
   const [documents, setDocuments] = useLocalStorage<Document[]>('documents', []);
   const [energyBills, setEnergyBills] = useLocalStorage<EnergyBill[]>('energyBills', []);
+  const [waterBills, setWaterBills] = useLocalStorage<WaterBill[]>('waterBills', []);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Gerar alertas automáticos
   useEffect(() => {
-    const automaticAlerts = generateAutomaticAlerts(properties, tenants, transactions, energyBills);
+    const automaticAlerts = generateAutomaticAlerts(properties, tenants, transactions, energyBills, waterBills);
     const existingAlertIds = alerts.map(a => a.id);
     const newAlerts = automaticAlerts.filter(a => !existingAlertIds.includes(a.id));
     
     if (newAlerts.length > 0) {
       setAlerts(prev => [...prev, ...newAlerts]);
     }
-  }, [properties, tenants, transactions, energyBills]);
+  }, [properties, tenants, transactions, energyBills, waterBills]);
 
   // Processar transações recorrentes
   useEffect(() => {
@@ -195,9 +197,32 @@ function App() {
     setEnergyBills(prev => prev.filter(bill => bill.id !== id));
   };
 
+  // Funções para gerenciar contas de água
+  const addWaterBill = (billData: Omit<WaterBill, 'id' | 'createdAt' | 'lastUpdated'>) => {
+    const newBill: WaterBill = {
+      ...billData,
+      id: Date.now().toString(),
+      createdAt: new Date(),
+      lastUpdated: new Date()
+    };
+    setWaterBills(prev => [...prev, newBill]);
+  };
+
+  const updateWaterBill = (id: string, updates: Partial<WaterBill>) => {
+    setWaterBills(prev => prev.map(bill => 
+      bill.id === id 
+        ? { ...bill, ...updates, lastUpdated: new Date() }
+        : bill
+    ));
+  };
+
+  const deleteWaterBill = (id: string) => {
+    setWaterBills(prev => prev.filter(bill => bill.id !== id));
+  };
+
   // Funções para backup
   const handleExport = () => {
-    const backup = createBackup(properties, tenants, transactions, alerts, documents, energyBills);
+    const backup = createBackup(properties, tenants, transactions, alerts, documents, energyBills, waterBills);
     exportBackup(backup);
   };
 
@@ -217,6 +242,7 @@ function App() {
             setAlerts(backupData.alerts);
             setDocuments(backupData.documents || []);
             setEnergyBills(backupData.energyBills || []);
+            setWaterBills(backupData.waterBills || []);
             alert('Backup importado com sucesso!');
           } else {
             alert('Arquivo de backup inválido!');
@@ -298,6 +324,16 @@ function App() {
             onAddEnergyBill={addEnergyBill}
             onUpdateEnergyBill={updateEnergyBill}
             onDeleteEnergyBill={deleteEnergyBill}
+          />
+        );
+      case 'water':
+        return (
+          <WaterCalculator
+            waterBills={waterBills}
+            properties={properties}
+            onAddWaterBill={addWaterBill}
+            onUpdateWaterBill={updateWaterBill}
+            onDeleteWaterBill={deleteWaterBill}
           />
         );
       default:

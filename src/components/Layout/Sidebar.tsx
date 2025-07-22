@@ -8,7 +8,8 @@ import {
   Bell, 
   Settings,
   Zap,
-  FileText 
+  FileText,
+  Droplets
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -24,6 +25,7 @@ const menuItems = [
   { id: 'reports', label: 'Relatórios', icon: TrendingUp },
   { id: 'alerts', label: 'Alertas', icon: Bell },
   { id: 'energy', label: 'Energia Compartilhada', icon: Zap },
+  { id: 'water', label: 'Água (Sanebavi)', icon: Droplets },
   { id: 'documents', label: 'Documentos', icon: FileText },
   { id: 'settings', label: 'Configurações', icon: Settings },
 ];

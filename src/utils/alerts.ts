@@ -1,10 +1,11 @@
-import { Alert, Property, Tenant, Transaction } from '../types';
+import { Alert, Property, Tenant, Transaction, WaterBill } from '../types';
 
 export const generateAutomaticAlerts = (
   properties: Property[],
   tenants: Tenant[],
   transactions: Transaction[],
-  energyBills?: any[] // Adicionar parâmetro opcional para contas de energia
+  energyBills?: any[], // Adicionar parâmetro opcional para contas de energia
+  waterBills?: WaterBill[] // Adicionar parâmetro opcional para contas de água
 ): Alert[] => {
   const alerts: Alert[] = [];
   const now = new Date();
@@ -66,6 +67,35 @@ export const generateAutomaticAlerts = (
       }
     });
   }
+  
+  // Alertas de contas de água pendentes
+  if (waterBills) {
+    waterBills.forEach(bill => {
+      // Verificar se o bill existe e tem propertiesInGroup válido
+      if (bill && bill.propertiesInGroup && Array.isArray(bill.propertiesInGroup)) {
+        bill.propertiesInGroup.forEach((property: any) => {
+          // Verificar se a conta proporcional está pendente e vencida
+          if (!property.isPaid && property.dueDate && new Date(property.dueDate) < now) {
+            const linkedProperty = properties.find(p => p.id === property.propertyId);
+            const tenant = tenants.find(t => t.id === property.tenantId);
+            
+            alerts.push({
+              id: `water_bill_pending_${property.id}_${bill.id}`,
+              type: 'energy_bill_pending', // Reutilizando o tipo existente
+              propertyId: property.propertyId || '',
+              tenantId: property.tenantId,
+              tenantName: property.tenantName || tenant?.name,
+              message: `Conta de água de ${property.name} vencida - ${property.tenantName || 'Inquilino não identificado'}`,
+              date: now,
+              priority: 'high',
+              resolved: false
+            });
+          }
+        });
+      }
+    });
+  }
+  
   // Alertas de manutenção
   properties.forEach(property => {
     if (property.status === 'maintenance') {
