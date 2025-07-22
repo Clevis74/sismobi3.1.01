@@ -16,6 +16,7 @@ import { formatCurrency, formatDate, createLocalDate } from '../../utils/calcula
 interface WaterCalculatorProps {
   waterBills: WaterBill[];
   properties: any[]; // Lista de propriedades para vinculação
+  showValues: boolean;
   onAddWaterBill: (bill: Omit<WaterBill, 'id' | 'createdAt' | 'lastUpdated'>) => void;
   onUpdateWaterBill: (id: string, bill: Partial<WaterBill>) => void;
   onDeleteWaterBill: (id: string) => void;
@@ -24,6 +25,7 @@ interface WaterCalculatorProps {
 export const WaterCalculator: React.FC<WaterCalculatorProps> = ({
   waterBills,
   properties,
+  showValues,
   onAddWaterBill,
   onUpdateWaterBill,
   onDeleteWaterBill
@@ -307,7 +309,9 @@ export const WaterCalculator: React.FC<WaterCalculatorProps> = ({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Valor Médio</p>
-                <p className="text-xl font-bold text-blue-600">{formatCurrency(stats.averageValue)}</p>
+                <p className="text-xl font-bold text-blue-600">
+                  {showValues ? formatCurrency(stats.averageValue) : '****'}
+                </p>
               </div>
               <Calculator className="w-8 h-8 text-blue-600" />
             </div>
@@ -317,7 +321,9 @@ export const WaterCalculator: React.FC<WaterCalculatorProps> = ({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Pessoas Médio</p>
-                <p className="text-xl font-bold text-green-600">{stats.averagePeople.toFixed(0)}</p>
+                <p className="text-xl font-bold text-green-600">
+                  {showValues ? stats.averagePeople.toFixed(0) : '****'}
+                </p>
               </div>
               <Users className="w-8 h-8 text-green-600" />
             </div>
@@ -327,7 +333,9 @@ export const WaterCalculator: React.FC<WaterCalculatorProps> = ({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Valor per Capita</p>
-                <p className="text-xl font-bold text-purple-600">{formatCurrency(stats.averageValuePerPerson)}</p>
+                <p className="text-xl font-bold text-purple-600">
+                  {showValues ? formatCurrency(stats.averageValuePerPerson) : '****'}
+                </p>
               </div>
               <User className="w-8 h-8 text-purple-600" />
             </div>
@@ -526,7 +534,7 @@ export const WaterCalculator: React.FC<WaterCalculatorProps> = ({
                         <div className="flex justify-between">
                           <span className="text-gray-600">Valor:</span>
                           <span className="font-medium text-green-600">
-                            {formatCurrency(property.proportionalValue)}
+                            {showValues ? formatCurrency(property.proportionalValue) : '****'}
                           </span>
                         </div>
                         
@@ -660,13 +668,16 @@ export const WaterCalculator: React.FC<WaterCalculatorProps> = ({
                       {formatDate(bill.date)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatCurrency(bill.totalGroupValue)}
+                      {showValues ? formatCurrency(bill.totalGroupValue) : '****'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {bill.totalGroupPeople} pessoas
+                      {showValues ? `${bill.totalGroupPeople} pessoas` : '**** pessoas'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {bill.totalGroupPeople > 0 ? formatCurrency(bill.totalGroupValue / bill.totalGroupPeople) : 'N/A'}
+                      {showValues 
+                        ? (bill.totalGroupPeople > 0 ? formatCurrency(bill.totalGroupValue / bill.totalGroupPeople) : 'N/A')
+                        : '****'
+                      }
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${

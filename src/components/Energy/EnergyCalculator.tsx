@@ -16,6 +16,7 @@ import { formatCurrency, formatDate, createLocalDate } from '../../utils/calcula
 interface EnergyCalculatorProps {
   energyBills: EnergyBill[];
   properties: any[]; // Lista de propriedades para vinculação
+  showValues: boolean;
   onAddEnergyBill: (bill: Omit<EnergyBill, 'id' | 'createdAt' | 'lastUpdated'>) => void;
   onUpdateEnergyBill: (id: string, bill: Partial<EnergyBill>) => void;
   onDeleteEnergyBill: (id: string) => void;
@@ -24,6 +25,7 @@ interface EnergyCalculatorProps {
 export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
   energyBills,
   properties,
+  showValues,
   onAddEnergyBill,
   onUpdateEnergyBill,
   onDeleteEnergyBill
@@ -342,7 +344,9 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Consumo Médio</p>
-                <p className="text-xl font-bold text-blue-600">{stats.averageConsumption.toFixed(0)} kWh</p>
+                <p className="text-xl font-bold text-blue-600">
+                  {showValues ? `${stats.averageConsumption.toFixed(0)} kWh` : '**** kWh'}
+                </p>
               </div>
               <Calculator className="w-8 h-8 text-blue-600" />
             </div>
@@ -352,7 +356,9 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Valor Médio</p>
-                <p className="text-xl font-bold text-green-600">{formatCurrency(stats.averageValue)}</p>
+                <p className="text-xl font-bold text-green-600">
+                  {showValues ? formatCurrency(stats.averageValue) : '****'}
+                </p>
               </div>
               <Calculator className="w-8 h-8 text-green-600" />
             </div>
@@ -384,7 +390,7 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
               <div>
                 <p className="text-sm font-medium text-gray-600">Variação Mensal</p>
                 <p className={`text-xl font-bold ${stats.monthlyVariation >= 0 ? 'text-red-600' : 'text-green-600'}`}>
-                  {stats.monthlyVariation >= 0 ? '+' : ''}{stats.monthlyVariation.toFixed(1)}%
+                  {showValues ? `${stats.monthlyVariation >= 0 ? '+' : ''}${stats.monthlyVariation.toFixed(1)}%` : '****%'}
                 </p>
               </div>
               {stats.monthlyVariation >= 0 ? 
@@ -624,7 +630,7 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
                         <div className="flex justify-between">
                           <span className="text-gray-600">Valor:</span>
                           <span className="font-medium text-green-600">
-                            {formatCurrency(property.proportionalValue)}
+                            {showValues ? formatCurrency(property.proportionalValue) : '****'}
                           </span>
                         </div>
                         
@@ -754,10 +760,10 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
                       {formatDate(bill.date)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatCurrency(bill.totalGroupValue)}
+                      {showValues ? formatCurrency(bill.totalGroupValue) : '****'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {bill.totalGroupConsumption.toFixed(0)} kWh
+                      {showValues ? `${bill.totalGroupConsumption.toFixed(0)} kWh` : '**** kWh'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${

@@ -7,12 +7,14 @@ interface ReportManagerProps {
   properties: Property[];
   transactions: Transaction[];
   summary: FinancialSummary;
+  showValues: boolean;
 }
 
 export const ReportManager: React.FC<ReportManagerProps> = ({
   properties,
   transactions,
-  summary
+  summary,
+  showValues
 }) => {
   const [selectedPeriod, setSelectedPeriod] = useState<'month' | 'quarter' | 'year'>('month');
   const [selectedProperty, setSelectedProperty] = useState<string>('all');
@@ -141,7 +143,9 @@ export const ReportManager: React.FC<ReportManagerProps> = ({
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Receitas</p>
-              <p className="text-2xl font-bold text-green-600">{formatCurrency(totalIncome)}</p>
+              <p className="text-2xl font-bold text-green-600">
+                {showValues ? formatCurrency(totalIncome) : '****'}
+              </p>
             </div>
             <div className="p-3 bg-green-100 rounded-lg">
               <TrendingUp className="w-6 h-6 text-green-600" />
@@ -153,7 +157,9 @@ export const ReportManager: React.FC<ReportManagerProps> = ({
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Despesas</p>
-              <p className="text-2xl font-bold text-red-600">{formatCurrency(totalExpenses)}</p>
+              <p className="text-2xl font-bold text-red-600">
+                {showValues ? formatCurrency(totalExpenses) : '****'}
+              </p>
             </div>
             <div className="p-3 bg-red-100 rounded-lg">
               <BarChart3 className="w-6 h-6 text-red-600" />
@@ -166,7 +172,7 @@ export const ReportManager: React.FC<ReportManagerProps> = ({
             <div>
               <p className="text-sm font-medium text-gray-600">Lucro Líquido</p>
               <p className={`text-2xl font-bold ${netIncome >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {formatCurrency(netIncome)}
+                {showValues ? formatCurrency(netIncome) : '****'}
               </p>
             </div>
             <div className={`p-3 rounded-lg ${netIncome >= 0 ? 'bg-green-100' : 'bg-red-100'}`}>
@@ -184,7 +190,9 @@ export const ReportManager: React.FC<ReportManagerProps> = ({
             {Object.entries(incomesByCategory).map(([category, amount]) => (
               <div key={category} className="flex justify-between items-center">
                 <span className="text-gray-700">{category}</span>
-                <span className="font-medium text-green-600">{formatCurrency(amount)}</span>
+                <span className="font-medium text-green-600">
+                  {showValues ? formatCurrency(amount) : '****'}
+                </span>
               </div>
             ))}
             {Object.keys(incomesByCategory).length === 0 && (
@@ -199,7 +207,9 @@ export const ReportManager: React.FC<ReportManagerProps> = ({
             {Object.entries(expensesByCategory).map(([category, amount]) => (
               <div key={category} className="flex justify-between items-center">
                 <span className="text-gray-700">{category}</span>
-                <span className="font-medium text-red-600">{formatCurrency(amount)}</span>
+                <span className="font-medium text-red-600">
+                  {showValues ? formatCurrency(amount) : '****'}
+                </span>
               </div>
             ))}
             {Object.keys(expensesByCategory).length === 0 && (
@@ -258,7 +268,7 @@ export const ReportManager: React.FC<ReportManagerProps> = ({
                     <span className={`text-sm font-medium ${
                       transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
                     }`}>
-                      {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
+                      {transaction.type === 'income' ? '+' : '-'}{showValues ? formatCurrency(transaction.amount) : '****'}
                     </span>
                   </td>
                 </tr>
