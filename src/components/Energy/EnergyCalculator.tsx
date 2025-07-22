@@ -302,7 +302,7 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Cálculo de Energia Compartilhada</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Energia (CPFL)</h2>
           <p className="text-gray-600 mt-1">
             {energyBills.length} conta{energyBills.length !== 1 ? 's' : ''} registrada{energyBills.length !== 1 ? 's' : ''}
           </p>

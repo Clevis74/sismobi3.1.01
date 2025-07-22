@@ -260,7 +260,7 @@ export const WaterCalculator: React.FC<WaterCalculatorProps> = ({
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">💧 Água (Sanebavi)</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Cálculo de Água Compartilhada</h2>
           <p className="text-gray-600 mt-1">
             {waterBills.length} conta{waterBills.length !== 1 ? 's' : ''} registrada{waterBills.length !== 1 ? 's' : ''}
           </p>
