@@ -5,6 +5,7 @@ interface MetricCardProps {
   title: string;
   value: string;
   icon: LucideIcon;
+  showValues: boolean;
   trend?: {
     value: number;
     isPositive: boolean;
@@ -16,6 +17,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   title, 
   value, 
   icon: Icon, 
+  showValues,
   trend, 
   color 
 }) => {
@@ -31,10 +33,10 @@ export const MetricCard: React.FC<MetricCardProps> = ({
       <div className="flex items-center justify-between">
         <div className="flex-1">
           <p className="text-sm font-medium text-gray-600">{title}</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
+          <p className="text-2xl font-bold text-gray-900 mt-1">{showValues ? value : '****'}</p>
           {trend && (
             <p className={`text-sm mt-2 ${trend.isPositive ? 'text-green-600' : 'text-red-600'}`}>
-              {trend.isPositive ? '+' : ''}{trend.value}% em relação ao mês anterior
+              {showValues ? `${trend.isPositive ? '+' : ''}${trend.value}% em relação ao mês anterior` : '****% em relação ao mês anterior'}
             </p>
           )}
         </div>

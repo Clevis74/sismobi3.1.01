@@ -4,9 +4,10 @@ import { formatCurrency } from '../../utils/calculations';
 
 interface TransactionChartProps {
   transactions: Transaction[];
+  showValues: boolean;
 }
 
-export const TransactionChart: React.FC<TransactionChartProps> = ({ transactions }) => {
+export const TransactionChart: React.FC<TransactionChartProps> = ({ transactions, showValues }) => {
   const last6Months = Array.from({ length: 6 }, (_, i) => {
     const date = new Date();
     date.setMonth(date.getMonth() - i);
@@ -56,12 +57,12 @@ export const TransactionChart: React.FC<TransactionChartProps> = ({ transactions
               <div 
                 className="w-4 bg-green-500 rounded-t"
                 style={{ height: `${(data.income / maxValue) * 200}px` }}
-                title={`Receita: ${formatCurrency(data.income)}`}
+                title={showValues ? `Receita: ${formatCurrency(data.income)}` : 'Receita: ****'}
               />
               <div 
                 className="w-4 bg-red-500 rounded-t"
                 style={{ height: `${(data.expenses / maxValue) * 200}px` }}
-                title={`Despesa: ${formatCurrency(data.expenses)}`}
+                title={showValues ? `Despesa: ${formatCurrency(data.expenses)}` : 'Despesa: ****'}
               />
             </div>
             <span className="text-xs text-gray-600">{data.month}</span>

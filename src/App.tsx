@@ -18,6 +18,7 @@ import { Property, Tenant, Transaction, Alert, Document, EnergyBill, WaterBill }
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [showValues, setShowValues] = useState(true);
   const [properties, setProperties] = useLocalStorage<Property[]>('properties', []);
   const [tenants, setTenants] = useLocalStorage<Tenant[]>('tenants', []);
   const [transactions, setTransactions] = useLocalStorage<Transaction[]>('transactions', []);
@@ -258,11 +259,12 @@ function App() {
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
-        return <Dashboard summary={summary} properties={properties} transactions={transactions} />;
+        return <Dashboard summary={summary} properties={properties} transactions={transactions} showValues={showValues} />;
       case 'properties':
         return (
           <PropertyManager
             properties={properties}
+            showValues={showValues}
             onAddProperty={addProperty}
             onUpdateProperty={updateProperty}
             onDeleteProperty={deleteProperty}
@@ -273,6 +275,7 @@ function App() {
           <TenantManager
             tenants={tenants}
             properties={properties}
+            showValues={showValues}
             onAddTenant={addTenant}
             onUpdateTenant={updateTenant}
             onDeleteTenant={deleteTenant}
@@ -283,6 +286,7 @@ function App() {
           <TransactionManager
             transactions={transactions}
             properties={properties}
+            showValues={showValues}
             onAddTransaction={addTransaction}
             onUpdateTransaction={updateTransaction}
             onDeleteTransaction={deleteTransaction}
@@ -303,6 +307,7 @@ function App() {
             properties={properties}
             transactions={transactions}
             summary={summary}
+            showValues={showValues}
           />
         );
       case 'documents':
@@ -321,6 +326,7 @@ function App() {
           <EnergyCalculator
             energyBills={energyBills}
             properties={properties}
+            showValues={showValues}
             onAddEnergyBill={addEnergyBill}
             onUpdateEnergyBill={updateEnergyBill}
             onDeleteEnergyBill={deleteEnergyBill}
@@ -331,6 +337,7 @@ function App() {
           <WaterCalculator
             waterBills={waterBills}
             properties={properties}
+            showValues={showValues}
             onAddWaterBill={addWaterBill}
             onUpdateWaterBill={updateWaterBill}
             onDeleteWaterBill={deleteWaterBill}
@@ -358,7 +365,12 @@ function App() {
 
       {/* Main content */}
       <div className="flex-1 flex flex-col">
-        <Header onExport={handleExport} onImport={handleImport} />
+        <Header 
+          onExport={handleExport} 
+          onImport={handleImport} 
+          showValues={showValues}
+          onToggleValues={() => setShowValues(!showValues)}
+        />
         
         {/* Mobile menu button */}
         <button

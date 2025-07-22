@@ -10,9 +10,10 @@ interface DashboardProps {
   summary: FinancialSummary;
   properties: any[];
   transactions: any[];
+  showValues: boolean;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ summary, properties, transactions }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ summary, properties, transactions, showValues }) => {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -21,6 +22,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ summary, properties, trans
           value={formatCurrency(summary.totalIncome)}
           icon={DollarSign}
           color="green"
+          showValues={showValues}
           trend={{ value: 8.5, isPositive: true }}
         />
         <MetricCard
@@ -28,6 +30,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ summary, properties, trans
           value={formatCurrency(summary.totalExpenses)}
           icon={TrendingUp}
           color="red"
+          showValues={showValues}
           trend={{ value: -2.3, isPositive: false }}
         />
         <MetricCard
@@ -35,6 +38,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ summary, properties, trans
           value={formatCurrency(summary.netIncome)}
           icon={DollarSign}
           color="blue"
+          showValues={showValues}
           trend={{ value: 12.8, isPositive: true }}
         />
         <MetricCard
@@ -42,18 +46,19 @@ export const Dashboard: React.FC<DashboardProps> = ({ summary, properties, trans
           value={`${summary.occupancyRate.toFixed(1)}%`}
           icon={Percent}
           color="yellow"
+          showValues={showValues}
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-lg shadow-md p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Fluxo de Caixa - Últimos 6 Meses</h3>
-          <TransactionChart transactions={transactions} />
+          <TransactionChart transactions={transactions} showValues={showValues} />
         </div>
         
         <div className="bg-white rounded-lg shadow-md p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Propriedades</h3>
-          <PropertyList properties={properties} />
+          <PropertyList properties={properties} showValues={showValues} />
         </div>
       </div>
 
@@ -62,7 +67,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ summary, properties, trans
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="text-center p-4 bg-green-50 rounded-lg">
             <p className="text-sm text-gray-600">ROI Mensal</p>
-            <p className="text-xl font-bold text-green-600">{summary.monthlyROI.toFixed(2)}%</p>
+            <p className="text-xl font-bold text-green-600">
+              {showValues ? `${summary.monthlyROI.toFixed(2)}%` : '****%'}
+            </p>
           </div>
           <div className="text-center p-4 bg-blue-50 rounded-lg">
             <p className="text-sm text-gray-600">Propriedades Alugadas</p>
@@ -71,7 +78,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ summary, properties, trans
           <div className="text-center p-4 bg-yellow-50 rounded-lg">
             <p className="text-sm text-gray-600">Receita Média/Propriedade</p>
             <p className="text-xl font-bold text-yellow-600">
-              {formatCurrency(summary.rentedProperties > 0 ? summary.totalIncome / summary.rentedProperties : 0)}
+              {showValues 
+                ? formatCurrency(summary.rentedProperties > 0 ? summary.totalIncome / summary.rentedProperties : 0)
+                : '****'
+              }
             </p>
           </div>
         </div>
