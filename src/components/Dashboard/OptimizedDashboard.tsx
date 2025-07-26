@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { DollarSign, CreditCard, TrendingUp, Home, BarChart2, Briefcase, Building2 } from 'lucide-react';
 import { MetricCard } from './MetricCard';
 import { TransactionChart } from './TransactionChart';
 import { PropertyList } from './PropertyList';
@@ -29,26 +30,26 @@ const FinancialSummaryCards = React.memo(({
       <MetricCard
         title="Receita Total"
         value={formatValue(summary.totalIncome)}
-        trend={summary.totalIncome > 0 ? 'up' : 'neutral'}
-        icon="💰"
+        color="green"
+        icon={DollarSign}
       />
       <MetricCard
         title="Despesas Totais"
         value={formatValue(summary.totalExpenses)}
-        trend={summary.totalExpenses > 0 ? 'down' : 'neutral'}
-        icon="💸"
+        color="red"
+        icon={CreditCard}
       />
       <MetricCard
         title="Lucro Líquido"
         value={formatValue(summary.netIncome)}
-        trend={summary.netIncome > 0 ? 'up' : summary.netIncome < 0 ? 'down' : 'neutral'}
-        icon="📈"
+        color={summary.netIncome > 0 ? 'green' : summary.netIncome < 0 ? 'red' : 'blue'}
+        icon={TrendingUp}
       />
       <MetricCard
         title="Taxa de Ocupação"
         value={formatPercent(summary.occupancyRate)}
-        trend={summary.occupancyRate > 80 ? 'up' : summary.occupancyRate < 60 ? 'down' : 'neutral'}
-        icon="🏠"
+        color={summary.occupancyRate > 80 ? 'green' : summary.occupancyRate < 60 ? 'red' : 'yellow'}
+        icon={Home}
       />
     </div>
   );
@@ -85,20 +86,20 @@ const AdditionalStats = React.memo(({
       <MetricCard
         title="ROI Mensal"
         value={formatPercent(summary.monthlyROI)}
-        trend={summary.monthlyROI > 0 ? 'up' : 'neutral'}
-        icon="📊"
+        color={summary.monthlyROI > 0 ? 'green' : 'blue'}
+        icon={BarChart2}
       />
       <MetricCard
         title="Investimento Total"
         value={formatValue(totalInvestment)}
-        trend="neutral"
-        icon="💼"
+        color="blue"
+        icon={Briefcase}
       />
       <MetricCard
         title="Aluguel Médio"
         value={formatValue(averageRent)}
-        trend="neutral"
-        icon="🏘️"
+        color="blue"
+        icon={Building2}
       />
     </div>
   );
