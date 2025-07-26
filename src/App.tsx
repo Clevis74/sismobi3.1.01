@@ -209,8 +209,8 @@ function App() {
     setDocuments(prev => prev.filter(d => d.id !== id));
   }, [setDocuments]);
 
-  // Funções para gerenciar contas de energia
-  const addEnergyBill = (billData: Omit<EnergyBill, 'id' | 'createdAt' | 'lastUpdated'>) => {
+  // Callbacks para energy bills
+  const addEnergyBill = useCallback((billData: Omit<EnergyBill, 'id' | 'createdAt' | 'lastUpdated'>) => {
     const newBill: EnergyBill = {
       ...billData,
       id: Date.now().toString(),
@@ -218,22 +218,22 @@ function App() {
       lastUpdated: new Date()
     };
     setEnergyBills(prev => [...prev, newBill]);
-  };
+  }, [setEnergyBills]);
 
-  const updateEnergyBill = (id: string, updates: Partial<EnergyBill>) => {
+  const updateEnergyBill = useCallback((id: string, updates: Partial<EnergyBill>) => {
     setEnergyBills(prev => prev.map(bill => 
       bill.id === id 
         ? { ...bill, ...updates, lastUpdated: new Date() }
         : bill
     ));
-  };
+  }, [setEnergyBills]);
 
-  const deleteEnergyBill = (id: string) => {
+  const deleteEnergyBill = useCallback((id: string) => {
     setEnergyBills(prev => prev.filter(bill => bill.id !== id));
-  };
+  }, [setEnergyBills]);
 
-  // Funções para gerenciar contas de água
-  const addWaterBill = (billData: Omit<WaterBill, 'id' | 'createdAt' | 'lastUpdated'>) => {
+  // Callbacks para water bills
+  const addWaterBill = useCallback((billData: Omit<WaterBill, 'id' | 'createdAt' | 'lastUpdated'>) => {
     const newBill: WaterBill = {
       ...billData,
       id: Date.now().toString(),
@@ -241,27 +241,27 @@ function App() {
       lastUpdated: new Date()
     };
     setWaterBills(prev => [...prev, newBill]);
-  };
+  }, [setWaterBills]);
 
-  const updateWaterBill = (id: string, updates: Partial<WaterBill>) => {
+  const updateWaterBill = useCallback((id: string, updates: Partial<WaterBill>) => {
     setWaterBills(prev => prev.map(bill => 
       bill.id === id 
         ? { ...bill, ...updates, lastUpdated: new Date() }
         : bill
     ));
-  };
+  }, [setWaterBills]);
 
-  const deleteWaterBill = (id: string) => {
+  const deleteWaterBill = useCallback((id: string) => {
     setWaterBills(prev => prev.filter(bill => bill.id !== id));
-  };
+  }, [setWaterBills]);
 
-  // Funções para backup
-  const handleExport = () => {
+  // Callbacks para backup
+  const handleExport = useCallback(() => {
     const backup = createBackup(properties, tenants, transactions, alerts, documents, energyBills, waterBills);
     exportBackup(backup);
-  };
+  }, [properties, tenants, transactions, alerts, documents, energyBills, waterBills]);
 
-  const handleImport = () => {
+  const handleImport = useCallback(() => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = '.json';
@@ -288,7 +288,7 @@ function App() {
       }
     };
     input.click();
-  };
+  }, [setProperties, setTenants, setTransactions, setAlerts, setDocuments, setEnergyBills, setWaterBills]);
 
   const renderContent = () => {
     switch (activeTab) {
