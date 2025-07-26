@@ -18,37 +18,73 @@ import { useRenderMonitor, performanceMonitor } from './utils/performanceMonitor
 import { Property, Tenant, Transaction, Alert, Document, EnergyBill, WaterBill } from './types';
 
 function App() {
+  useRenderMonitor('App');
+  
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showValues, setShowValues] = useState(true);
-  const [properties, setProperties] = useLocalStorage<Property[]>('properties', []);
-  const [tenants, setTenants] = useLocalStorage<Tenant[]>('tenants', []);
-  const [transactions, setTransactions] = useLocalStorage<Transaction[]>('transactions', []);
-  const [alerts, setAlerts] = useLocalStorage<Alert[]>('alerts', []);
-  const [documents, setDocuments] = useLocalStorage<Document[]>('documents', []);
-  const [energyBills, setEnergyBills] = useLocalStorage<EnergyBill[]>('energyBills', []);
-  const [waterBills, setWaterBills] = useLocalStorage<WaterBill[]>('waterBills', []);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  // Usar hook otimizado para localStorage
+  const [properties, setProperties] = useOptimizedLocalStorage<Property[]>('properties', []);
+  const [tenants, setTenants] = useOptimizedLocalStorage<Tenant[]>('tenants', []);
+  const [transactions, setTransactions] = useOptimizedLocalStorage<Transaction[]>('transactions', []);
+  const [alerts, setAlerts] = useOptimizedLocalStorage<Alert[]>('alerts', []);
+  const [documents, setDocuments] = useOptimizedLocalStorage<Document[]>('documents', []);
+  const [energyBills, setEnergyBills] = useOptimizedLocalStorage<EnergyBill[]>('energyBills', []);
+  const [waterBills, setWaterBills] = useOptimizedLocalStorage<WaterBill[]>('waterBills', []);
 
-  // Gerar alertas automáticos
-  useEffect(() => {
-    const automaticAlerts = generateAutomaticAlerts(properties, tenants, transactions, energyBills, waterBills);
-    const existingAlertIds = alerts.map(a => a.id);
-    const newAlerts = automaticAlerts.filter(a => !existingAlertIds.includes(a.id));
-    
-    if (newAlerts.length > 0) {
-      setAlerts(prev => [...prev, ...newAlerts]);
-    }
+  // Memoizar cálculo financeiro
+  const summary = useMemo(() => {
+    performanceMonitor.startTimer('financial-calculation');
+    const result = calculateFinancialSummary(properties, transactions);
+    performanceMonitor.endTimer('financial-calculation');
+    return result;
+  }, [properties, transactions]);
+
+  // Memoizar geração de alertas automáticos
+  const automaticAlerts = useMemo(() => {
+    performanceMonitor.startTimer('alert-generation');
+    const result = generateAutomaticAlerts(properties, tenants, transactions, energyBills, waterBills);
+    performanceMonitor.endTimer('alert-generation');
+    return result;
   }, [properties, tenants, transactions, energyBills, waterBills]);
 
-  // Processar transações recorrentes
+  // Memoizar processamento de transações recorrentes
+  const recurringTransactions = useMemo(() => {
+    performanceMonitor.startTimer('recurring-transactions');
+    const result = processRecurringTransactions(transactions);
+    performanceMonitor.endTimer('recurring-transactions');
+    return result;
+  }, [transactions]);
+
+  // Efeito otimizado para alertas automáticos
   useEffect(() => {
-    const recurringTransactions = processRecurringTransactions(transactions);
+    if (automaticAlerts.length > 0) {
+      const existingAlertIds = new Set(alerts.map(a => a.id));
+      const newAlerts = automaticAlerts.filter(a => !existingAlertIds.has(a.id));
+      
+      if (newAlerts.length > 0) {
+        setAlerts(prev => [...prev, ...newAlerts]);
+      }
+    }
+  }, [automaticAlerts, alerts, setAlerts]);
+
+  // Efeito otimizado para transações recorrentes
+  useEffect(() => {
     if (recurringTransactions.length > 0) {
       setTransactions(prev => [...prev, ...recurringTransactions]);
     }
-  }, [transactions]);
+  }, [recurringTransactions, setTransactions]);
 
-  const summary = calculateFinancialSummary(properties, transactions);
+  // Limpar cache periodicamente
+  useEffect(() => {
+    const interval = setInterval(() => {
+      clearCalculationCache();
+      clearAlertCache();
+    }, 10 * 60 * 1000); // 10 minutos
+
+    return () => clearInterval(interval);
+  }, []);
 
   // Funções para gerenciar propriedades
   const addProperty = (propertyData: Omit<Property, 'id' | 'createdAt'>) => {
