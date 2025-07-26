@@ -1,36 +1,39 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
-// Helper function to revive Date objects from JSON
+// Helper function to convert date strings back to Date objects
 function reviveDates(key: string, value: any): any {
-  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value)) {
-    return new Date(value);
+  // Define which keys should be converted to dates
+  const dateFields = ['createdAt', 'startDate', 'agreedPaymentDate', 'date', 'nextDate', 'issueDate', 'validityDate', 'lastUpdated'];
+  
+  if (typeof value === 'string' && dateFields.includes(key)) {
+    const date = new Date(value);
+    // Check if it's a valid date
+    if (!isNaN(date.getTime())) {
+      return date;
+    }
   }
+  
   return value;
 }
 
-// Helper function to process stored data and convert date strings back to Date objects
+// Helper function to recursively process objects and arrays
 function processStoredData(data: any): any {
   if (data === null || data === undefined) {
     return data;
   }
-
+  
   if (Array.isArray(data)) {
-    return data.map(processStoredData);
+    return data.map(item => processStoredData(item));
   }
-
+  
   if (typeof data === 'object') {
     const processed: any = {};
     for (const [key, value] of Object.entries(data)) {
-      processed[key] = processStoredData(value);
+      processed[key] = reviveDates(key, processStoredData(value));
     }
     return processed;
   }
-
-  // Check if it's a date string and convert it
-  if (typeof data === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(data)) {
-    return new Date(data);
-  }
-
+  
   return data;
 }
 
@@ -44,7 +47,7 @@ export function useOptimizedLocalStorage<T>(
     try {
       const item = window.localStorage.getItem(key);
       if (item) {
-        const parsed = JSON.parse(item, reviveDates);
+        const parsed = JSON.parse(item);
         return processStoredData(parsed);
       }
       return defaultValue;
