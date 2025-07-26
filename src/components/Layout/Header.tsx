@@ -1,5 +1,6 @@
-import React from 'react';
-import { Calendar, Download, Upload, Eye, EyeOff } from 'lucide-react';
+import React, { useState } from 'react';
+import { Calendar, Download, Upload, Eye, EyeOff, Activity } from 'lucide-react';
+import { PerformanceDashboard } from '../Dev/PerformanceDashboard';
 
 interface HeaderProps {
   onExport: () => void;
