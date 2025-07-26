@@ -105,15 +105,14 @@ function App() {
     setTransactions(prev => prev.filter(t => t.propertyId !== id));
   }, [setProperties, setTransactions]);
 
-  // Funções para gerenciar inquilinos
-  const addTenant = (tenantData: Omit<Tenant, 'id'>) => {
+  // Callbacks memoizados para funções de inquilinos
+  const addTenant = useCallback((tenantData: Omit<Tenant, 'id'>) => {
     const newTenant: Tenant = {
       ...tenantData,
       id: Date.now().toString()
     };
     setTenants(prev => [...prev, newTenant]);
     
-    // Atualizar a propriedade vinculada
     if (tenantData.propertyId) {
       setProperties(prev => prev.map(property => 
         property.id === tenantData.propertyId 
@@ -121,48 +120,48 @@ function App() {
           : property
       ));
     }
-  };
+  }, [setTenants, setProperties]);
 
-  const updateTenant = (id: string, updates: Partial<Tenant>) => {
-    const oldTenant = tenants.find(t => t.id === id);
-    const updatedTenant = { ...oldTenant, ...updates } as Tenant;
-    
-    setTenants(prev => prev.map(t => t.id === id ? { ...t, ...updates } : t));
-    
-    // Gerenciar vínculos de propriedades
-    setProperties(prev => prev.map(property => {
-      // Remover vínculo da propriedade antiga se mudou
-      if (oldTenant?.propertyId && oldTenant.propertyId !== updatedTenant.propertyId && property.id === oldTenant.propertyId) {
-        return { ...property, tenant: undefined, status: 'vacant' as const };
-      }
+  const updateTenant = useCallback((id: string, updates: Partial<Tenant>) => {
+    setTenants(prev => {
+      const oldTenant = prev.find(t => t.id === id);
+      const updatedTenant = { ...oldTenant, ...updates } as Tenant;
       
-      // Adicionar vínculo à nova propriedade
-      if (property.id === updatedTenant.propertyId) {
-        return { ...property, tenant: updatedTenant, status: 'rented' as const };
-      }
+      setProperties(prevProps => prevProps.map(property => {
+        if (oldTenant?.propertyId && oldTenant.propertyId !== updatedTenant.propertyId && property.id === oldTenant.propertyId) {
+          return { ...property, tenant: undefined, status: 'vacant' as const };
+        }
+        
+        if (property.id === updatedTenant.propertyId) {
+          return { ...property, tenant: updatedTenant, status: 'rented' as const };
+        }
+        
+        if (property.tenant?.id === id) {
+          return { ...property, tenant: updatedTenant };
+        }
+        
+        return property;
+      }));
       
-      // Atualizar dados do inquilino na propriedade atual se não mudou de propriedade
-      if (property.tenant?.id === id) {
-        return { ...property, tenant: updatedTenant };
-      }
-      
-      return property;
-    }));
-  };
+      return prev.map(t => t.id === id ? { ...t, ...updates } : t);
+    });
+  }, [setTenants, setProperties]);
 
-  const deleteTenant = (id: string) => {
-    const tenant = tenants.find(t => t.id === id);
-    setTenants(prev => prev.filter(t => t.id !== id));
-    
-    // Remover vínculo da propriedade
-    if (tenant?.propertyId) {
-      setProperties(prev => prev.map(property => 
-        property.id === tenant.propertyId 
-          ? { ...property, tenant: undefined, status: 'vacant' as const }
-          : property
-      ));
-    }
-  };
+  const deleteTenant = useCallback((id: string) => {
+    setTenants(prev => {
+      const tenant = prev.find(t => t.id === id);
+      
+      if (tenant?.propertyId) {
+        setProperties(prevProps => prevProps.map(property => 
+          property.id === tenant.propertyId 
+            ? { ...property, tenant: undefined, status: 'vacant' as const }
+            : property
+        ));
+      }
+      
+      return prev.filter(t => t.id !== id);
+    });
+  }, [setTenants, setProperties]);
 
   // Funções para gerenciar transações
   const addTransaction = (transactionData: Omit<Transaction, 'id'>) => {
