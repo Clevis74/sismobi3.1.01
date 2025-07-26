@@ -86,24 +86,24 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // Funções para gerenciar propriedades
-  const addProperty = (propertyData: Omit<Property, 'id' | 'createdAt'>) => {
+  // Callbacks memoizados para funções de propriedades
+  const addProperty = useCallback((propertyData: Omit<Property, 'id' | 'createdAt'>) => {
     const newProperty: Property = {
       ...propertyData,
       id: Date.now().toString(),
       createdAt: new Date()
     };
     setProperties(prev => [...prev, newProperty]);
-  };
+  }, [setProperties]);
 
-  const updateProperty = (id: string, updates: Partial<Property>) => {
+  const updateProperty = useCallback((id: string, updates: Partial<Property>) => {
     setProperties(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));
-  };
+  }, [setProperties]);
 
-  const deleteProperty = (id: string) => {
+  const deleteProperty = useCallback((id: string) => {
     setProperties(prev => prev.filter(p => p.id !== id));
     setTransactions(prev => prev.filter(t => t.propertyId !== id));
-  };
+  }, [setProperties, setTransactions]);
 
   // Funções para gerenciar inquilinos
   const addTenant = (tenantData: Omit<Tenant, 'id'>) => {
