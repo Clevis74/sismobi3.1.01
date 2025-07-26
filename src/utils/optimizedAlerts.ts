@@ -1,4 +1,5 @@
 import { Alert, Property, Tenant, Transaction, WaterBill } from '../types';
+import { formatCurrency, formatDate } from './calculations';
 
 // Cache para alertas já processados
 const alertCache = new Map<string, Alert[]>();
@@ -19,6 +20,27 @@ const createAlertCacheKey = (
   const waterHash = waterBills?.slice(-5).map(b => `${b.id}-${b.isPaid}`).join('|') || '';
   
   return `${propHash}:${tenantHash}:${transHash}:${energyHash}:${waterHash}`;
+};
+
+// Função para calcular dias até o vencimento
+const getDaysUntilDue = (dueDate: Date): number => {
+  const now = new Date();
+  const timeDiff = dueDate.getTime() - now.getTime();
+  return Math.ceil(timeDiff / (1000 * 3600 * 24));
+};
+
+// Função para criar mensagem de alerta de água mais detalhada
+const createWaterAlertMessage = (property: any, bill: WaterBill, daysOverdue: number): string => {
+  const groupName = bill.groupName;
+  const tenantInfo = property.tenantName ? ` (${property.tenantName})` : '';
+  const valueInfo = formatCurrency(property.proportionalValue);
+  const dueDateInfo = formatDate(property.dueDate);
+  
+  if (daysOverdue > 0) {
+    return `Conta de água da unidade ${property.name}${tenantInfo} está vencida há ${daysOverdue} dia${daysOverdue > 1 ? 's' : ''}. Valor: ${valueInfo}, Vencimento: ${dueDateInfo}. Grupo: ${groupName}`;
+  } else {
+    return `Conta de água da unidade ${property.name}${tenantInfo} vence hoje. Valor: ${valueInfo}, Vencimento: ${dueDateInfo}. Grupo: ${groupName}`;
+  }
 };
 
 // Geração otimizada de alertas com cache e processamento eficiente
@@ -71,7 +93,7 @@ export const generateAutomaticAlerts = (
           propertyId: property.id,
           tenantId: property.tenant.id,
           tenantName: property.tenant.name,
-          message: `Aluguel de ${property.name} em atraso`,
+          message: `Aluguel de ${property.name} em atraso - Inquilino: ${property.tenant.name}, Valor: ${formatCurrency(property.rentValue)}`,
           date: now,
           priority: 'high',
           resolved: false
@@ -87,6 +109,7 @@ export const generateAutomaticAlerts = (
         bill.propertiesInGroup.forEach((property: any) => {
           if (!property.isPaid && property.dueDate && new Date(property.dueDate) < now) {
             const tenant = tenantMap.get(property.tenantId);
+            const daysOverdue = Math.abs(getDaysUntilDue(new Date(property.dueDate)));
             
             alerts.push({
               id: `energy_bill_pending_${property.id}_${bill.id}`,
@@ -94,7 +117,7 @@ export const generateAutomaticAlerts = (
               propertyId: property.propertyId || '',
               tenantId: property.tenantId,
               tenantName: property.tenantName || tenant?.name,
-              message: `Conta de energia de ${property.name} vencida - ${property.tenantName || 'Inquilino não identificado'}`,
+              message: `Conta de energia da unidade ${property.name} está vencida há ${daysOverdue} dia${daysOverdue > 1 ? 's' : ''}. Valor: ${formatCurrency(property.proportionalValue)}, Inquilino: ${property.tenantName || 'Não identificado'}`,
               date: now,
               priority: 'high',
               resolved: false
@@ -105,21 +128,22 @@ export const generateAutomaticAlerts = (
     });
   }
   
-  // Alertas de contas de água - processamento otimizado
+  // Alertas de contas de água - processamento otimizado (CORRIGIDO)
   if (waterBills && waterBills.length > 0) {
     waterBills.forEach(bill => {
       if (bill?.propertiesInGroup && Array.isArray(bill.propertiesInGroup)) {
         bill.propertiesInGroup.forEach((property: any) => {
-          if (!property.isPaid && property.dueDate && new Date(property.dueDate) < now) {
+          if (!property.isPaid && property.dueDate && new Date(property.dueDate) <= now) {
             const tenant = tenantMap.get(property.tenantId);
+            const daysOverdue = Math.abs(getDaysUntilDue(new Date(property.dueDate)));
             
             alerts.push({
               id: `water_bill_pending_${property.id}_${bill.id}`,
-              type: 'energy_bill_pending',
+              type: 'water_bill_pending', // CORRIGIDO: Tipo correto para água
               propertyId: property.propertyId || '',
               tenantId: property.tenantId,
               tenantName: property.tenantName || tenant?.name,
-              message: `Conta de água de ${property.name} vencida - ${property.tenantName || 'Inquilino não identificado'}`,
+              message: createWaterAlertMessage(property, bill, daysOverdue), // MELHORADO: Mensagem mais detalhada
               date: now,
               priority: 'high',
               resolved: false
@@ -163,7 +187,7 @@ export const generateAutomaticAlerts = (
           id: `tax_due_${property.id}`,
           type: 'tax_due',
           propertyId: property.id,
-          message: `Impostos de ${property.name} podem estar em atraso`,
+          message: `Impostos de ${property.name} podem estar em atraso - Verifique IPTU e outras taxas municipais`,
           date: now,
           priority: 'medium',
           resolved: false

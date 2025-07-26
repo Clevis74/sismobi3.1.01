@@ -45,7 +45,7 @@ export interface Transaction {
 
 export interface Alert {
   id: string;
-  type: 'rent_due' | 'contract_expiring' | 'maintenance' | 'tax_due' | 'energy_bill_pending';
+  type: 'rent_due' | 'contract_expiring' | 'maintenance' | 'tax_due' | 'energy_bill_pending' | 'water_bill_pending';
   propertyId: string;
   tenantId?: string; // ID do inquilino relacionado ao alerta
   tenantName?: string; // Nome do inquilino para exibição

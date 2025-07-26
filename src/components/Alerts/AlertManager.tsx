@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AlertTriangle, CheckCircle, Clock, Home, X } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Clock, Home, X, Droplets, Zap } from 'lucide-react';
 import { Alert } from '../../types';
 import { formatDate } from '../../utils/calculations';
 
@@ -51,7 +51,20 @@ export const AlertManager: React.FC<AlertManagerProps> = ({
       case 'maintenance': return 'Manutenção necessária';
       case 'tax_due': return 'Impostos a pagar';
       case 'energy_bill_pending': return 'Conta de energia vencida';
+      case 'water_bill_pending': return 'Conta de água vencida'; // CORRIGIDO: Adicionado suporte para alertas de água
       default: return 'Alerta';
+    }
+  };
+
+  const getAlertTypeIcon = (type: string) => {
+    switch (type) {
+      case 'rent_due': return <Home className="w-5 h-5 text-blue-600" />;
+      case 'contract_expiring': return <Clock className="w-5 h-5 text-yellow-600" />;
+      case 'maintenance': return <AlertTriangle className="w-5 h-5 text-orange-600" />;
+      case 'tax_due': return <AlertTriangle className="w-5 h-5 text-purple-600" />;
+      case 'energy_bill_pending': return <Zap className="w-5 h-5 text-yellow-600" />;
+      case 'water_bill_pending': return <Droplets className="w-5 h-5 text-blue-600" />; // NOVO: Ícone específico para água
+      default: return <AlertTriangle className="w-5 h-5 text-gray-600" />;
     }
   };
 
@@ -119,9 +132,12 @@ export const AlertManager: React.FC<AlertManagerProps> = ({
                   
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900">
-                        {getAlertTypeText(alert.type)}
-                      </h3>
+                      <div className="flex items-center space-x-2">
+                        {getAlertTypeIcon(alert.type)}
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {getAlertTypeText(alert.type)}
+                        </h3>
+                      </div>
                       {alert.resolved && (
                         <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                           <CheckCircle className="w-3 h-3 mr-1" />
@@ -141,6 +157,11 @@ export const AlertManager: React.FC<AlertManagerProps> = ({
                         <Clock className="w-4 h-4 mr-1" />
                         <span>{formatDate(alert.date)}</span>
                       </div>
+                      {alert.tenantName && (
+                        <div className="flex items-center">
+                          <span className="text-blue-600 font-medium">👤 {alert.tenantName}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
