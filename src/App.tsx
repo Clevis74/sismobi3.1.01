@@ -293,7 +293,7 @@ function App() {
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
-        return <Dashboard summary={summary} properties={properties} transactions={transactions} showValues={showValues} />;
+        return <OptimizedDashboard summary={summary} properties={properties} transactions={transactions} showValues={showValues} />;
       case 'properties':
         return (
           <PropertyManager
@@ -306,7 +306,7 @@ function App() {
         );
       case 'tenants':
         return (
-          <TenantManager
+          <OptimizedTenantManager
             tenants={tenants}
             properties={properties}
             showValues={showValues}
@@ -378,7 +378,7 @@ function App() {
           />
         );
       default:
-        return <Dashboard summary={summary} properties={properties} transactions={transactions} />;
+        return <OptimizedDashboard summary={summary} properties={properties} transactions={transactions} showValues={showValues} />;
     }
   };
 
