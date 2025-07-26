@@ -1,4 +1,5 @@
 // Utilitários de debounce e throttle para otimização de performance
+import React from 'react';
 
 // Função de debounce padrão
 export function debounce<T extends (...args: any[]) => any>(
