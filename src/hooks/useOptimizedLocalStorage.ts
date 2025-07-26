@@ -1,5 +1,39 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
+// Helper function to revive Date objects from JSON
+function reviveDates(key: string, value: any): any {
+  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value)) {
+    return new Date(value);
+  }
+  return value;
+}
+
+// Helper function to process stored data and convert date strings back to Date objects
+function processStoredData(data: any): any {
+  if (data === null || data === undefined) {
+    return data;
+  }
+
+  if (Array.isArray(data)) {
+    return data.map(processStoredData);
+  }
+
+  if (typeof data === 'object') {
+    const processed: any = {};
+    for (const [key, value] of Object.entries(data)) {
+      processed[key] = processStoredData(value);
+    }
+    return processed;
+  }
+
+  // Check if it's a date string and convert it
+  if (typeof data === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(data)) {
+    return new Date(data);
+  }
+
+  return data;
+}
+
 // Hook otimizado para localStorage com debounce e cache
 export function useOptimizedLocalStorage<T>(
   key: string,
@@ -9,7 +43,11 @@ export function useOptimizedLocalStorage<T>(
   const [storedValue, setStoredValue] = useState<T>(() => {
     try {
       const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item) : defaultValue;
+      if (item) {
+        const parsed = JSON.parse(item, reviveDates);
+        return processStoredData(parsed);
+      }
+      return defaultValue;
     } catch (error) {
       console.warn(`Erro ao ler localStorage para a chave "${key}":`, error);
       return defaultValue;
