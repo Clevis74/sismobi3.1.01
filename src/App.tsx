@@ -1,19 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Sidebar } from './components/Layout/Sidebar';
 import { Header } from './components/Layout/Header';
-import { Dashboard } from './components/Dashboard/Dashboard';
+import { OptimizedDashboard } from './components/Dashboard/OptimizedDashboard';
 import { PropertyManager } from './components/Properties/PropertyManager';
-import { TenantManager } from './components/Tenants/TenantManager';
+import { OptimizedTenantManager } from './components/Tenants/OptimizedTenantManager';
 import { TransactionManager } from './components/Transactions/TransactionManager';
 import { AlertManager } from './components/Alerts/AlertManager';
 import { ReportManager } from './components/Reports/ReportManager';
 import { DocumentManager } from './components/Documents/DocumentManager';
 import { EnergyCalculator } from './components/Energy/EnergyCalculator';
 import { WaterCalculator } from './components/Water/WaterCalculator';
-import { useLocalStorage } from './hooks/useLocalStorage';
-import { calculateFinancialSummary } from './utils/calculations';
-import { generateAutomaticAlerts, processRecurringTransactions } from './utils/alerts';
+import { useOptimizedLocalStorage } from './hooks/useOptimizedLocalStorage';
+import { calculateFinancialSummary, clearCalculationCache } from './utils/optimizedCalculations';
+import { generateAutomaticAlerts, processRecurringTransactions, clearAlertCache } from './utils/optimizedAlerts';
 import { createBackup, exportBackup, importBackup, validateBackup, BackupData } from './utils/dataBackup';
+import { useRenderMonitor, performanceMonitor } from './utils/performanceMonitor';
 import { Property, Tenant, Transaction, Alert, Document, EnergyBill, WaterBill } from './types';
 
 function App() {
