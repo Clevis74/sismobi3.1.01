@@ -163,53 +163,51 @@ function App() {
     });
   }, [setTenants, setProperties]);
 
-  // Funções para gerenciar transações
-  const addTransaction = (transactionData: Omit<Transaction, 'id'>) => {
+  // Callbacks memoizados para outras funções
+  const addTransaction = useCallback((transactionData: Omit<Transaction, 'id'>) => {
     const newTransaction: Transaction = {
       ...transactionData,
       id: Date.now().toString()
     };
     setTransactions(prev => [...prev, newTransaction]);
-  };
+  }, [setTransactions]);
 
-  const updateTransaction = (id: string, updates: Partial<Transaction>) => {
+  const updateTransaction = useCallback((id: string, updates: Partial<Transaction>) => {
     setTransactions(prev => prev.map(t => t.id === id ? { ...t, ...updates } : t));
-  };
+  }, [setTransactions]);
 
-  const deleteTransaction = (id: string) => {
+  const deleteTransaction = useCallback((id: string) => {
     setTransactions(prev => prev.filter(t => t.id !== id));
-  };
+  }, [setTransactions]);
 
-  // Funções para gerenciar alertas
-  const resolveAlert = (id: string) => {
+  const resolveAlert = useCallback((id: string) => {
     setAlerts(prev => prev.map(a => a.id === id ? { ...a, resolved: true } : a));
-  };
+  }, [setAlerts]);
 
-  const deleteAlert = (id: string) => {
+  const deleteAlert = useCallback((id: string) => {
     setAlerts(prev => prev.filter(a => a.id !== id));
-  };
+  }, [setAlerts]);
 
-  // Funções para gerenciar documentos
-  const addDocument = (documentData: Omit<Document, 'id' | 'lastUpdated'>) => {
+  const addDocument = useCallback((documentData: Omit<Document, 'id' | 'lastUpdated'>) => {
     const newDocument: Document = {
       ...documentData,
       id: Date.now().toString(),
       lastUpdated: new Date()
     };
     setDocuments(prev => [...prev, newDocument]);
-  };
+  }, [setDocuments]);
 
-  const updateDocument = (id: string, updates: Partial<Document>) => {
+  const updateDocument = useCallback((id: string, updates: Partial<Document>) => {
     setDocuments(prev => prev.map(d => 
       d.id === id 
         ? { ...d, ...updates, lastUpdated: new Date() }
         : d
     ));
-  };
+  }, [setDocuments]);
 
-  const deleteDocument = (id: string) => {
+  const deleteDocument = useCallback((id: string) => {
     setDocuments(prev => prev.filter(d => d.id !== id));
-  };
+  }, [setDocuments]);
 
   // Funções para gerenciar contas de energia
   const addEnergyBill = (billData: Omit<EnergyBill, 'id' | 'createdAt' | 'lastUpdated'>) => {
