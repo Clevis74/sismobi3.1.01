@@ -168,21 +168,29 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVi
             <div className="bg-gray-50 rounded-lg p-4">
               <h3 className="text-lg font-semibold mb-4">⏱️ Timing de Operações</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {Object.entries(report.timings).map(([operation, time]) => (
-                  <div key={operation} className="bg-white rounded-lg p-3 border">
-                    <p className="font-medium">{operation}</p>
-                    <p className="text-2xl font-bold text-green-600">{(time as number).toFixed(2)}ms</p>
-                    <div className="mt-2 bg-gray-200 rounded-full h-2">
-                      <div 
-                        className={`h-2 rounded-full ${
-                          (time as number) > 100 ? 'bg-red-500' : 
-                          (time as number) > 50 ? 'bg-yellow-500' : 'bg-green-500'
-                        }`}
-                        style={{ width: `${Math.min((time as number) / 200 * 100, 100)}%` }}
-                      />
+                {Object.entries(safeObjectAccess(report.timings)).map(([operation, time]) => {
+                  const safeTime = typeof time === 'number' ? time : 0;
+                  return (
+                    <div key={operation} className="bg-white rounded-lg p-3 border">
+                      <p className="font-medium">{operation}</p>
+                      <p className="text-2xl font-bold text-green-600">{safeTime.toFixed(2)}ms</p>
+                      <div className="mt-2 bg-gray-200 rounded-full h-2">
+                        <div 
+                          className={`h-2 rounded-full ${
+                            safeTime > 100 ? 'bg-red-500' : 
+                            safeTime > 50 ? 'bg-yellow-500' : 'bg-green-500'
+                          }`}
+                          style={{ width: `${Math.min(safeTime / 200 * 100, 100)}%` }}
+                        />
+                      </div>
                     </div>
+                  );
+                })}
+                {Object.keys(safeObjectAccess(report.timings)).length === 0 && (
+                  <div className="col-span-full text-center text-gray-500 py-4">
+                    Nenhum dado de timing disponível
                   </div>
-                ))}
+                )}
               </div>
             </div>
 
