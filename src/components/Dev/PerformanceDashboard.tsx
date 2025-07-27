@@ -198,17 +198,29 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVi
             <div className="bg-gray-50 rounded-lg p-4">
               <h3 className="text-lg font-semibold mb-4">💾 Estatísticas de Cache</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {Object.entries(report.cacheStats).map(([cacheKey, stats]) => (
-                  <div key={cacheKey} className="bg-white rounded-lg p-3 border">
-                    <p className="font-medium">{cacheKey}</p>
-                    <p className="text-lg font-bold text-purple-600">
-                      {((stats as any).hitRate).toFixed(1)}%
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      Hits: {(stats as any).hits} | Misses: {(stats as any).misses}
-                    </p>
+                {Object.entries(safeObjectAccess(report.cacheStats)).map(([cacheKey, stats]) => {
+                  const safeStats = safeObjectAccess(stats);
+                  const hitRate = typeof safeStats.hitRate === 'number' ? safeStats.hitRate : 0;
+                  const hits = typeof safeStats.hits === 'number' ? safeStats.hits : 0;
+                  const misses = typeof safeStats.misses === 'number' ? safeStats.misses : 0;
+                  
+                  return (
+                    <div key={cacheKey} className="bg-white rounded-lg p-3 border">
+                      <p className="font-medium">{cacheKey}</p>
+                      <p className="text-lg font-bold text-purple-600">
+                        {hitRate.toFixed(1)}%
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Hits: {hits} | Misses: {misses}
+                      </p>
+                    </div>
+                  );
+                })}
+                {Object.keys(safeObjectAccess(report.cacheStats)).length === 0 && (
+                  <div className="col-span-full text-center text-gray-500 py-4">
+                    Nenhuma estatística de cache disponível
                   </div>
-                ))}
+                )}
               </div>
             </div>
 
