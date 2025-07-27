@@ -44,16 +44,51 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVi
   }, [isVisible]);
 
   const updateReport = () => {
-    const performanceReport = performanceMonitor.getPerformanceReport();
-    const calculationMetrics = getPerformanceMetrics();
-    const alertMetrics = getAlertCacheMetrics();
-    
-    setReport({
-      ...performanceReport,
-      calculationMetrics,
-      alertMetrics,
-      timestamp: new Date()
-    });
+    try {
+      const performanceReport = performanceMonitor.getPerformanceReport();
+      const calculationMetrics = getPerformanceMetrics();
+      const alertMetrics = getAlertCacheMetrics();
+      
+      const safeReport: PerformanceReport = {
+        timings: safeObjectAccess(performanceReport?.timings),
+        renderCounts: safeObjectAccess(performanceReport?.renderCounts),
+        cacheStats: safeObjectAccess(performanceReport?.cacheStats),
+        memoryUsage: safeObjectAccess(performanceReport?.memoryUsage),
+        calculationMetrics: {
+          calculationCacheSize: calculationMetrics?.calculationCacheSize ?? 0,
+          formatCacheSize: calculationMetrics?.formatCacheSize ?? 0,
+          totalCacheEntries: calculationMetrics?.totalCacheEntries ?? 0
+        },
+        alertMetrics: {
+          alertCacheSize: alertMetrics?.alertCacheSize ?? 0,
+          cacheKeys: safeArrayAccess(alertMetrics?.cacheKeys)
+        },
+        recommendations: safeArrayAccess(performanceReport?.recommendations),
+        timestamp: new Date()
+      };
+      
+      setReport(safeReport);
+    } catch (error) {
+      console.error('[PerformanceDashboard] Erro ao atualizar relatório:', error);
+      // Definir um relatório vazio em caso de erro
+      setReport({
+        timings: {},
+        renderCounts: {},
+        cacheStats: {},
+        memoryUsage: { message: 'Erro ao carregar dados de memória' },
+        calculationMetrics: {
+          calculationCacheSize: 0,
+          formatCacheSize: 0,
+          totalCacheEntries: 0
+        },
+        alertMetrics: {
+          alertCacheSize: 0,
+          cacheKeys: []
+        },
+        recommendations: ['⚠️ Erro ao carregar recomendações'],
+        timestamp: new Date()
+      });
+    }
   };
 
   const clearMetrics = () => {
