@@ -258,13 +258,33 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVi
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-gray-600">Cache de Alertas</p>
-                    <p className="text-xl font-bold">{report.alertMetrics.alertCacheSize}</p>
+                    <p className="text-xl font-bold">
+                      {report.alertMetrics?.alertCacheSize ?? 0}
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Chaves de Cache</p>
-                    <p className="text-xl font-bold">{report.alertMetrics.cacheKeys.length}</p>
+                    <p className="text-xl font-bold">
+                      {safeArrayAccess(report.alertMetrics?.cacheKeys).length}
+                    </p>
                   </div>
                 </div>
+                {/* Lista das chaves de cache para debug (apenas em dev) */}
+                {process.env.NODE_ENV === 'development' && 
+                 safeArrayAccess(report.alertMetrics?.cacheKeys).length > 0 && (
+                  <div className="mt-3 pt-3 border-t">
+                    <details>
+                      <summary className="text-sm text-gray-500 cursor-pointer">
+                        Ver chaves de cache ({safeArrayAccess(report.alertMetrics?.cacheKeys).length})
+                      </summary>
+                      <ul className="mt-2 text-xs text-gray-600 max-h-20 overflow-y-auto">
+                        {safeArrayAccess(report.alertMetrics?.cacheKeys).map((key, idx) => (
+                          <li key={idx} className="truncate">{key}</li>
+                        ))}
+                      </ul>
+                    </details>
+                  </div>
+                )}
               </div>
             </div>
 
