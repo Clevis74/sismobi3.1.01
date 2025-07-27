@@ -149,13 +149,18 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVi
             <div className="bg-gray-50 rounded-lg p-4">
               <h3 className="text-lg font-semibold mb-4">📊 Renders de Componentes</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {Object.entries(report.renderCounts).map(([component, count]) => (
+                {Object.entries(safeObjectAccess(report.renderCounts)).map(([component, count]) => (
                   <div key={component} className="bg-white rounded-lg p-3 border">
                     <p className="font-medium">{component}</p>
-                    <p className="text-2xl font-bold text-blue-600">{count as number}</p>
+                    <p className="text-2xl font-bold text-blue-600">{typeof count === 'number' ? count : 0}</p>
                     <p className="text-sm text-gray-600">renders</p>
                   </div>
                 ))}
+                {Object.keys(safeObjectAccess(report.renderCounts)).length === 0 && (
+                  <div className="col-span-full text-center text-gray-500 py-4">
+                    Nenhum dado de render disponível
+                  </div>
+                )}
               </div>
             </div>
 
