@@ -1,13 +1,22 @@
 import { Property, Transaction, FinancialSummary } from '../types';
+import { formatDate as safeFormatDate, formatCurrency, createLocalDate, isDateInCurrentMonth } from './safeDateFormatting';
 
 // Cache para evitar recálculos desnecessários
 const calculationCache = new Map<string, any>();
 
-// Função auxiliar para criar chave de cache
+// Função auxiliar para criar chave de cache com validação segura
 const createCacheKey = (properties: Property[], transactions: Transaction[], suffix: string = '') => {
-  const propHash = properties.map(p => `${p.id}-${p.status}-${p.rentValue}`).join('|');
-  const transHash = transactions.map(t => `${t.id}-${t.amount}-${t.date}`).join('|');
-  return `${propHash}:${transHash}${suffix}`;
+  try {
+    const propHash = properties.map(p => `${p.id}-${p.status}-${p.rentValue}`).join('|');
+    const transHash = transactions.map(t => {
+      const dateTime = t.date instanceof Date ? t.date.getTime() : new Date(t.date).getTime();
+      return `${t.id}-${t.amount}-${isNaN(dateTime) ? '0' : dateTime}`;
+    }).join('|');
+    return `${propHash}:${transHash}${suffix}`;
+  } catch (error) {
+    console.warn('[createCacheKey] Erro ao criar chave de cache:', error);
+    return `fallback-${Date.now()}${suffix}`;
+  }
 };
 
 // Memoização inteligente para cálculos financeiros
@@ -24,11 +33,20 @@ export const calculateFinancialSummary = (
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
   
-  // Filtrar transações do mês atual uma única vez
+  // Filtrar transações do mês atual com validação de data
   const monthlyTransactions = transactions.filter(t => {
-    const transactionDate = new Date(t.date);
-    return transactionDate.getMonth() === currentMonth && 
-           transactionDate.getFullYear() === currentYear;
+    try {
+      const transactionDate = new Date(t.date);
+      if (isNaN(transactionDate.getTime())) {
+        console.warn('[calculateFinancialSummary] Data inválida na transação:', t.id, t.date);
+        return false;
+      }
+      return transactionDate.getMonth() === currentMonth && 
+             transactionDate.getFullYear() === currentYear;
+    } catch (error) {
+      console.warn('[calculateFinancialSummary] Erro ao processar data:', error, t);
+      return false;
+    }
   });
 
   // Calcular totais em uma única passagem
@@ -36,10 +54,11 @@ export const calculateFinancialSummary = (
   let totalExpenses = 0;
   
   monthlyTransactions.forEach(t => {
+    const amount = typeof t.amount === 'number' ? t.amount : 0;
     if (t.type === 'income') {
-      totalIncome += t.amount;
+      totalIncome += amount;
     } else {
-      totalExpenses += t.amount;
+      totalExpenses += amount;
     }
   });
 
@@ -48,7 +67,10 @@ export const calculateFinancialSummary = (
   const rentedProperties = properties.filter(p => p.status === 'rented').length;
   const occupancyRate = totalProperties > 0 ? (rentedProperties / totalProperties) * 100 : 0;
 
-  const totalInvestment = properties.reduce((sum, p) => sum + p.purchasePrice, 0);
+  const totalInvestment = properties.reduce((sum, p) => {
+    const price = typeof p.purchasePrice === 'number' ? p.purchasePrice : 0;
+    return sum + price;
+  }, 0);
   const monthlyROI = totalInvestment > 0 ? (netIncome / totalInvestment) * 100 : 0;
 
   const result: FinancialSummary = {
@@ -73,60 +95,19 @@ export const calculateFinancialSummary = (
   return result;
 };
 
-// Formatação otimizada com cache
-const formatCache = new Map<string, string>();
-
-export const formatCurrency = (amount: number): string => {
-  const key = `currency-${amount}`;
-  if (formatCache.has(key)) {
-    return formatCache.get(key)!;
-  }
-  
-  const formatted = new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
-  }).format(amount);
-  
-  formatCache.set(key, formatted);
-  return formatted;
-};
-
-export const formatDate = (date: Date): string => {
-  const key = `date-${date.getTime()}`;
-  if (formatCache.has(key)) {
-    return formatCache.get(key)!;
-  }
-  
-  const formatted = new Intl.DateTimeFormat('pt-BR').format(date);
-  formatCache.set(key, formatted);
-  return formatted;
-};
-
-export const createLocalDate = (dateString: string): Date => {
-  // Para strings no formato YYYY-MM-DD, criar data local
-  if (dateString.includes('-') && dateString.length === 10) {
-    const [year, month, day] = dateString.split('-').map(Number);
-    return new Date(year, month - 1, day);
-  }
-  return new Date(dateString);
-};
-
-export const isDateInCurrentMonth = (date: Date): boolean => {
-  const now = new Date();
-  return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
-};
+// Re-exportar funções seguras de formatação
+export const formatDate = safeFormatDate;
+export { formatCurrency, createLocalDate, isDateInCurrentMonth };
 
 // Função para limpar cache quando necessário
 export const clearCalculationCache = () => {
   calculationCache.clear();
-  formatCache.clear();
 };
 
 // Função para calcular métricas de performance
 export const getPerformanceMetrics = () => {
   return {
     calculationCacheSize: calculationCache.size,
-    formatCacheSize: formatCache.size,
-    totalCacheEntries: calculationCache.size + formatCache.size
+    totalCacheEntries: calculationCache.size
   };
 };
