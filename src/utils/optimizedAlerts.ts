@@ -225,9 +225,9 @@ export const clearAlertCache = (): void => {
 };
 
 // Função para obter métricas do cache de alertas
-export const getAlertCacheMetrics = (): { size: number; keys: string[] } => {
+export const getAlertCacheMetrics = (): { alertCacheSize: number; cacheKeys: string[] } => {
   return {
-    size: alertCache.size,
-    keys: Array.from(alertCache.keys())
+    alertCacheSize: alertCache.size,
+    cacheKeys: Array.from(alertCache.keys())
   };
 };
