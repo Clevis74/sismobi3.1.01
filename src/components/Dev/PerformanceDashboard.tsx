@@ -10,12 +10,12 @@ interface PerformanceDashboardProps {
 }
 
 // Função helper para verificação segura de arrays
-const safeArrayAccess = <T>(array: T[] | undefined | null): T[] => {
+const safeArrayAccess = function<T>(array: T[] | undefined | null): T[] {
   return Array.isArray(array) ? array : [];
 };
 
-// Função helper para verificação segura de objetos
-const safeObjectAccess = <T extends Record<string, any>>(obj: T | undefined | null): T => {
+// Função helper para verificação segura de objetos  
+const safeObjectAccess = function<T extends Record<string, any>>(obj: T | undefined | null): T {
   return obj ?? ({} as T);
 };
 
