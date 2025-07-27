@@ -35,7 +35,7 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVi
   const updateReport = () => {
     const performanceReport = performanceMonitor.getPerformanceReport();
     const calculationMetrics = getPerformanceMetrics();
-    const alertMetrics = getAlertPerformanceMetrics();
+    const alertMetrics = getAlertCacheMetrics();
     
     setReport({
       ...performanceReport,
