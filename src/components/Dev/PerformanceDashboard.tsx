@@ -2,11 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { performanceMonitor } from '../../utils/performanceMonitor';
 import { getPerformanceMetrics } from '../../utils/optimizedCalculations';
 import { getAlertCacheMetrics } from '../../utils/optimizedAlerts';
+import { PerformanceReport } from '../../types/performance';
 
 interface PerformanceDashboardProps {
   isVisible: boolean;
   onClose: () => void;
 }
+
+// Função helper para verificação segura de arrays
+const safeArrayAccess = <T>(array: T[] | undefined | null): T[] => {
+  return Array.isArray(array) ? array : [];
+};
+
+// Função helper para verificação segura de objetos
+const safeObjectAccess = <T extends Record<string, any>>(obj: T | undefined | null): T => {
+  return obj ?? ({} as T);
+};
 
 export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVisible, onClose }) => {
   const [report, setReport] = useState<any>(null);
