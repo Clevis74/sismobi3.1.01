@@ -1,4 +1,7 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
+import { SkipLinks } from './components/common/SkipLinks';
+import { NotificationProvider, useBackupAlerts } from './components/common/NotificationSystem';
 import { Sidebar } from './components/Layout/Sidebar';
 import { Header } from './components/Layout/Header';
 import { OptimizedDashboard } from './components/Dashboard/OptimizedDashboard';
@@ -17,12 +20,16 @@ import { createBackup, exportBackup, importBackup, validateBackup, BackupData } 
 import { useRenderMonitor, performanceMonitor } from './utils/performanceMonitor';
 import { Property, Tenant, Transaction, Alert, Document, EnergyBill, WaterBill } from './types';
 
-function App() {
+// Componente interno que usa os hooks
+const AppContent: React.FC = () => {
   useRenderMonitor('App');
   
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showValues, setShowValues] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  // Hooks de backup com sistema de notificações
+  const backupAlerts = useBackupAlerts();
   
   // Usar hook otimizado para localStorage
   const [properties, setProperties] = useOptimizedLocalStorage<Property[]>('properties', []);
@@ -33,29 +40,79 @@ function App() {
   const [energyBills, setEnergyBills] = useOptimizedLocalStorage<EnergyBill[]>('energyBills', []);
   const [waterBills, setWaterBills] = useOptimizedLocalStorage<WaterBill[]>('waterBills', []);
 
-  // Memoizar cálculo financeiro
-  const summary = useMemo(() => {
-    performanceMonitor.startTimer('financial-calculation');
-    const result = calculateFinancialSummary(properties, transactions);
-    performanceMonitor.endTimer('financial-calculation');
-    return result;
+  // Refs para dependências estáveis
+  const stablePropertiesRef = useRef<Property[]>([]);
+  const stableTransactionsRef = useRef<Transaction[]>([]);
+  
+  // Atualizar refs apenas quando dados mudarem estruturalmente
+  useEffect(() => {
+    const propsStringified = JSON.stringify(properties);
+    const transStringified = JSON.stringify(transactions);
+    const stablePropsStringified = JSON.stringify(stablePropertiesRef.current);
+    const stableTransStringified = JSON.stringify(stableTransactionsRef.current);
+    
+    if (propsStringified !== stablePropsStringified) {
+      stablePropertiesRef.current = properties;
+    }
+    if (transStringified !== stableTransStringified) {
+      stableTransactionsRef.current = transactions;
+    }
   }, [properties, transactions]);
 
-  // Memoizar geração de alertas automáticos
+  // Hash para dependências estáveis do useMemo
+  const propertiesHash = useMemo(() => {
+    return properties.map(p => `${p.id}-${p.status}-${p.rentValue}`).join('|');
+  }, [properties]);
+  
+  const transactionsHash = useMemo(() => {
+    return transactions.map(t => {
+      const dateTime = t.date instanceof Date ? t.date.getTime() : new Date(t.date).getTime();
+      return `${t.id}-${t.amount}-${isNaN(dateTime) ? '0' : dateTime}`;
+    }).join('|');
+  }, [transactions]);
+
+  // Outros hashes para dependências complexas
+  const tenantsHash = useMemo(() => {
+    return tenants.map(t => `${t.id}-${t.propertyId}-${t.status}`).join('|');
+  }, [tenants]);
+
+  const energyBillsHash = useMemo(() => {
+    return energyBills.map(b => `${b.id}-${b.groupId}`).join('|');
+  }, [energyBills]);
+
+  const waterBillsHash = useMemo(() => {
+    return waterBills.map(b => `${b.id}-${b.groupId}`).join('|');
+  }, [waterBills]);
+
+  // Summary com dependências estáveis
+  const summary = useMemo(() => {
+    performanceMonitor.startTimer('financial-calculation');
+    const result = calculateFinancialSummary(stablePropertiesRef.current, stableTransactionsRef.current);
+    performanceMonitor.endTimer('financial-calculation');
+    return result;
+  }, [propertiesHash, transactionsHash]);
+
+  // Alertas automáticos com dependências hash
   const automaticAlerts = useMemo(() => {
     performanceMonitor.startTimer('alert-generation');
-    const result = generateAutomaticAlerts(properties, tenants, transactions, energyBills, waterBills);
+    const result = generateAutomaticAlerts(
+      stablePropertiesRef.current, 
+      tenants, 
+      stableTransactionsRef.current, 
+      energyBills, 
+      waterBills
+    );
     performanceMonitor.endTimer('alert-generation');
     return result;
-  }, [properties, tenants, transactions, energyBills, waterBills]);
+  }, [propertiesHash, transactionsHash, tenantsHash, energyBillsHash, waterBillsHash]);
 
-  // Memoizar processamento de transações recorrentes
+  // Transações recorrentes com dependências hash
   const recurringTransactions = useMemo(() => {
     performanceMonitor.startTimer('recurring-transactions');
-    const result = processRecurringTransactions(transactions);
+    const result = processRecurringTransactions(stableTransactionsRef.current);
     performanceMonitor.endTimer('recurring-transactions');
     return result;
-  }, [transactions]);
+  }, [transactionsHash]);
 
   // Efeito otimizado para alertas automáticos
   useEffect(() => {
@@ -255,11 +312,16 @@ function App() {
     setWaterBills(prev => prev.filter(bill => bill.id !== id));
   }, [setWaterBills]);
 
-  // Callbacks para backup
+  // Callbacks para backup com sistema de notificações
   const handleExport = useCallback(() => {
-    const backup = createBackup(properties, tenants, transactions, alerts, documents, energyBills, waterBills);
-    exportBackup(backup);
-  }, [properties, tenants, transactions, alerts, documents, energyBills, waterBills]);
+    try {
+      const backup = createBackup(properties, tenants, transactions, alerts, documents, energyBills, waterBills);
+      exportBackup(backup);
+      // Não mostra notificação de sucesso aqui pois o download é automático
+    } catch (error) {
+      backupAlerts.importError('Erro ao criar backup');
+    }
+  }, [properties, tenants, transactions, alerts, documents, energyBills, waterBills, backupAlerts]);
 
   const handleImport = useCallback(() => {
     const input = document.createElement('input');
@@ -278,17 +340,17 @@ function App() {
             setDocuments(backupData.documents || []);
             setEnergyBills(backupData.energyBills || []);
             setWaterBills(backupData.waterBills || []);
-            alert('Backup importado com sucesso!');
+            backupAlerts.importSuccess();
           } else {
-            alert('Arquivo de backup inválido!');
+            backupAlerts.invalidFile();
           }
         } catch (error) {
-          alert('Erro ao importar backup: ' + error);
+          backupAlerts.importError(error instanceof Error ? error.message : 'Erro desconhecido');
         }
       }
     };
     input.click();
-  }, [setProperties, setTenants, setTransactions, setAlerts, setDocuments, setEnergyBills, setWaterBills]);
+  }, [setProperties, setTenants, setTransactions, setAlerts, setDocuments, setEnergyBills, setWaterBills, backupAlerts]);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -383,44 +445,76 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
-      {/* Sidebar */}
-      <div className={`${isMobileMenuOpen ? 'block' : 'hidden'} lg:block fixed lg:relative z-30 w-64 h-full`}>
-        <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+    <>
+      <SkipLinks />
+      <div className="min-h-screen bg-gray-100 flex">
+        {/* Sidebar */}
+        <div className={`${isMobileMenuOpen ? 'block' : 'hidden'} lg:block fixed lg:relative z-30 w-64 h-full`}>
+          <ErrorBoundary fallback={<div className="p-4 text-red-600">Erro no menu lateral</div>}>
+            <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+          </ErrorBoundary>
+        </div>
+
+        {/* Mobile overlay */}
+        {isMobileMenuOpen && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
+            onClick={() => setIsMobileMenuOpen(false)}
+            role="button"
+            aria-label="Fechar menu"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setIsMobileMenuOpen(false);
+              }
+            }}
+          />
+        )}
+
+        {/* Main content */}
+        <div className="flex-1 flex flex-col">
+          <ErrorBoundary fallback={<div className="p-4 text-red-600">Erro no cabeçalho</div>}>
+            <Header 
+              onExport={handleExport} 
+              onImport={handleImport} 
+              showValues={showValues}
+              onToggleValues={() => setShowValues(!showValues)}
+            />
+          </ErrorBoundary>
+          
+          {/* Mobile menu button */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label={isMobileMenuOpen ? 'Fechar menu' : 'Abrir menu'}
+            aria-expanded={isMobileMenuOpen}
+            className="lg:hidden fixed top-4 left-4 z-40 p-2 bg-white rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+            <span className="sr-only">Menu de navegação</span>
+          </button>
+
+          <main id="main-content" className="flex-1 p-6 overflow-y-auto" role="main">
+            <ErrorBoundary>
+              {renderContent()}
+            </ErrorBoundary>
+          </main>
+        </div>
       </div>
+    </>
+  );
+};
 
-      {/* Mobile overlay */}
-      {isMobileMenuOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
-          onClick={() => setIsMobileMenuOpen(false)}
-        />
-      )}
-
-      {/* Main content */}
-      <div className="flex-1 flex flex-col">
-        <Header 
-          onExport={handleExport} 
-          onImport={handleImport} 
-          showValues={showValues}
-          onToggleValues={() => setShowValues(!showValues)}
-        />
-        
-        {/* Mobile menu button */}
-        <button
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="lg:hidden fixed top-4 left-4 z-40 p-2 bg-white rounded-lg shadow-md"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
-
-        <main className="flex-1 p-6 overflow-y-auto">
-          {renderContent()}
-        </main>
-      </div>
-    </div>
+// Componente principal com providers
+function App() {
+  return (
+    <ErrorBoundary>
+      <NotificationProvider>
+        <AppContent />
+      </NotificationProvider>
+    </ErrorBoundary>
   );
 }
 
