@@ -108,6 +108,7 @@ export const clearCalculationCache = () => {
 export const getPerformanceMetrics = () => {
   return {
     calculationCacheSize: calculationCache.size,
+    formatCacheSize: 0, // Será implementado quando necessário
     totalCacheEntries: calculationCache.size
   };
 };
