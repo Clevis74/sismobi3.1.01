@@ -323,11 +323,15 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVi
             <div className="bg-gray-50 rounded-lg p-4">
               <h3 className="text-lg font-semibold mb-4">💡 Recomendações</h3>
               <div className="bg-white rounded-lg p-3 border">
-                {report.recommendations.map((rec: string, index: number) => (
-                  <div key={index} className="mb-2 last:mb-0">
-                    <p className="text-sm">{rec}</p>
-                  </div>
-                ))}
+                {safeArrayAccess(report.recommendations).length > 0 ? (
+                  safeArrayAccess(report.recommendations).map((rec: string, index: number) => (
+                    <div key={index} className="mb-2 last:mb-0">
+                      <p className="text-sm">{rec}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-500 text-sm">Nenhuma recomendação disponível</p>
+                )}
               </div>
             </div>
           </div>
