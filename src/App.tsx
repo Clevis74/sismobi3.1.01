@@ -16,7 +16,7 @@ import { WaterCalculator } from './components/Water/WaterCalculator';
 import { useOptimizedLocalStorage } from './hooks/useOptimizedLocalStorage';
 import { calculateFinancialSummary, clearCalculationCache } from './utils/optimizedCalculations';
 import { generateAutomaticAlerts, processRecurringTransactions, clearAlertCache } from './utils/optimizedAlerts';
-import { createBackup, exportBackup, importBackup, validateBackup, BackupData } from './utils/dataBackup';
+import { createBackup, exportBackup, importBackup, validateBackup } from './utils/dataBackup';
 import { useRenderMonitor, performanceMonitor } from './utils/performanceMonitor';
 import { Property, Tenant, Transaction, Alert, Document, EnergyBill, WaterBill } from './types';
 
@@ -318,7 +318,7 @@ const AppContent: React.FC = () => {
       const backup = createBackup(properties, tenants, transactions, alerts, documents, energyBills, waterBills);
       exportBackup(backup);
       // Não mostra notificação de sucesso aqui pois o download é automático
-    } catch (error) {
+    } catch (_error) {
       backupAlerts.importError('Erro ao criar backup');
     }
   }, [properties, tenants, transactions, alerts, documents, energyBills, waterBills, backupAlerts]);
@@ -352,7 +352,7 @@ const AppContent: React.FC = () => {
     input.click();
   }, [setProperties, setTenants, setTransactions, setAlerts, setDocuments, setEnergyBills, setWaterBills, backupAlerts]);
 
-  const renderContent = () => {
+  const renderContent = (): React.ReactElement => {
     switch (activeTab) {
       case 'dashboard':
         return <OptimizedDashboard summary={summary} properties={properties} transactions={transactions} showValues={showValues} />;
@@ -444,6 +444,21 @@ const AppContent: React.FC = () => {
     }
   };
 
+  const handleMobileMenuToggle = (): void => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const handleOverlayClick = (): void => {
+    setIsMobileMenuOpen(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent): void => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setIsMobileMenuOpen(false);
+    }
+  };
+
   return (
     <>
       <SkipLinks />
@@ -459,16 +474,11 @@ const AppContent: React.FC = () => {
         {isMobileMenuOpen && (
           <div
             className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
-            onClick={() => setIsMobileMenuOpen(false)}
+            onClick={handleOverlayClick}
             role="button"
             aria-label="Fechar menu"
             tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                setIsMobileMenuOpen(false);
-              }
-            }}
+            onKeyDown={handleKeyDown}
           />
         )}
 
@@ -485,7 +495,7 @@ const AppContent: React.FC = () => {
           
           {/* Mobile menu button */}
           <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            onClick={handleMobileMenuToggle}
             aria-label={isMobileMenuOpen ? 'Fechar menu' : 'Abrir menu'}
             aria-expanded={isMobileMenuOpen}
             className="lg:hidden fixed top-4 left-4 z-40 p-2 bg-white rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
@@ -508,7 +518,7 @@ const AppContent: React.FC = () => {
 };
 
 // Componente principal com providers
-function App() {
+function App(): React.ReactElement {
   return (
     <ErrorBoundary>
       <NotificationProvider>

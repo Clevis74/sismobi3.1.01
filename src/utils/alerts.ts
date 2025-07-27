@@ -4,7 +4,7 @@ export const generateAutomaticAlerts = (
   properties: Property[],
   tenants: Tenant[],
   transactions: Transaction[],
-  energyBills?: any[], // Adicionar parâmetro opcional para contas de energia
+  energyBills?: unknown[], // Adicionar parâmetro opcional para contas de energia
   waterBills?: WaterBill[] // Adicionar parâmetro opcional para contas de água
 ): Alert[] => {
   const alerts: Alert[] = [];
@@ -44,15 +44,15 @@ export const generateAutomaticAlerts = (
   if (energyBills) {
     energyBills.forEach(bill => {
       // Verificar se o bill existe e tem propertiesInGroup válido
-      if (bill && bill.propertiesInGroup && Array.isArray(bill.propertiesInGroup)) {
-        bill.propertiesInGroup.forEach((property: any) => {
+      if (bill && (bill as any).propertiesInGroup && Array.isArray((bill as any).propertiesInGroup)) {
+        (bill as any).propertiesInGroup.forEach((property: any) => {
           // Verificar se a conta proporcional está pendente e vencida
           if (!property.isPaid && property.dueDate && new Date(property.dueDate) < now) {
-            const linkedProperty = properties.find(p => p.id === property.propertyId);
+            const _linkedProperty = properties.find(p => p.id === property.propertyId);
             const tenant = tenants.find(t => t.id === property.tenantId);
             
             alerts.push({
-              id: `energy_bill_pending_${property.id}_${bill.id}`,
+              id: `energy_bill_pending_${property.id}_${(bill as any).id}`,
               type: 'energy_bill_pending',
               propertyId: property.propertyId || '',
               tenantId: property.tenantId,
@@ -76,7 +76,7 @@ export const generateAutomaticAlerts = (
         bill.propertiesInGroup.forEach((property: any) => {
           // Verificar se a conta proporcional está pendente e vencida
           if (!property.isPaid && property.dueDate && new Date(property.dueDate) < now) {
-            const linkedProperty = properties.find(p => p.id === property.propertyId);
+            const _linkedProperty = properties.find(p => p.id === property.propertyId);
             const tenant = tenants.find(t => t.id === property.tenantId);
             
             alerts.push({
@@ -146,7 +146,7 @@ export const processRecurringTransactions = (transactions: Transaction[]): Trans
       
       if (nextDate <= now) {
         // Criar nova transação recorrente
-        let newDate = new Date(nextDate);
+        const newDate = new Date(nextDate);
         
         switch (frequency) {
           case 'monthly':

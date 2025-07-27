@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback } from 'react';
 import { X, AlertCircle, CheckCircle, Info, AlertTriangle } from 'lucide-react';
 
 type NotificationType = 'success' | 'error' | 'warning' | 'info';
@@ -21,7 +21,7 @@ interface NotificationContextType {
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
-export const useNotifications = () => {
+export const useNotifications = (): NotificationContextType => {
   const context = useContext(NotificationContext);
   if (!context) {
     throw new Error('useNotifications deve ser usado dentro de NotificationProvider');
@@ -135,7 +135,12 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 };
 
 // Hook para substituir alert() nativo
-export const useAlert = () => {
+export const useAlert = (): {
+  success: (message: string, title?: string) => string;
+  error: (message: string, title?: string) => string;
+  warning: (message: string, title?: string) => string;
+  info: (message: string, title?: string) => string;
+} => {
   const { addNotification } = useNotifications();
   
   return {
@@ -151,7 +156,11 @@ export const useAlert = () => {
 };
 
 // Hook para alerts específicos do backup
-export const useBackupAlerts = () => {
+export const useBackupAlerts = (): {
+  importSuccess: () => string;
+  importError: (errorMsg: string) => string;
+  invalidFile: () => string;
+} => {
   const { success, error } = useAlert();
   
   return {

@@ -1,115 +1,82 @@
-import { Alert, Property, Tenant, Transaction, WaterBill } from '../types';
-import { formatCurrency, formatDate } from './calculations';
+import { Alert, Property, Tenant, Transaction, EnergyBill, WaterBill } from '../types';
 
-// Cache para alertas já processados
+// Cache para evitar recálculos desnecessários de alertas
 const alertCache = new Map<string, Alert[]>();
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+const _CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
 
-// Função para criar chave de cache baseada nos dados
-const createAlertCacheKey = (
-  properties: Property[],
-  tenants: Tenant[],
-  transactions: Transaction[],
-  energyBills?: any[],
-  waterBills?: WaterBill[]
-) => {
-  const propHash = properties.map(p => `${p.id}-${p.status}`).join('|');
-  const tenantHash = tenants.map(t => `${t.id}-${t.status}`).join('|');
-  const transHash = transactions.slice(-10).map(t => `${t.id}-${t.date}`).join('|'); // Últimas 10 transações
-  const energyHash = energyBills?.slice(-5).map(b => `${b.id}-${b.isPaid}`).join('|') || '';
-  const waterHash = waterBills?.slice(-5).map(b => `${b.id}-${b.isPaid}`).join('|') || '';
-  
-  return `${propHash}:${tenantHash}:${transHash}:${energyHash}:${waterHash}`;
-};
-
-// Função para calcular dias até o vencimento
-const getDaysUntilDue = (dueDate: Date): number => {
-  const now = new Date();
-  const timeDiff = dueDate.getTime() - now.getTime();
-  return Math.ceil(timeDiff / (1000 * 3600 * 24));
-};
-
-// Função para criar mensagem de alerta de água mais detalhada
-const createWaterAlertMessage = (property: any, bill: WaterBill, daysOverdue: number): string => {
-  const groupName = bill.groupName;
-  const tenantInfo = property.tenantName ? ` (${property.tenantName})` : '';
-  const valueInfo = formatCurrency(property.proportionalValue);
-  const dueDateInfo = formatDate(property.dueDate);
-  
-  if (daysOverdue > 0) {
-    return `Conta de água da unidade ${property.name}${tenantInfo} está vencida há ${daysOverdue} dia${daysOverdue > 1 ? 's' : ''}. Valor: ${valueInfo}, Vencimento: ${dueDateInfo}. Grupo: ${groupName}`;
-  } else {
-    return `Conta de água da unidade ${property.name}${tenantInfo} vence hoje. Valor: ${valueInfo}, Vencimento: ${dueDateInfo}. Grupo: ${groupName}`;
-  }
-};
-
-// Geração otimizada de alertas com cache e processamento eficiente
+// Geração otimizada de alertas automáticos
 export const generateAutomaticAlerts = (
   properties: Property[],
   tenants: Tenant[],
   transactions: Transaction[],
-  energyBills?: any[],
+  energyBills?: EnergyBill[],
   waterBills?: WaterBill[]
 ): Alert[] => {
-  const cacheKey = createAlertCacheKey(properties, tenants, transactions, energyBills, waterBills);
-  
-  // Verificar cache
-  if (alertCache.has(cacheKey)) {
-    const cached = alertCache.get(cacheKey);
-    if (cached) return cached;
-  }
-
   const alerts: Alert[] = [];
   const now = new Date();
+
+  // Cache baseado em hash dos dados de entrada
+  const cacheKey = `alerts-${JSON.stringify({
+    props: properties.map(p => `${p.id}-${p.status}`),
+    tenants: tenants.map(t => `${t.id}-${t.status}`),
+    trans: transactions.slice(-10).map(t => `${t.id}-${t.date}`), // Últimas 10 transações
+    energy: energyBills?.slice(-5).map(b => `${b.id}-${b.date}`) || [],
+    water: waterBills?.slice(-5).map(w => `${w.id}-${w.date}`) || []
+  })}`;
+
+  // Verificar cache
+  if (alertCache.has(cacheKey)) {
+    return alertCache.get(cacheKey)!;
+  }
+
+  // Criar mapas para lookup otimizado
+  const tenantMap = new Map(tenants.map(t => [t.id, t]));
+  const _propertyMap = new Map(properties.map(p => [p.id, p]));
+
+  // Alertas de aluguel em atraso - otimizado
   const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
-
-  // Criar mapas para evitar loops aninhados
-  const tenantMap = new Map(tenants.map(t => [t.id, t]));
-  const propertyMap = new Map(properties.map(p => [p.id, p]));
   
-  // Pré-filtrar transações do mês atual
-  const monthlyIncomeTransactions = transactions.filter(t => 
-    t.type === 'income' && 
-    t.category === 'Aluguel' &&
-    new Date(t.date).getMonth() === currentMonth &&
-    new Date(t.date).getFullYear() === currentYear
+  const rentPayments = new Set(
+    transactions
+      .filter(t => {
+        const transactionDate = new Date(t.date);
+        return t.type === 'income' && 
+               t.category === 'Aluguel' &&
+               transactionDate.getMonth() === currentMonth &&
+               transactionDate.getFullYear() === currentYear;
+      })
+      .map(t => t.propertyId)
   );
 
-  // Criar set de propriedades com pagamento de aluguel
-  const propertiesWithRentPayment = new Set(
-    monthlyIncomeTransactions.map(t => t.propertyId)
-  );
-
-  // Alertas de aluguel em atraso - processamento otimizado
   properties.forEach(property => {
-    if (property.status === 'rented' && property.tenant) {
-      const hasRentPayment = propertiesWithRentPayment.has(property.id);
-      
-      if (!hasRentPayment && now.getDate() > 10) {
-        alerts.push({
-          id: `rent_due_${property.id}`,
-          type: 'rent_due',
-          propertyId: property.id,
-          tenantId: property.tenant.id,
-          tenantName: property.tenant.name,
-          message: `Aluguel de ${property.name} em atraso - Inquilino: ${property.tenant.name}, Valor: ${formatCurrency(property.rentValue)}`,
-          date: now,
-          priority: 'high',
-          resolved: false
-        });
-      }
+    if (property.status === 'rented' && 
+        property.tenant && 
+        !rentPayments.has(property.id) && 
+        now.getDate() > 10) {
+      alerts.push({
+        id: `rent_due_${property.id}`,
+        type: 'rent_due',
+        propertyId: property.id,
+        tenantId: property.tenant.id,
+        tenantName: property.tenant.name,
+        message: `Aluguel de ${property.name} em atraso`,
+        date: now,
+        priority: 'high',
+        resolved: false
+      });
     }
   });
 
-  // Alertas de contas de energia - processamento otimizado
-  if (energyBills && energyBills.length > 0) {
+  // Alertas de contas de energia pendentes - otimizado
+  if (energyBills) {
     energyBills.forEach(bill => {
       if (bill?.propertiesInGroup && Array.isArray(bill.propertiesInGroup)) {
         bill.propertiesInGroup.forEach((property: any) => {
-          if (!property.isPaid && property.dueDate && new Date(property.dueDate) < now) {
+          if (!property.isPaid && 
+              property.dueDate && 
+              new Date(property.dueDate) < now) {
             const tenant = tenantMap.get(property.tenantId);
-            const daysOverdue = Math.abs(getDaysUntilDue(new Date(property.dueDate)));
             
             alerts.push({
               id: `energy_bill_pending_${property.id}_${bill.id}`,
@@ -117,7 +84,7 @@ export const generateAutomaticAlerts = (
               propertyId: property.propertyId || '',
               tenantId: property.tenantId,
               tenantName: property.tenantName || tenant?.name,
-              message: `Conta de energia da unidade ${property.name} está vencida há ${daysOverdue} dia${daysOverdue > 1 ? 's' : ''}. Valor: ${formatCurrency(property.proportionalValue)}, Inquilino: ${property.tenantName || 'Não identificado'}`,
+              message: `Conta de energia de ${property.name} vencida - ${property.tenantName || 'Inquilino não identificado'}`,
               date: now,
               priority: 'high',
               resolved: false
@@ -128,22 +95,23 @@ export const generateAutomaticAlerts = (
     });
   }
   
-  // Alertas de contas de água - processamento otimizado (CORRIGIDO)
-  if (waterBills && waterBills.length > 0) {
+  // Alertas de contas de água pendentes - otimizado
+  if (waterBills) {
     waterBills.forEach(bill => {
       if (bill?.propertiesInGroup && Array.isArray(bill.propertiesInGroup)) {
         bill.propertiesInGroup.forEach((property: any) => {
-          if (!property.isPaid && property.dueDate && new Date(property.dueDate) <= now) {
+          if (!property.isPaid && 
+              property.dueDate && 
+              new Date(property.dueDate) < now) {
             const tenant = tenantMap.get(property.tenantId);
-            const daysOverdue = Math.abs(getDaysUntilDue(new Date(property.dueDate)));
             
             alerts.push({
               id: `water_bill_pending_${property.id}_${bill.id}`,
-              type: 'water_bill_pending', // CORRIGIDO: Tipo correto para água
+              type: 'water_bill_pending',
               propertyId: property.propertyId || '',
               tenantId: property.tenantId,
               tenantName: property.tenantName || tenant?.name,
-              message: createWaterAlertMessage(property, bill, daysOverdue), // MELHORADO: Mensagem mais detalhada
+              message: `Conta de água de ${property.name} vencida - ${property.tenantName || 'Inquilino não identificado'}`,
               date: now,
               priority: 'high',
               resolved: false
@@ -154,40 +122,39 @@ export const generateAutomaticAlerts = (
     });
   }
   
-  // Alertas de manutenção - processamento direto
-  properties.forEach(property => {
-    if (property.status === 'maintenance') {
-      alerts.push({
-        id: `maintenance_${property.id}`,
-        type: 'maintenance',
-        propertyId: property.id,
-        message: `${property.name} necessita de manutenção`,
-        date: now,
-        priority: 'medium',
-        resolved: false
-      });
-    }
+  // Alertas de manutenção - otimizado
+  const maintenanceProperties = properties.filter(p => p.status === 'maintenance');
+  maintenanceProperties.forEach(property => {
+    alerts.push({
+      id: `maintenance_${property.id}`,
+      type: 'maintenance',
+      propertyId: property.id,
+      message: `${property.name} necessita de manutenção`,
+      date: now,
+      priority: 'medium',
+      resolved: false
+    });
   });
 
-  // Alertas de impostos - processamento otimizado
-  if (now.getMonth() >= 2) { // Março em diante
-    const annualTaxTransactions = new Set(
-      transactions
-        .filter(t => 
-          t.type === 'expense' && 
-          t.category === 'Impostos' &&
-          new Date(t.date).getFullYear() === now.getFullYear()
-        )
-        .map(t => t.propertyId)
-    );
+  // Alertas de impostos - otimizado
+  const currentYearTaxPayments = new Set(
+    transactions
+      .filter(t => 
+        t.type === 'expense' &&
+        t.category === 'Impostos' &&
+        new Date(t.date).getFullYear() === currentYear
+      )
+      .map(t => t.propertyId)
+  );
 
+  if (now.getMonth() >= 2) { // Março em diante
     properties.forEach(property => {
-      if (!annualTaxTransactions.has(property.id)) {
+      if (!currentYearTaxPayments.has(property.id)) {
         alerts.push({
           id: `tax_due_${property.id}`,
           type: 'tax_due',
           propertyId: property.id,
-          message: `Impostos de ${property.name} podem estar em atraso - Verifique IPTU e outras taxas municipais`,
+          message: `Impostos de ${property.name} podem estar em atraso`,
           date: now,
           priority: 'medium',
           resolved: false
@@ -196,10 +163,10 @@ export const generateAutomaticAlerts = (
     });
   }
 
-  // Armazenar no cache
+  // Cache o resultado
   alertCache.set(cacheKey, alerts);
   
-  // Limpar cache antigo
+  // Limpar cache antigo (manter apenas 5 entradas)
   if (alertCache.size > 5) {
     const firstKey = alertCache.keys().next().value;
     alertCache.delete(firstKey);
@@ -213,14 +180,17 @@ export const processRecurringTransactions = (transactions: Transaction[]): Trans
   const now = new Date();
   const recurringTransactions: Transaction[] = [];
 
-  // Processar apenas transações com recurring definido
-  const transactionsWithRecurring = transactions.filter(t => t.recurring);
-  
-  transactionsWithRecurring.forEach(transaction => {
-    const { frequency, nextDate } = transaction.recurring!;
-    
-    if (nextDate <= now) {
-      let newDate = new Date(nextDate);
+  // Filtrar apenas transações recorrentes vencidas
+  const overdueRecurring = transactions.filter(t => 
+    t.recurring && t.recurring.nextDate <= now
+  );
+
+  overdueRecurring.forEach(transaction => {
+    if (transaction.recurring) {
+      const { frequency, nextDate } = transaction.recurring;
+      
+      // Criar nova transação recorrente
+      const newDate = new Date(nextDate);
       
       switch (frequency) {
         case 'monthly':
@@ -250,14 +220,14 @@ export const processRecurringTransactions = (transactions: Transaction[]): Trans
 };
 
 // Função para limpar cache de alertas
-export const clearAlertCache = () => {
+export const clearAlertCache = (): void => {
   alertCache.clear();
 };
 
-// Função para obter métricas de performance dos alertas
-export const getAlertPerformanceMetrics = () => {
+// Função para obter métricas do cache de alertas
+export const getAlertCacheMetrics = (): { size: number; keys: string[] } => {
   return {
-    alertCacheSize: alertCache.size,
-    cacheKeys: Array.from(alertCache.keys())
+    size: alertCache.size,
+    keys: Array.from(alertCache.keys())
   };
 };
