@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '../../test/test-utils';
+import { render, screen } from '../../../test/test-utils';
 import { ErrorBoundary } from '../ErrorBoundary';
 
 // Componente que vai gerar erro
