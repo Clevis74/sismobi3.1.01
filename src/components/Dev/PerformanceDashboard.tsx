@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { performanceMonitor } from '../../utils/performanceMonitor';
 import { getPerformanceMetrics } from '../../utils/optimizedCalculations';
-import { getAlertPerformanceMetrics } from '../../utils/optimizedAlerts';
+import { getAlertCacheMetrics } from '../../utils/optimizedAlerts';
 
 interface PerformanceDashboardProps {
   isVisible: boolean;
