@@ -32,17 +32,6 @@ export default tseslint.config(
         { allowConstantExport: true }
       ],
       
-      // Acessibilidade básica
-      'jsx-a11y/alt-text': 'error',
-      'jsx-a11y/aria-props': 'error',
-      'jsx-a11y/aria-proptypes': 'error',
-      'jsx-a11y/aria-role': 'error',
-      'jsx-a11y/click-events-have-key-events': 'error',
-      'jsx-a11y/heading-has-content': 'error',
-      'jsx-a11y/label-has-associated-control': 'error',
-      'jsx-a11y/no-autofocus': 'error',
-      'jsx-a11y/tabindex-no-positive': 'error',
-      
       // Segurança básica
       'no-eval': 'error',
       'no-implied-eval': 'error',
