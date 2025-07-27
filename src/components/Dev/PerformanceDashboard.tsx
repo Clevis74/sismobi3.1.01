@@ -231,15 +231,21 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVi
                 <div className="grid grid-cols-3 gap-4">
                   <div>
                     <p className="text-sm text-gray-600">Cache de Cálculos</p>
-                    <p className="text-xl font-bold">{report.calculationMetrics.calculationCacheSize}</p>
+                    <p className="text-xl font-bold">
+                      {report.calculationMetrics?.calculationCacheSize ?? 0}
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Cache de Formatação</p>
-                    <p className="text-xl font-bold">{report.calculationMetrics.formatCacheSize}</p>
+                    <p className="text-xl font-bold">
+                      {report.calculationMetrics?.formatCacheSize ?? 0}
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Total de Entradas</p>
-                    <p className="text-xl font-bold">{report.calculationMetrics.totalCacheEntries}</p>
+                    <p className="text-xl font-bold">
+                      {report.calculationMetrics?.totalCacheEntries ?? 0}
+                    </p>
                   </div>
                 </div>
               </div>
