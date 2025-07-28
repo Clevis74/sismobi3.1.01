@@ -20,6 +20,24 @@ const safeObjectAccess = function<T extends Record<string, any>>(obj: T | undefi
   return obj ?? ({} as T);
 };
 
+// Função helper para formatação condicional de valores
+const formatConditionalValue = (value: number | string, showValues: boolean, suffix: string = ''): string => {
+  if (!showValues) return '****' + (suffix ? ` ${suffix}` : '');
+  if (typeof value === 'number') {
+    return value.toFixed(2) + (suffix ? ` ${suffix}` : '');
+  }
+  return value.toString() + (suffix ? ` ${suffix}` : '');
+};
+
+// Função helper para formatação condicional de moeda
+const formatConditionalCurrency = (value: number, showValues: boolean): string => {
+  if (!showValues) return '****';
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL'
+  }).format(value);
+};
+
 export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVisible, onClose, showValues }) => {
   const [report, setReport] = useState<PerformanceReport | null>(null);
   const [refreshInterval, setRefreshInterval] = useState<NodeJS.Timeout | null>(null);
