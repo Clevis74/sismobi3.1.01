@@ -99,9 +99,21 @@ export const calculateFinancialSummary = (
   properties: Property[],
   transactions: Transaction[]
 ): FinancialSummary => {
+  const startTime = performance.now();
   const cacheKey = createCacheKey(properties, transactions, '-financial');
   
+  // Incrementar contador de operações
+  cacheAlerts.stats.totalOperations++;
+  
   if (calculationCache.has(cacheKey)) {
+    cacheAlerts.stats.cacheHits++;
+    
+    // Log hit em desenvolvimento
+    if (process.env.NODE_ENV === 'development') {
+      const hitRate = (cacheAlerts.stats.cacheHits / cacheAlerts.stats.totalOperations) * 100;
+      console.debug(`💾 Cache HIT (${hitRate.toFixed(1)}%):`, cacheKey.substring(0, 50) + '...');
+    }
+    
     return calculationCache.get(cacheKey);
   }
 
@@ -161,6 +173,14 @@ export const calculateFinancialSummary = (
   // Cache o resultado e limpa cache antigo
   calculationCache.set(cacheKey, result);
   cleanupCache();
+  
+  // Verificar tempo de operação
+  const operationTime = performance.now() - startTime;
+  if (operationTime > cacheAlerts.thresholds.operationTimeWarning) {
+    logCacheAlert('slow_operation', 
+      `Cálculo financeiro lento: ${operationTime.toFixed(2)}ms`, 
+      { properties: properties.length, transactions: transactions.length });
+  }
 
   return result;
 };
