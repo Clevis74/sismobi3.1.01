@@ -23,70 +23,12 @@ const StaticAnalyzer: React.FC = () => {
   const [showOnlyErrors, setShowOnlyErrors] = useState(false);
   const [expandedResult, setExpandedResult] = useState<string | null>(null);
 
-  // Simula leitura de arquivos do projeto (em implementação real, seria via File API ou fetch)
+  // Usa sistema de leitura de arquivos simulado
   const getProjectFiles = useCallback(async (): Promise<{ path: string; content: string }[]> => {
-    // Esta é uma simulação - em implementação real, você leria os arquivos do sistema
-    const mockFiles = [
-      {
-        path: '/src/App.tsx',
-        content: `
-import React, { useState, useEffect } from 'react';
-import { SomeComponent } from './components/SomeComponent';
-
-// Exemplo com problemas intencionais para demonstração
-const App: React.FC = () => {
-  const [data, setData] = useState<any>([]); // Problema: uso de 'any'
-  const [unused] = useState('test'); // Problema: variável não utilizada
-  
-  useEffect(() => {
-    console.log('Component mounted'); // Problema: console.log
-  }, []); // Problema: array de dependências pode estar incompleto
-  
-  const items = data.map(item => ( // Problema: key ausente
-    <div onClick={() => console.log('clicked')}> // Problema: função inline
-      {item.name}
-    </div>
-  ));
-  
-  return (
-    <div>
-      <img src="test.jpg" /> {/* Problema: alt ausente */}
-      <button onClick={() => alert('clicked')}> {/* Problema: função inline */}
-        <svg>...</svg> {/* Problema: button sem texto acessível */}
-      </button>
-      <div onClick={handleClick}>Clickable div</div> {/* Problema: div sem role */}
-      {items}
-    </div>
-  );
-};
-
-export default App;`
-      },
-      {
-        path: '/src/components/ExampleComponent.tsx',
-        content: `
-import React from 'react';
-import * as lodash from 'lodash'; // Problema: import de biblioteca inteira
-
-const ExampleComponent: React.FC = () => {
-  const regex = new RegExp('test'); // Problema: RegExp em render
-  
-  const handleDangerousHTML = (html: string) => {
-    return <div dangerouslySetInnerHTML={{__html: html}} />; // Problema: XSS risk
-  };
-  
-  return (
-    <div>
-      <p>Example component</p>
-    </div>
-  );
-};
-
-export default ExampleComponent;`
-      }
-    ];
-    
-    return mockFiles;
+    // Em implementação real, usaria File API ou fetch para ler arquivos reais
+    const { getProjectFiles: readFiles } = await import('../../utils/fileReader');
+    const files = await readFiles();
+    return files.map(file => ({ path: file.path, content: file.content }));
   }, []);
 
   const runAnalysis = useCallback(async () => {
