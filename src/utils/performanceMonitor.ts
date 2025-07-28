@@ -292,11 +292,34 @@ class PerformanceMonitor {
     this.renderCounts.clear();
     this.cacheHits.clear();
     this.cacheMisses.clear();
+    // Manter dados de produção para análise histórica
   }
 
   // Exportar dados para análise
   public exportData(): string {
-    return JSON.stringify(this.getPerformanceReport(), null, 2);
+    const report = this.getPerformanceReport();
+    const productionData = this.getProductionMetrics();
+    
+    return JSON.stringify({
+      ...report,
+      productionData,
+      exportedAt: new Date().toISOString()
+    }, null, 2);
+  }
+  
+  // ========== MÉTODOS DE CONTROLE (REVERSIBILIDADE) ==========
+  
+  // Desabilitar monitoramento de produção (reversível)
+  public disableProductionMonitoring(): void {
+    this.isProductionMode = false;
+    this.memorySnapshots = [];
+    this.productionMetrics.clear();
+  }
+  
+  // Reabilitar monitoramento de produção 
+  public enableProductionMonitoring(): void {
+    this.isProductionMode = true;
+    this.startProductionMonitoring();
   }
 }
 
