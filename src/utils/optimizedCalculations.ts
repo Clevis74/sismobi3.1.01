@@ -60,12 +60,37 @@ const createCacheKey = (properties: Property[], transactions: Transaction[], suf
   }
 };
 
-// Função para limpar cache quando necessário (implementação LRU)
+// Função para limpar cache quando necessário (implementação LRU com alertas)
 const cleanupCache = () => {
-  if (calculationCache.size > CACHE_CLEANUP_THRESHOLD) {
-    const keysToDelete = Array.from(calculationCache.keys())
-      .slice(0, calculationCache.size - MAX_CACHE_SIZE);
-    keysToDelete.forEach(key => calculationCache.delete(key));
+  try {
+    if (calculationCache.size > CACHE_CLEANUP_THRESHOLD) {
+      const keysToDelete = Array.from(calculationCache.keys())
+        .slice(0, calculationCache.size - MAX_CACHE_SIZE);
+      keysToDelete.forEach(key => calculationCache.delete(key));
+      
+      // Registrar limpeza para análise
+      cacheAlerts.stats.cleanupCount++;
+      cacheAlerts.stats.lastCleanup = Date.now();
+      
+      // Alerta se limpeza muito frequente
+      if (cacheAlerts.stats.cleanupCount > 10) {
+        logCacheAlert('frequent_cleanup', 
+          `Cache limpo ${cacheAlerts.stats.cleanupCount} vezes. Considere aumentar MAX_CACHE_SIZE.`);
+      }
+    }
+    
+    // Verificar hit rate se temos dados suficientes
+    if (cacheAlerts.stats.totalOperations > 20) {
+      const hitRate = (cacheAlerts.stats.cacheHits / cacheAlerts.stats.totalOperations) * 100;
+      if (hitRate < cacheAlerts.thresholds.hitRateWarning) {
+        logCacheAlert('low_hit_rate', 
+          `Hit rate do cache baixo: ${hitRate.toFixed(1)}%`, 
+          { hits: cacheAlerts.stats.cacheHits, total: cacheAlerts.stats.totalOperations });
+      }
+    }
+  } catch (error) {
+    // Falha defensiva - cache continua funcionando
+    console.warn('[cleanupCache] Erro no cleanup:', error);
   }
 };
 
