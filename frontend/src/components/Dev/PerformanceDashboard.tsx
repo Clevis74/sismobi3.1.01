@@ -315,19 +315,26 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVi
                   <div>
                     <p className="text-sm text-gray-600">Cache de Alertas</p>
                     <p className="text-xl font-bold">
-                      {report.alertMetrics?.alertCacheSize ?? 0}
+                      {showValues ? 
+                        (report.alertMetrics?.alertCacheSize ?? 0) : 
+                        '****'
+                      }
                     </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Chaves de Cache</p>
                     <p className="text-xl font-bold">
-                      {safeArrayAccess(report.alertMetrics?.cacheKeys).length}
+                      {showValues ? 
+                        safeArrayAccess(report.alertMetrics?.cacheKeys).length : 
+                        '****'
+                      }
                     </p>
                   </div>
                 </div>
                 {/* Lista das chaves de cache para debug (apenas em dev) */}
                 {process.env.NODE_ENV === 'development' && 
-                 safeArrayAccess(report.alertMetrics?.cacheKeys).length > 0 && (
+                 safeArrayAccess(report.alertMetrics?.cacheKeys).length > 0 && 
+                 showValues && (
                   <div className="mt-3 pt-3 border-t">
                     <details>
                       <summary className="text-sm text-gray-500 cursor-pointer">
@@ -339,6 +346,13 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVi
                         ))}
                       </ul>
                     </details>
+                  </div>
+                )}
+                {!showValues && process.env.NODE_ENV === 'development' && (
+                  <div className="mt-3 pt-3 border-t">
+                    <p className="text-sm text-gray-500">
+                      Chaves de cache ocultas. Mostre valores para ver detalhes.
+                    </p>
                   </div>
                 )}
               </div>
