@@ -43,6 +43,11 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVi
   const [refreshInterval, setRefreshInterval] = useState<NodeJS.Timeout | null>(null);
   const [showValues, setShowValues] = useState(initialShowValues);
 
+  // Sincronizar com a prop inicial
+  useEffect(() => {
+    setShowValues(initialShowValues);
+  }, [initialShowValues]);
+
   useEffect(() => {
     if (isVisible) {
       // Atualizar relatório imediatamente
