@@ -6,6 +6,12 @@ class PerformanceMonitor {
   private renderCounts: Map<string, number> = new Map();
   private cacheHits: Map<string, number> = new Map();
   private cacheMisses: Map<string, number> = new Map();
+  
+  // ========== EXTENSÕES PARA PRODUÇÃO (REVERSÍVEIS) ==========
+  private productionMetrics: Map<string, any> = new Map();
+  private memorySnapshots: Array<{ timestamp: number; usage: any }> = [];
+  private alertThresholds: Map<string, number> = new Map();
+  private isProductionMode: boolean = process.env.NODE_ENV === 'production';
 
   private constructor() {}
 
