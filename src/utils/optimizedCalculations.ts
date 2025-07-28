@@ -1,10 +1,49 @@
 import { Property, Transaction, FinancialSummary } from '../types';
 import { formatDate as safeFormatDate, formatCurrency, createLocalDate, isDateInCurrentMonth } from './safeDateFormatting';
 
-// Cache para evitar recálculos desnecessários com limite fixo
+// ========== EXTENSÕES DE CACHE COM ALERTAS (REVERSÍVEIS) ==========
+
+// Cache para evitar recálculos desnecessários com limite configurável
 const calculationCache = new Map<string, any>();
 const MAX_CACHE_SIZE = 20;
 const CACHE_CLEANUP_THRESHOLD = 15;
+
+// Sistema de alertas de cache (extensão modular)
+const cacheAlerts = {
+  enabled: true,
+  thresholds: {
+    maxSize: MAX_CACHE_SIZE,
+    cleanupThreshold: CACHE_CLEANUP_THRESHOLD,
+    hitRateWarning: 60, // %
+    operationTimeWarning: 100 // ms
+  },
+  stats: {
+    totalOperations: 0,
+    cacheHits: 0,
+    cleanupCount: 0,
+    lastCleanup: 0
+  }
+};
+
+// Função para log de alertas (defensiva)
+const logCacheAlert = (type: string, message: string, data?: any) => {
+  if (!cacheAlerts.enabled || process.env.NODE_ENV !== 'development') return;
+  
+  try {
+    console.warn(`🚨 Cache Alert [${type}]: ${message}`, data || '');
+    
+    // Registrar alerta para análise posterior
+    if (!window.__cacheAlerts) window.__cacheAlerts = [];
+    window.__cacheAlerts.push({
+      timestamp: Date.now(),
+      type,
+      message,
+      data
+    });
+  } catch (error) {
+    // Falha silenciosa para não impactar produção
+  }
+};
 
 // Função auxiliar para criar chave de cache com validação segura
 const createCacheKey = (properties: Property[], transactions: Transaction[], suffix: string = '') => {
