@@ -440,6 +440,8 @@ const AppContent: React.FC = () => {
             onDeleteWaterBill={deleteWaterBill}
           />
         );
+      case 'static-analysis':
+        return <StaticAnalyzer />;
       default:
         return <OptimizedDashboard summary={summary} properties={properties} transactions={transactions} showValues={showValues} />;
     }
