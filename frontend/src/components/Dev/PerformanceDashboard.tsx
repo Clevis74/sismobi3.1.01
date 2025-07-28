@@ -20,7 +20,7 @@ const safeObjectAccess = function<T extends Record<string, any>>(obj: T | undefi
   return obj ?? ({} as T);
 };
 
-export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVisible, onClose }) => {
+export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVisible, onClose, showValues }) => {
   const [report, setReport] = useState<PerformanceReport | null>(null);
   const [refreshInterval, setRefreshInterval] = useState<NodeJS.Timeout | null>(null);
 
