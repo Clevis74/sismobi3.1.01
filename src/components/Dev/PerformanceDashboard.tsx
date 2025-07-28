@@ -38,15 +38,9 @@ const formatConditionalCurrency = (value: number, showValues: boolean): string =
   }).format(value);
 };
 
-export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVisible, onClose, showValues: initialShowValues }) => {
+export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVisible, onClose, showValues }) => {
   const [report, setReport] = useState<PerformanceReport | null>(null);
   const [refreshInterval, setRefreshInterval] = useState<NodeJS.Timeout | null>(null);
-  const [showValues, setShowValues] = useState(initialShowValues);
-
-  // Sincronizar com a prop inicial
-  useEffect(() => {
-    setShowValues(initialShowValues);
-  }, [initialShowValues]);
 
   useEffect(() => {
     if (isVisible) {
@@ -141,26 +135,23 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVi
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold text-gray-900">🚀 Performance Dashboard</h2>
             <div className="flex space-x-2">
-              <button
-                onClick={() => setShowValues(!showValues)}
-                className={`px-4 py-2 rounded-lg transition-colors flex items-center ${
-                  showValues 
-                    ? 'text-gray-700 hover:text-red-600 hover:bg-red-50' 
-                    : 'text-green-700 hover:text-green-800 hover:bg-green-50'
-                }`}
-              >
+              <div className={`px-4 py-2 rounded-lg flex items-center ${
+                showValues 
+                  ? 'text-green-700 bg-green-50' 
+                  : 'text-red-700 bg-red-50'
+              }`}>
                 {showValues ? (
                   <>
-                    <span className="mr-2">🔒</span>
-                    Ocultar Valores
+                    <span className="mr-2">🔓</span>
+                    Valores Visíveis
                   </>
                 ) : (
                   <>
-                    <span className="mr-2">🔓</span> 
-                    Mostrar Valores
+                    <span className="mr-2">🔒</span> 
+                    Valores Ocultos
                   </>
                 )}
-              </button>
+              </div>
               <button
                 onClick={exportReport}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -351,7 +342,7 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVi
                 {!showValues && process.env.NODE_ENV === 'development' && (
                   <div className="mt-3 pt-3 border-t">
                     <p className="text-sm text-gray-500">
-                      Chaves de cache ocultas. Mostre valores para ver detalhes.
+                      Chaves de cache ocultas. Use o botão no cabeçalho para mostrar valores.
                     </p>
                   </div>
                 )}
