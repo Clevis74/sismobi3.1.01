@@ -344,19 +344,28 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVi
                     <div>
                       <p className="text-sm text-gray-600">Usado</p>
                       <p className="text-xl font-bold">
-                        {((report.memoryUsage?.usedJSHeapSize ?? 0) / 1024 / 1024).toFixed(2)} MB
+                        {showValues ? 
+                          `${((report.memoryUsage?.usedJSHeapSize ?? 0) / 1024 / 1024).toFixed(2)} MB` : 
+                          '**** MB'
+                        }
                       </p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-600">Total</p>
                       <p className="text-xl font-bold">
-                        {((report.memoryUsage?.totalJSHeapSize ?? 0) / 1024 / 1024).toFixed(2)} MB
+                        {showValues ? 
+                          `${((report.memoryUsage?.totalJSHeapSize ?? 0) / 1024 / 1024).toFixed(2)} MB` : 
+                          '**** MB'
+                        }
                       </p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-600">Limite</p>
                       <p className="text-xl font-bold">
-                        {((report.memoryUsage?.jsHeapSizeLimit ?? 0) / 1024 / 1024).toFixed(2)} MB
+                        {showValues ? 
+                          `${((report.memoryUsage?.jsHeapSizeLimit ?? 0) / 1024 / 1024).toFixed(2)} MB` : 
+                          '**** MB'
+                        }
                       </p>
                     </div>
                   </div>
