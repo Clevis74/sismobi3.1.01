@@ -279,19 +279,28 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVi
                   <div>
                     <p className="text-sm text-gray-600">Cache de Cálculos</p>
                     <p className="text-xl font-bold">
-                      {report.calculationMetrics?.calculationCacheSize ?? 0}
+                      {showValues ? 
+                        (report.calculationMetrics?.calculationCacheSize ?? 0) : 
+                        '****'
+                      }
                     </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Cache de Formatação</p>
                     <p className="text-xl font-bold">
-                      {report.calculationMetrics?.formatCacheSize ?? 0}
+                      {showValues ? 
+                        (report.calculationMetrics?.formatCacheSize ?? 0) : 
+                        '****'
+                      }
                     </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Total de Entradas</p>
                     <p className="text-xl font-bold">
-                      {report.calculationMetrics?.totalCacheEntries ?? 0}
+                      {showValues ? 
+                        (report.calculationMetrics?.totalCacheEntries ?? 0) : 
+                        '****'
+                      }
                     </p>
                   </div>
                 </div>
