@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Calendar, Download, Upload, Eye, EyeOff, Activity } from 'lucide-react';
 import { PerformanceDashboard } from '../Dev/PerformanceDashboard';
+import EnhancedPerformanceDashboard from '../Dev/EnhancedPerformanceDashboard';
 import { formatDate } from '../../utils/safeDateFormatting';
 
 interface HeaderProps {
