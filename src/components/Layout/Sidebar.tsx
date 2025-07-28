@@ -9,7 +9,8 @@ import {
   Settings,
   Zap,
   FileText,
-  Droplets
+  Droplets,
+  Code
 } from 'lucide-react';
 
 interface SidebarProps {
