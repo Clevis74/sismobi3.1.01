@@ -1,8 +1,19 @@
 import { Alert, Property, Tenant, Transaction, EnergyBill, WaterBill } from '../types';
 
-// Cache para evitar recálculos desnecessários de alertas
+// Cache para evitar recálculos desnecessários de alertas com limite fixo
 const alertCache = new Map<string, Alert[]>();
+const MAX_CACHE_SIZE = 10;
+const CACHE_CLEANUP_THRESHOLD = 8;
 const _CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+
+// Função para limpar cache quando necessário (implementação LRU)
+const cleanupAlertCache = () => {
+  if (alertCache.size > CACHE_CLEANUP_THRESHOLD) {
+    const keysToDelete = Array.from(alertCache.keys())
+      .slice(0, alertCache.size - MAX_CACHE_SIZE);
+    keysToDelete.forEach(key => alertCache.delete(key));
+  }
+};
 
 // Geração otimizada de alertas automáticos
 export const generateAutomaticAlerts = (
@@ -68,12 +79,13 @@ export const generateAutomaticAlerts = (
     }
   });
 
-  // Alertas de contas de energia pendentes - otimizado
-  if (energyBills) {
+  // Alertas de contas de energia pendentes - com validação defensiva
+  if (energyBills && Array.isArray(energyBills)) {
     energyBills.forEach(bill => {
       if (bill?.propertiesInGroup && Array.isArray(bill.propertiesInGroup)) {
         bill.propertiesInGroup.forEach((property: any) => {
-          if (!property.isPaid && 
+          if (property && 
+              !property.isPaid && 
               property.dueDate && 
               new Date(property.dueDate) < now) {
             const tenant = tenantMap.get(property.tenantId);
@@ -95,12 +107,13 @@ export const generateAutomaticAlerts = (
     });
   }
   
-  // Alertas de contas de água pendentes - otimizado
-  if (waterBills) {
+  // Alertas de contas de água pendentes - com validação defensiva
+  if (waterBills && Array.isArray(waterBills)) {
     waterBills.forEach(bill => {
       if (bill?.propertiesInGroup && Array.isArray(bill.propertiesInGroup)) {
         bill.propertiesInGroup.forEach((property: any) => {
-          if (!property.isPaid && 
+          if (property && 
+              !property.isPaid && 
               property.dueDate && 
               new Date(property.dueDate) < now) {
             const tenant = tenantMap.get(property.tenantId);
@@ -163,14 +176,9 @@ export const generateAutomaticAlerts = (
     });
   }
 
-  // Cache o resultado
+  // Cache o resultado e limpa cache antigo
   alertCache.set(cacheKey, alerts);
-  
-  // Limpar cache antigo (manter apenas 5 entradas)
-  if (alertCache.size > 5) {
-    const firstKey = alertCache.keys().next().value;
-    alertCache.delete(firstKey);
-  }
+  cleanupAlertCache();
 
   return alerts;
 };
@@ -180,9 +188,15 @@ export const processRecurringTransactions = (transactions: Transaction[]): Trans
   const now = new Date();
   const recurringTransactions: Transaction[] = [];
 
+  // Validação defensiva para array de transações
+  if (!Array.isArray(transactions)) {
+    console.warn('[processRecurringTransactions] Transactions não é um array:', transactions);
+    return [];
+  }
+
   // Filtrar apenas transações recorrentes vencidas
   const overdueRecurring = transactions.filter(t => 
-    t.recurring && t.recurring.nextDate <= now
+    t && t.recurring && t.recurring.nextDate <= now
   );
 
   overdueRecurring.forEach(transaction => {

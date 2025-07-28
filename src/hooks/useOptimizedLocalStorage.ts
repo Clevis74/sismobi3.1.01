@@ -59,43 +59,75 @@ export function useOptimizedLocalStorage<T>(
 
   const saveTimeoutRef = useRef<NodeJS.Timeout>();
   const lastSavedRef = useRef<string>('');
+  const pendingValueRef = useRef<T | null>(null);
 
   const setValue = useCallback((value: T | ((val: T) => T)) => {
     try {
       const valueToStore = value instanceof Function ? value(storedValue) : value;
       setStoredValue(valueToStore);
+      pendingValueRef.current = valueToStore;
       
-      // Debounce para evitar escritas excessivas no localStorage
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
+      // Flush imediato para operações críticas
+      const criticalKeys = ['transactions', 'properties', 'tenants', 'alerts'];
+      const isCritical = criticalKeys.some(criticalKey => key.includes(criticalKey));
       
-      saveTimeoutRef.current = setTimeout(() => {
+      if (isCritical) {
         try {
           const serializedValue = JSON.stringify(valueToStore);
-          
-          // Evitar escritas desnecessárias
-          if (serializedValue !== lastSavedRef.current) {
-            window.localStorage.setItem(key, serializedValue);
-            lastSavedRef.current = serializedValue;
-          }
+          window.localStorage.setItem(key, serializedValue);
+          lastSavedRef.current = serializedValue;
+          pendingValueRef.current = null;
         } catch (error) {
-          console.warn(`Erro ao salvar no localStorage para a chave "${key}":`, error);
+          console.warn(`Erro ao salvar operação crítica no localStorage para a chave "${key}":`, error);
         }
-      }, debounceMs);
+      } else {
+        // Debounce para outras operações
+        if (saveTimeoutRef.current) {
+          clearTimeout(saveTimeoutRef.current);
+        }
+        
+        saveTimeoutRef.current = setTimeout(() => {
+          try {
+            const currentPendingValue = pendingValueRef.current;
+            if (currentPendingValue !== null) {
+              const serializedValue = JSON.stringify(currentPendingValue);
+              
+              // Evitar escritas desnecessárias
+              if (serializedValue !== lastSavedRef.current) {
+                window.localStorage.setItem(key, serializedValue);
+                lastSavedRef.current = serializedValue;
+              }
+              pendingValueRef.current = null;
+            }
+          } catch (error) {
+            console.warn(`Erro ao salvar no localStorage para a chave "${key}":`, error);
+          }
+        }, debounceMs);
+      }
     } catch (error) {
       console.warn(`Erro ao processar valor para a chave "${key}":`, error);
     }
   }, [key, storedValue, debounceMs]);
 
-  // Cleanup do timeout quando o componente for desmontado
+  // Cleanup e flush final do timeout quando o componente for desmontado
   useEffect(() => {
     return () => {
       if (saveTimeoutRef.current) {
         clearTimeout(saveTimeoutRef.current);
+        
+        // Flush final para garantir que dados pendentes sejam salvos
+        try {
+          const currentPendingValue = pendingValueRef.current;
+          if (currentPendingValue !== null) {
+            const serializedValue = JSON.stringify(currentPendingValue);
+            window.localStorage.setItem(key, serializedValue);
+          }
+        } catch (error) {
+          console.warn(`Erro ao fazer flush final no localStorage para a chave "${key}":`, error);
+        }
       }
     };
-  }, []);
+  }, [key]);
 
   return [storedValue, setValue];
 }
@@ -147,9 +179,11 @@ export function useBatchLocalStorage() {
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
+        // Flush final do batch
+        flushBatch();
       }
     };
-  }, []);
+  }, [flushBatch]);
 
   return { addToBatch, flushBatch };
 }

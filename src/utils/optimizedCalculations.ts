@@ -1,8 +1,10 @@
 import { Property, Transaction, FinancialSummary } from '../types';
 import { formatDate as safeFormatDate, formatCurrency, createLocalDate, isDateInCurrentMonth } from './safeDateFormatting';
 
-// Cache para evitar recálculos desnecessários
+// Cache para evitar recálculos desnecessários com limite fixo
 const calculationCache = new Map<string, any>();
+const MAX_CACHE_SIZE = 20;
+const CACHE_CLEANUP_THRESHOLD = 15;
 
 // Função auxiliar para criar chave de cache com validação segura
 const createCacheKey = (properties: Property[], transactions: Transaction[], suffix: string = '') => {
@@ -16,6 +18,15 @@ const createCacheKey = (properties: Property[], transactions: Transaction[], suf
   } catch (error) {
     console.warn('[createCacheKey] Erro ao criar chave de cache:', error);
     return `fallback-${Date.now()}${suffix}`;
+  }
+};
+
+// Função para limpar cache quando necessário (implementação LRU)
+const cleanupCache = () => {
+  if (calculationCache.size > CACHE_CLEANUP_THRESHOLD) {
+    const keysToDelete = Array.from(calculationCache.keys())
+      .slice(0, calculationCache.size - MAX_CACHE_SIZE);
+    keysToDelete.forEach(key => calculationCache.delete(key));
   }
 };
 
@@ -83,14 +94,9 @@ export const calculateFinancialSummary = (
     monthlyROI
   };
 
-  // Cache o resultado
+  // Cache o resultado e limpa cache antigo
   calculationCache.set(cacheKey, result);
-  
-  // Limpar cache antigo (manter apenas 10 entradas)
-  if (calculationCache.size > 10) {
-    const firstKey = calculationCache.keys().next().value;
-    calculationCache.delete(firstKey);
-  }
+  cleanupCache();
 
   return result;
 };
