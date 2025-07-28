@@ -218,14 +218,16 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVi
                   return (
                     <div key={operation} className="bg-white rounded-lg p-3 border">
                       <p className="font-medium">{operation}</p>
-                      <p className="text-2xl font-bold text-green-600">{safeTime.toFixed(2)}ms</p>
+                      <p className="text-2xl font-bold text-green-600">
+                        {showValues ? `${safeTime.toFixed(2)}ms` : '****ms'}
+                      </p>
                       <div className="mt-2 bg-gray-200 rounded-full h-2">
                         <div 
                           className={`h-2 rounded-full ${
                             safeTime > 100 ? 'bg-red-500' : 
                             safeTime > 50 ? 'bg-yellow-500' : 'bg-green-500'
                           }`}
-                          style={{ width: `${Math.min(safeTime / 200 * 100, 100)}%` }}
+                          style={{ width: showValues ? `${Math.min(safeTime / 200 * 100, 100)}%` : '50%' }}
                         />
                       </div>
                     </div>
