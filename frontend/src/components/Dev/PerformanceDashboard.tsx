@@ -255,10 +255,10 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVi
                     <div key={cacheKey} className="bg-white rounded-lg p-3 border">
                       <p className="font-medium">{cacheKey}</p>
                       <p className="text-lg font-bold text-purple-600">
-                        {hitRate.toFixed(1)}%
+                        {showValues ? `${hitRate.toFixed(1)}%` : '****%'}
                       </p>
                       <p className="text-sm text-gray-600">
-                        Hits: {hits} | Misses: {misses}
+                        Hits: {showValues ? hits : '****'} | Misses: {showValues ? misses : '****'}
                       </p>
                     </div>
                   );
