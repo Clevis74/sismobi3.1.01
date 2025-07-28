@@ -28,6 +28,7 @@ const menuItems = [
   { id: 'energy', label: 'Energia (CPFL)', icon: Zap },
   { id: 'water', label: 'Cálculo de Água Compartilhada', icon: Droplets },
   { id: 'documents', label: 'Documentos', icon: FileText },
+  { id: 'static-analysis', label: 'Análise Estática', icon: Code },
   { id: 'settings', label: 'Configurações', icon: Settings },
 ];
 
