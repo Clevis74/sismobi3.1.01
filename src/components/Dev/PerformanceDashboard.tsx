@@ -7,6 +7,7 @@ import { PerformanceReport } from '../../types/performance';
 interface PerformanceDashboardProps {
   isVisible: boolean;
   onClose: () => void;
+  showValues: boolean;
 }
 
 // Função helper para verificação segura de arrays
