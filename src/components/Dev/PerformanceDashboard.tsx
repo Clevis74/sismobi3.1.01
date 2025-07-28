@@ -20,9 +20,33 @@ const safeObjectAccess = function<T extends Record<string, any>>(obj: T | undefi
   return obj ?? ({} as T);
 };
 
-export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVisible, onClose }) => {
+// Função helper para formatação condicional de valores
+const formatConditionalValue = (value: number | string, showValues: boolean, suffix: string = ''): string => {
+  if (!showValues) return '****' + (suffix ? ` ${suffix}` : '');
+  if (typeof value === 'number') {
+    return value.toFixed(2) + (suffix ? ` ${suffix}` : '');
+  }
+  return value.toString() + (suffix ? ` ${suffix}` : '');
+};
+
+// Função helper para formatação condicional de moeda
+const formatConditionalCurrency = (value: number, showValues: boolean): string => {
+  if (!showValues) return '****';
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL'
+  }).format(value);
+};
+
+export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVisible, onClose, showValues: initialShowValues }) => {
   const [report, setReport] = useState<PerformanceReport | null>(null);
   const [refreshInterval, setRefreshInterval] = useState<NodeJS.Timeout | null>(null);
+  const [showValues, setShowValues] = useState(initialShowValues);
+
+  // Sincronizar com a prop inicial
+  useEffect(() => {
+    setShowValues(initialShowValues);
+  }, [initialShowValues]);
 
   useEffect(() => {
     if (isVisible) {
@@ -118,6 +142,26 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVi
             <h2 className="text-2xl font-bold text-gray-900">🚀 Performance Dashboard</h2>
             <div className="flex space-x-2">
               <button
+                onClick={() => setShowValues(!showValues)}
+                className={`px-4 py-2 rounded-lg transition-colors flex items-center ${
+                  showValues 
+                    ? 'text-gray-700 hover:text-red-600 hover:bg-red-50' 
+                    : 'text-green-700 hover:text-green-800 hover:bg-green-50'
+                }`}
+              >
+                {showValues ? (
+                  <>
+                    <span className="mr-2">🔒</span>
+                    Ocultar Valores
+                  </>
+                ) : (
+                  <>
+                    <span className="mr-2">🔓</span> 
+                    Mostrar Valores
+                  </>
+                )}
+              </button>
+              <button
                 onClick={exportReport}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
@@ -174,14 +218,16 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVi
                   return (
                     <div key={operation} className="bg-white rounded-lg p-3 border">
                       <p className="font-medium">{operation}</p>
-                      <p className="text-2xl font-bold text-green-600">{safeTime.toFixed(2)}ms</p>
+                      <p className="text-2xl font-bold text-green-600">
+                        {showValues ? `${safeTime.toFixed(2)}ms` : '****ms'}
+                      </p>
                       <div className="mt-2 bg-gray-200 rounded-full h-2">
                         <div 
                           className={`h-2 rounded-full ${
                             safeTime > 100 ? 'bg-red-500' : 
                             safeTime > 50 ? 'bg-yellow-500' : 'bg-green-500'
                           }`}
-                          style={{ width: `${Math.min(safeTime / 200 * 100, 100)}%` }}
+                          style={{ width: showValues ? `${Math.min(safeTime / 200 * 100, 100)}%` : '50%' }}
                         />
                       </div>
                     </div>
@@ -209,10 +255,10 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVi
                     <div key={cacheKey} className="bg-white rounded-lg p-3 border">
                       <p className="font-medium">{cacheKey}</p>
                       <p className="text-lg font-bold text-purple-600">
-                        {hitRate.toFixed(1)}%
+                        {showValues ? `${hitRate.toFixed(1)}%` : '****%'}
                       </p>
                       <p className="text-sm text-gray-600">
-                        Hits: {hits} | Misses: {misses}
+                        Hits: {showValues ? hits : '****'} | Misses: {showValues ? misses : '****'}
                       </p>
                     </div>
                   );
@@ -233,19 +279,28 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVi
                   <div>
                     <p className="text-sm text-gray-600">Cache de Cálculos</p>
                     <p className="text-xl font-bold">
-                      {report.calculationMetrics?.calculationCacheSize ?? 0}
+                      {showValues ? 
+                        (report.calculationMetrics?.calculationCacheSize ?? 0) : 
+                        '****'
+                      }
                     </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Cache de Formatação</p>
                     <p className="text-xl font-bold">
-                      {report.calculationMetrics?.formatCacheSize ?? 0}
+                      {showValues ? 
+                        (report.calculationMetrics?.formatCacheSize ?? 0) : 
+                        '****'
+                      }
                     </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Total de Entradas</p>
                     <p className="text-xl font-bold">
-                      {report.calculationMetrics?.totalCacheEntries ?? 0}
+                      {showValues ? 
+                        (report.calculationMetrics?.totalCacheEntries ?? 0) : 
+                        '****'
+                      }
                     </p>
                   </div>
                 </div>
@@ -260,19 +315,26 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVi
                   <div>
                     <p className="text-sm text-gray-600">Cache de Alertas</p>
                     <p className="text-xl font-bold">
-                      {report.alertMetrics?.alertCacheSize ?? 0}
+                      {showValues ? 
+                        (report.alertMetrics?.alertCacheSize ?? 0) : 
+                        '****'
+                      }
                     </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Chaves de Cache</p>
                     <p className="text-xl font-bold">
-                      {safeArrayAccess(report.alertMetrics?.cacheKeys).length}
+                      {showValues ? 
+                        safeArrayAccess(report.alertMetrics?.cacheKeys).length : 
+                        '****'
+                      }
                     </p>
                   </div>
                 </div>
                 {/* Lista das chaves de cache para debug (apenas em dev) */}
                 {process.env.NODE_ENV === 'development' && 
-                 safeArrayAccess(report.alertMetrics?.cacheKeys).length > 0 && (
+                 safeArrayAccess(report.alertMetrics?.cacheKeys).length > 0 && 
+                 showValues && (
                   <div className="mt-3 pt-3 border-t">
                     <details>
                       <summary className="text-sm text-gray-500 cursor-pointer">
@@ -284,6 +346,13 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVi
                         ))}
                       </ul>
                     </details>
+                  </div>
+                )}
+                {!showValues && process.env.NODE_ENV === 'development' && (
+                  <div className="mt-3 pt-3 border-t">
+                    <p className="text-sm text-gray-500">
+                      Chaves de cache ocultas. Mostre valores para ver detalhes.
+                    </p>
                   </div>
                 )}
               </div>
@@ -300,19 +369,28 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVi
                     <div>
                       <p className="text-sm text-gray-600">Usado</p>
                       <p className="text-xl font-bold">
-                        {((report.memoryUsage?.usedJSHeapSize ?? 0) / 1024 / 1024).toFixed(2)} MB
+                        {showValues ? 
+                          `${((report.memoryUsage?.usedJSHeapSize ?? 0) / 1024 / 1024).toFixed(2)} MB` : 
+                          '**** MB'
+                        }
                       </p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-600">Total</p>
                       <p className="text-xl font-bold">
-                        {((report.memoryUsage?.totalJSHeapSize ?? 0) / 1024 / 1024).toFixed(2)} MB
+                        {showValues ? 
+                          `${((report.memoryUsage?.totalJSHeapSize ?? 0) / 1024 / 1024).toFixed(2)} MB` : 
+                          '**** MB'
+                        }
                       </p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-600">Limite</p>
                       <p className="text-xl font-bold">
-                        {((report.memoryUsage?.jsHeapSizeLimit ?? 0) / 1024 / 1024).toFixed(2)} MB
+                        {showValues ? 
+                          `${((report.memoryUsage?.jsHeapSizeLimit ?? 0) / 1024 / 1024).toFixed(2)} MB` : 
+                          '**** MB'
+                        }
                       </p>
                     </div>
                   </div>
