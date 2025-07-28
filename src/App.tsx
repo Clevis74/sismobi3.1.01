@@ -13,6 +13,7 @@ import { ReportManager } from './components/Reports/ReportManager';
 import { DocumentManager } from './components/Documents/DocumentManager';
 import { EnergyCalculator } from './components/Energy/EnergyCalculator';
 import { WaterCalculator } from './components/Water/WaterCalculator';
+import StaticAnalyzer from './components/StaticAnalysis/StaticAnalyzer';
 import { useOptimizedLocalStorage } from './hooks/useOptimizedLocalStorage';
 import { calculateFinancialSummary, clearCalculationCache } from './utils/optimizedCalculations';
 import { generateAutomaticAlerts, processRecurringTransactions, clearAlertCache } from './utils/optimizedAlerts';
