@@ -263,3 +263,69 @@ export function useBatchLocalStorage() {
 
   return { addToBatch, flushBatch };
 }
+
+// ========== FUNÇÕES DE MONITORAMENTO E CONTROLE (APIS PÚBLICAS) ==========
+
+// Obter métricas de localStorage (API pública)
+export const getLocalStorageMetrics = () => {
+  return {
+    operations: { ...localStorageMetrics.operations },
+    keyStats: Object.fromEntries(localStorageMetrics.keyStats),
+    alerts: [...localStorageMetrics.alerts],
+    enabled: localStorageMetrics.enabled
+  };
+};
+
+// Configurar monitoramento (reversível)
+export const enableLocalStorageMonitoring = (enabled: boolean = true) => {
+  localStorageMetrics.enabled = enabled;
+};
+
+// Limpar métricas (útil para testes)
+export const clearLocalStorageMetrics = () => {
+  localStorageMetrics.operations = { reads: 0, writes: 0, errors: 0, criticalOperations: 0 };
+  localStorageMetrics.keyStats.clear();
+  localStorageMetrics.alerts = [];
+};
+
+// Verificar saúde do localStorage (sistema de alerta)
+export const checkLocalStorageHealth = () => {
+  const metrics = localStorageMetrics.operations;
+  const total = metrics.reads + metrics.writes;
+  
+  if (total === 0) return { healthy: true, message: 'Sem atividade' };
+  
+  const errorRate = (metrics.errors / total) * 100;
+  const criticalFailureRate = metrics.criticalOperations > 0 
+    ? (metrics.errors / metrics.criticalOperations) * 100 
+    : 0;
+  
+  return {
+    healthy: errorRate < 5 && criticalFailureRate < 1,
+    errorRate: errorRate.toFixed(1),
+    criticalFailureRate: criticalFailureRate.toFixed(1),
+    totalOperations: total,
+    recentAlerts: localStorageMetrics.alerts.slice(-5)
+  };
+};
+
+// Hook para monitorar localStorage em tempo real
+export const useLocalStorageMonitor = () => {
+  const [metrics, setMetrics] = useState(() => getLocalStorageMetrics());
+  
+  useEffect(() => {
+    if (!localStorageMetrics.enabled) return;
+    
+    const interval = setInterval(() => {
+      setMetrics(getLocalStorageMetrics());
+    }, 5000); // Atualizar a cada 5 segundos
+    
+    return () => clearInterval(interval);
+  }, []);
+  
+  return {
+    metrics,
+    health: checkLocalStorageHealth(),
+    clearMetrics: clearLocalStorageMetrics
+  };
+};
