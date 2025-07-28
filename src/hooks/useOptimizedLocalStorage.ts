@@ -101,7 +101,7 @@ function processStoredData(data: any): any {
   return data;
 }
 
-// Hook otimizado para localStorage com debounce e cache
+// Hook otimizado para localStorage com debounce e monitoramento
 export function useOptimizedLocalStorage<T>(
   key: string,
   defaultValue: T,
@@ -110,6 +110,8 @@ export function useOptimizedLocalStorage<T>(
   const [storedValue, setStoredValue] = useState<T>(() => {
     try {
       const item = window.localStorage.getItem(key);
+      logLocalStorageOperation('read', key, true);
+      
       if (item) {
         const parsed = JSON.parse(item);
         return processStoredData(parsed);
@@ -117,6 +119,7 @@ export function useOptimizedLocalStorage<T>(
       return defaultValue;
     } catch (error) {
       console.warn(`Erro ao ler localStorage para a chave "${key}":`, error);
+      logLocalStorageOperation('read', key, false);
       return defaultValue;
     }
   });
@@ -131,18 +134,22 @@ export function useOptimizedLocalStorage<T>(
       setStoredValue(valueToStore);
       pendingValueRef.current = valueToStore;
       
-      // Flush imediato para operações críticas
+      // Identificar operações críticas (extensão modular)
       const criticalKeys = ['transactions', 'properties', 'tenants', 'alerts'];
       const isCritical = criticalKeys.some(criticalKey => key.includes(criticalKey));
       
       if (isCritical) {
+        // Flush imediato para operações críticas com monitoramento
         try {
           const serializedValue = JSON.stringify(valueToStore);
           window.localStorage.setItem(key, serializedValue);
           lastSavedRef.current = serializedValue;
           pendingValueRef.current = null;
+          
+          logLocalStorageOperation('write', key, true, true);
         } catch (error) {
           console.warn(`Erro ao salvar operação crítica no localStorage para a chave "${key}":`, error);
+          logLocalStorageOperation('write', key, false, true);
         }
       } else {
         // Debounce para outras operações
@@ -160,16 +167,19 @@ export function useOptimizedLocalStorage<T>(
               if (serializedValue !== lastSavedRef.current) {
                 window.localStorage.setItem(key, serializedValue);
                 lastSavedRef.current = serializedValue;
+                logLocalStorageOperation('write', key, true, false);
               }
               pendingValueRef.current = null;
             }
           } catch (error) {
             console.warn(`Erro ao salvar no localStorage para a chave "${key}":`, error);
+            logLocalStorageOperation('write', key, false, false);
           }
         }, debounceMs);
       }
     } catch (error) {
       console.warn(`Erro ao processar valor para a chave "${key}":`, error);
+      logLocalStorageOperation('write', key, false);
     }
   }, [key, storedValue, debounceMs]);
 
@@ -185,9 +195,11 @@ export function useOptimizedLocalStorage<T>(
           if (currentPendingValue !== null) {
             const serializedValue = JSON.stringify(currentPendingValue);
             window.localStorage.setItem(key, serializedValue);
+            logLocalStorageOperation('write', key, true);
           }
         } catch (error) {
           console.warn(`Erro ao fazer flush final no localStorage para a chave "${key}":`, error);
+          logLocalStorageOperation('write', key, false);
         }
       }
     };
