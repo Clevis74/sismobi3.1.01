@@ -1,5 +1,69 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
+// ========== SISTEMA DE MONITORAMENTO LOCALSTORAGE (EXTENSÃO REVERSÍVEL) ==========
+
+// Métricas de localStorage (extensão modular)
+const localStorageMetrics = {
+  enabled: process.env.NODE_ENV === 'development',
+  operations: {
+    reads: 0,
+    writes: 0,
+    errors: 0,
+    criticalOperations: 0
+  },
+  keyStats: new Map<string, { reads: number; writes: number; errors: number; lastAccess: number }>(),
+  alerts: [] as Array<{ timestamp: number; type: string; key: string; message: string }>
+};
+
+// Função para log de operações críticas (defensiva)
+const logLocalStorageOperation = (operation: string, key: string, success: boolean, isCritical: boolean = false) => {
+  if (!localStorageMetrics.enabled) return;
+  
+  try {
+    // Atualizar contadores gerais
+    localStorageMetrics.operations.reads += operation === 'read' ? 1 : 0;
+    localStorageMetrics.operations.writes += operation === 'write' ? 1 : 0;
+    localStorageMetrics.operations.errors += success ? 0 : 1;
+    localStorageMetrics.operations.criticalOperations += isCritical ? 1 : 0;
+    
+    // Atualizar estatísticas por chave
+    if (!localStorageMetrics.keyStats.has(key)) {
+      localStorageMetrics.keyStats.set(key, { reads: 0, writes: 0, errors: 0, lastAccess: Date.now() });
+    }
+    
+    const keyStats = localStorageMetrics.keyStats.get(key)!;
+    keyStats.reads += operation === 'read' ? 1 : 0;
+    keyStats.writes += operation === 'write' ? 1 : 0;
+    keyStats.errors += success ? 0 : 1;
+    keyStats.lastAccess = Date.now();
+    
+    // Alertar sobre operações críticas falhando
+    if (isCritical && !success) {
+      const alert = {
+        timestamp: Date.now(),
+        type: 'critical_operation_failed',
+        key,
+        message: `Falha em operação crítica de ${operation} para a chave "${key}"`
+      };
+      
+      localStorageMetrics.alerts.push(alert);
+      console.error('🚨 LocalStorage Critical Alert:', alert.message);
+      
+      // Manter apenas últimos 20 alertas
+      if (localStorageMetrics.alerts.length > 20) {
+        localStorageMetrics.alerts = localStorageMetrics.alerts.slice(-20);
+      }
+    }
+    
+    // Log operações críticas em desenvolvimento
+    if (isCritical && process.env.NODE_ENV === 'development') {
+      console.debug(`📝 Critical LocalStorage ${operation}:`, key, success ? '✅' : '❌');
+    }
+  } catch (error) {
+    // Falha silenciosa para não impactar produção
+  }
+};
+
 // Helper function to convert date strings back to Date objects
 function reviveDates(key: string, value: any): any {
   // Define which keys should be converted to dates
