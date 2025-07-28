@@ -7,13 +7,12 @@ import {
   Search,
   FileText,
   Clock,
-  Filter,
   Eye,
   EyeOff,
   RefreshCw
 } from 'lucide-react';
 import { staticAnalyzer } from '../../utils/staticAnalysis';
-import { StaticAnalysisReport, StaticAnalysisResult, AnalysisStats } from '../../types/staticAnalysis';
+import { StaticAnalysisReport } from '../../types/staticAnalysis';
 
 const StaticAnalyzer: React.FC = () => {
   const [analysisReport, setAnalysisReport] = useState<StaticAnalysisReport | null>(null);
