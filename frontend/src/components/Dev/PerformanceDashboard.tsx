@@ -136,6 +136,26 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVi
             <h2 className="text-2xl font-bold text-gray-900">🚀 Performance Dashboard</h2>
             <div className="flex space-x-2">
               <button
+                onClick={() => setShowValues(!showValues)}
+                className={`px-4 py-2 rounded-lg transition-colors flex items-center ${
+                  showValues 
+                    ? 'text-gray-700 hover:text-red-600 hover:bg-red-50' 
+                    : 'text-green-700 hover:text-green-800 hover:bg-green-50'
+                }`}
+              >
+                {showValues ? (
+                  <>
+                    <span className="mr-2">🔒</span>
+                    Ocultar Valores
+                  </>
+                ) : (
+                  <>
+                    <span className="mr-2">🔓</span> 
+                    Mostrar Valores
+                  </>
+                )}
+              </button>
+              <button
                 onClick={exportReport}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
