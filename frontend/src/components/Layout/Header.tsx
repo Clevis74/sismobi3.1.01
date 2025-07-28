@@ -102,6 +102,7 @@ export const Header: React.FC<HeaderProps> = ({ onExport, onImport, showValues, 
       <PerformanceDashboard
         isVisible={showPerformanceDashboard}
         onClose={() => setShowPerformanceDashboard(false)}
+        showValues={showValues}
       />
     </>
   );
