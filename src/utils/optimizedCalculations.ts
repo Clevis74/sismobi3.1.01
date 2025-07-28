@@ -194,11 +194,59 @@ export const clearCalculationCache = () => {
   calculationCache.clear();
 };
 
-// Função para calcular métricas de performance
+// Função para calcular métricas de performance (ESTENDIDA)
 export const getPerformanceMetrics = () => {
   return {
     calculationCacheSize: calculationCache.size,
     formatCacheSize: 0, // Será implementado quando necessário
-    totalCacheEntries: calculationCache.size
+    totalCacheEntries: calculationCache.size,
+    // Novas métricas estendidas (reversíveis)
+    cacheStats: {
+      hitRate: cacheAlerts.stats.totalOperations > 0 
+        ? (cacheAlerts.stats.cacheHits / cacheAlerts.stats.totalOperations) * 100 
+        : 0,
+      totalOperations: cacheAlerts.stats.totalOperations,
+      cacheHits: cacheAlerts.stats.cacheHits,
+      cleanupCount: cacheAlerts.stats.cleanupCount,
+      lastCleanup: cacheAlerts.stats.lastCleanup
+    },
+    alerts: window.__cacheAlerts || [],
+    thresholds: cacheAlerts.thresholds
+  };
+};
+
+// ========== FUNÇÕES DE CONTROLE (REVERSIBILIDADE) ==========
+
+// Configurar thresholds de cache (API pública)
+export const setCacheThreshold = (key: keyof typeof cacheAlerts.thresholds, value: number) => {
+  try {
+    cacheAlerts.thresholds[key] = value;
+    logCacheAlert('config_change', `Threshold "${key}" alterado para ${value}`);
+  } catch (error) {
+    console.warn('[setCacheThreshold] Erro:', error);
+  }
+};
+
+// Desabilitar alertas de cache (reversível)
+export const disableCacheAlerts = () => {
+  cacheAlerts.enabled = false;
+};
+
+// Reabilitar alertas de cache
+export const enableCacheAlerts = () => {
+  cacheAlerts.enabled = true;
+};
+
+// Obter estatísticas detalhadas do cache
+export const getCacheStatistics = () => {
+  return {
+    size: calculationCache.size,
+    maxSize: MAX_CACHE_SIZE,
+    cleanupThreshold: CACHE_CLEANUP_THRESHOLD,
+    stats: { ...cacheAlerts.stats },
+    alerts: window.__cacheAlerts || [],
+    isHealthy: calculationCache.size < MAX_CACHE_SIZE && 
+               (cacheAlerts.stats.totalOperations === 0 || 
+                (cacheAlerts.stats.cacheHits / cacheAlerts.stats.totalOperations) > 0.5)
   };
 };
