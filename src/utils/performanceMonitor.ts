@@ -13,7 +13,18 @@ class PerformanceMonitor {
   private alertThresholds: Map<string, number> = new Map();
   private isProductionMode: boolean = process.env.NODE_ENV === 'production';
 
-  private constructor() {}
+  private constructor() {
+    // Configurar thresholds padrão para alertas (podem ser ajustados)
+    this.alertThresholds.set('renderCount', 15);
+    this.alertThresholds.set('operationTime', 150);
+    this.alertThresholds.set('cacheHitRate', 40);
+    this.alertThresholds.set('memoryUsage', 50); // MB
+    
+    // Iniciar monitoramento automático em produção (seguro)
+    if (this.isProductionMode) {
+      this.startProductionMonitoring();
+    }
+  }
 
   public static getInstance(): PerformanceMonitor {
     if (!PerformanceMonitor.instance) {
