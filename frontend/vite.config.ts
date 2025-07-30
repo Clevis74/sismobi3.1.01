@@ -9,7 +9,10 @@ export default defineConfig({
     port: 3000,
     allowedHosts: [
       "617d6955-e336-447e-9336-782340268964.preview.emergentagent.com"
-    ]
+    ],
+    hmr: {
+      overlay: false
+    }
   },
   optimizeDeps: {
     exclude: ['lucide-react'],
