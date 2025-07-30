@@ -24,8 +24,8 @@ const menuItems = [
   { id: 'transactions', label: 'Transações', icon: DollarSign },
   { id: 'reports', label: 'Relatórios', icon: TrendingUp },
   { id: 'alerts', label: 'Alertas', icon: Bell },
-  { id: 'energy', label: 'Energia (CPFL)', icon: Zap },
-  { id: 'water', label: 'Cálculo de Água Compartilhada', icon: Droplets },
+  { id: 'energy', label: 'Energia – Rateio de Consumo', icon: Zap },
+  { id: 'water', label: 'Água – Rateio de Consumo', icon: Droplets },
   { id: 'documents', label: 'Documentos', icon: FileText },
   { id: 'settings', label: 'Configurações', icon: Settings },
 ];
