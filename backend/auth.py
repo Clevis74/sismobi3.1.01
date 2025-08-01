@@ -10,9 +10,9 @@ from passlib.context import CryptContext
 from motor.motor_asyncio import AsyncIOMotorDatabase
 import structlog
 
-from .config import settings
-from .database import get_database
-from .models import User, TokenData
+from config import settings
+from database import get_database
+from models import User, TokenData
 
 logger = structlog.get_logger(__name__)
 
