@@ -84,6 +84,17 @@ export const Header: React.FC<HeaderProps> = ({
                 {currentDate}
               </span>
             </div>
+            
+            {/* Indicador de status da conexão */}
+            {connectionDisplay && (
+              <div 
+                className={`flex items-center px-3 py-1 rounded-full text-sm font-medium ${connectionDisplay.color}`}
+                title={connectionDisplay.title}
+              >
+                {connectionDisplay.icon}
+                <span className="ml-1">{connectionDisplay.text}</span>
+              </div>
+            )}
           </div>
           
           <div className="flex items-center space-x-4" role="toolbar" aria-label="Ações do cabeçalho">
