@@ -128,7 +128,7 @@ const AppContent: React.FC = () => {
     const result = calculateFinancialSummary(stablePropertiesRef.current, stableTransactionsRef.current);
     performanceMonitor.endTimer('financial-calculation');
     return result;
-  }, [transactionsHash]); // Removed unnecessary dependencies
+  }, []); // Using stable refs, no dependencies needed
 
   // Alertas automáticos com dependências hash
   const automaticAlerts = useMemo(() => {
