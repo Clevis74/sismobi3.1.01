@@ -89,7 +89,7 @@ class TenantCreate(TenantBase):
 
 class TenantUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=1, max_length=200)
-    email: Optional[str] = Field(None, regex=r'^[^@]+@[^@]+\.[^@]+$')
+    email: Optional[str] = Field(None, pattern=r'^[^@]+@[^@]+\.[^@]+$')
     phone: Optional[str] = Field(None, min_length=1, max_length=50)
     document: Optional[str] = Field(None, min_length=1, max_length=50)
     property_id: Optional[str] = None
