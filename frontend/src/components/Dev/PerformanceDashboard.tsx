@@ -62,7 +62,7 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVi
     }
   }, [isVisible, refreshInterval]);
 
-  const updateReport = () => {
+  const updateReport = (): void => {
     try {
       const performanceReport = performanceMonitor.getPerformanceReport();
       const calculationMetrics = getPerformanceMetrics();
