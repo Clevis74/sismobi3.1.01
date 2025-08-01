@@ -92,18 +92,21 @@ const AdditionalStats = React.memo(({
         value={formatPercent(summary.monthlyROI)}
         color={summary.monthlyROI > 0 ? 'green' : 'blue'}
         icon={BarChart2}
+        showValues={showValues}
       />
       <MetricCard
         title="Investimento Total"
         value={formatValue(totalInvestment)}
         color="blue"
         icon={Briefcase}
+        showValues={showValues}
       />
       <MetricCard
         title="Aluguel Médio"
         value={formatValue(averageRent)}
         color="blue"
         icon={Building2}
+        showValues={showValues}
       />
     </div>
   );
