@@ -40,7 +40,7 @@ export const useAuth = (): AuthContextType => {
 };
 
 // Provider Component
-export const AuthProvider: React.FC<{ children }> = ({ children }): JSX.Element => {
+export const AuthProvider: React.FC<_AuthContextProps> = ({ children }): JSX.Element => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
