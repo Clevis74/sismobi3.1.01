@@ -32,6 +32,19 @@ ENDPOINTS TO TEST:
    - DELETE /api/v1/tenants/{id}
 5. Dashboard:
    - GET /api/v1/dashboard/summary
+6. Transactions CRUD:
+   - GET /api/v1/transactions/
+   - POST /api/v1/transactions/
+   - GET /api/v1/transactions/{id}
+   - PUT /api/v1/transactions/{id}
+   - DELETE /api/v1/transactions/{id}
+7. Alerts CRUD:
+   - GET /api/v1/alerts/
+   - POST /api/v1/alerts/
+   - GET /api/v1/alerts/{id}
+   - PUT /api/v1/alerts/{id}
+   - PUT /api/v1/alerts/{id}/resolve
+   - DELETE /api/v1/alerts/{id}
 """
 
 import sys
