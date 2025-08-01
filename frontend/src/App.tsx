@@ -14,6 +14,7 @@ import { DocumentManager } from './components/Documents/DocumentManager';
 import { EnergyCalculator } from './components/Energy/EnergyCalculator';
 import { WaterCalculator } from './components/Water/WaterCalculator';
 import { useOptimizedLocalStorage } from './hooks/useOptimizedLocalStorage';
+import { useProperties, useTenants, useTransactions, useAlerts, useDocuments, useEnergyBills, useWaterBills } from './hooks/useHybridServices';
 import { calculateFinancialSummary, clearCalculationCache } from './utils/optimizedCalculations';
 import { generateAutomaticAlerts, processRecurringTransactions, clearAlertCache } from './utils/optimizedAlerts';
 import { createBackup, exportBackup, importBackup, validateBackup } from './utils/dataBackup';
