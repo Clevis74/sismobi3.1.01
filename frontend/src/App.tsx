@@ -97,28 +97,28 @@ const AppContent: React.FC = () => {
     }
   }, [properties, transactions]);
 
-  // Hash para dependências estáveis do useMemo
-  const propertiesHash = useMemo(() => {
+  // Hash para dependências estáveis do useMemo (not used after ref optimization)
+  const _propertiesHash = useMemo(() => {
     return properties.map(p => `${p.id}-${p.status}-${p.rentValue}`).join('|');
   }, [properties]);
   
-  const transactionsHash = useMemo(() => {
+  const _transactionsHash = useMemo(() => {
     return transactions.map(t => {
       const dateTime = t.date instanceof Date ? t.date.getTime() : new Date(t.date).getTime();
       return `${t.id}-${t.amount}-${isNaN(dateTime) ? '0' : dateTime}`;
     }).join('|');
   }, [transactions]);
 
-  // Outros hashes para dependências complexas
-  const tenantsHash = useMemo(() => {
+  // Outros hashes para dependências complexas (not used after ref optimization)
+  const _tenantsHash = useMemo(() => {
     return tenants.map(t => `${t.id}-${t.propertyId}-${t.status}`).join('|');
   }, [tenants]);
 
-  const energyBillsHash = useMemo(() => {
+  const _energyBillsHash = useMemo(() => {
     return energyBills.map(b => `${b.id}-${b.groupId}`).join('|');
   }, [energyBills]);
 
-  const waterBillsHash = useMemo(() => {
+  const _waterBillsHash = useMemo(() => {
     return waterBills.map(b => `${b.id}-${b.groupId}`).join('|');
   }, [waterBills]);
 
