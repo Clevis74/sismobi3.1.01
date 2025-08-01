@@ -320,12 +320,15 @@ export function useHybridData<T>(
 
   // Cleanup
   useEffect(() => {
-    return () => {
-      if (retryTimeoutRef.current) {
-        clearTimeout(retryTimeoutRef.current);
+    return (): void => {
+      const currentRetryTimeout = retryTimeoutRef.current;
+      const currentSyncTimeout = syncTimeoutRef.current;
+      
+      if (currentRetryTimeout) {
+        clearTimeout(currentRetryTimeout);
       }
-      if (syncTimeoutRef.current) {
-        clearTimeout(syncTimeoutRef.current);
+      if (currentSyncTimeout) {
+        clearTimeout(currentSyncTimeout);
       }
     };
   }, []);
