@@ -150,10 +150,17 @@ const AppContent: React.FC = () => {
       const newAlerts = automaticAlerts.filter(a => !existingAlertIds.has(a.id));
       
       if (newAlerts.length > 0) {
-        setAlerts(prev => [...prev, ...newAlerts]);
+        // Criar novos alertas usando a API híbrida
+        newAlerts.forEach(async (alert) => {
+          try {
+            await alertsActions.create(alert);
+          } catch (error) {
+            console.warn('Erro ao criar alerta automático:', error);
+          }
+        });
       }
     }
-  }, [automaticAlerts, alerts, setAlerts]);
+  }, [automaticAlerts, alerts, alertsActions]);
 
   // Efeito otimizado para transações recorrentes
   useEffect(() => {
