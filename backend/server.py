@@ -22,7 +22,7 @@ from utils import calculate_dashboard_summary
 from auth import get_current_active_user
 
 # Router imports
-from routers import auth, properties, tenants
+from routers import auth, properties, tenants, transactions, alerts
 
 # Configure structured logging
 structlog.configure(
