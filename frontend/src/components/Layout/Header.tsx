@@ -45,7 +45,7 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   // Status da conexão com cores e ícones
-  const getConnectionDisplay = () => {
+  const getConnectionDisplay = (): void => {
     if (!connectionStatus) return null;
 
     const { isOnline, dataSource, lastSync } = connectionStatus;

@@ -31,7 +31,7 @@ const menuItems = [
 ];
 
 export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
-  const handleKeyDown = (event: React.KeyboardEvent, itemId: string) => {
+  const handleKeyDown = (event: React.KeyboardEvent, itemId: string): void => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       setActiveTab(itemId);

@@ -22,7 +22,7 @@ const createCacheKey = (properties: Property[], transactions: Transaction[], suf
 };
 
 // Função para limpar cache quando necessário (implementação LRU)
-const cleanupCache = () => {
+const cleanupCache = (): void => {
   if (calculationCache.size > CACHE_CLEANUP_THRESHOLD) {
     const keysToDelete = Array.from(calculationCache.keys())
       .slice(0, calculationCache.size - MAX_CACHE_SIZE);
@@ -106,12 +106,12 @@ export const formatDate = safeFormatDate;
 export { formatCurrency, createLocalDate, isDateInCurrentMonth };
 
 // Função para limpar cache quando necessário
-export const clearCalculationCache = () => {
+export const clearCalculationCache = (): void => {
   calculationCache.clear();
 };
 
 // Função para calcular métricas de performance
-export const getPerformanceMetrics = () => {
+export const getPerformanceMetrics = (): void => {
   return {
     calculationCacheSize: calculationCache.size,
     formatCacheSize: 0, // Será implementado quando necessário

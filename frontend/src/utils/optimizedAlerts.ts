@@ -7,7 +7,7 @@ const CACHE_CLEANUP_THRESHOLD = 8;
 const _CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
 
 // Função para limpar cache quando necessário (implementação LRU)
-const cleanupAlertCache = () => {
+const cleanupAlertCache = (): void => {
   if (alertCache.size > CACHE_CLEANUP_THRESHOLD) {
     const keysToDelete = Array.from(alertCache.keys())
       .slice(0, alertCache.size - MAX_CACHE_SIZE);

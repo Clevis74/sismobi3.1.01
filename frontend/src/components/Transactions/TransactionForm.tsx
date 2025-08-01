@@ -61,7 +61,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     }
   }, [transaction]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
     
     const transactionData: Omit<Transaction, 'id'> = {
@@ -82,7 +82,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     onSubmit(transactionData);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>): void => {
     const { name, value, type } = e.target;
     
     if (type === 'checkbox') {

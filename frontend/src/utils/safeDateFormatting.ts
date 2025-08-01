@@ -144,7 +144,7 @@ export const isDateInCurrentMonth = (date: Date): boolean => {
 };
 
 // Função para limpar caches
-export const clearDateCache = () => {
+export const clearDateCache = (): void => {
   formatCache.clear();
   currencyCache.clear();
 };

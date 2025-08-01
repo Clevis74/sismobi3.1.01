@@ -9,7 +9,7 @@ export function debounce<T extends (...args: any[]) => any>(
   let timeout: NodeJS.Timeout | null = null;
   
   return function executedFunction(...args: Parameters<T>) {
-    const later = () => {
+    const later = (): void => {
       timeout = null;
       func(...args);
     };
@@ -52,7 +52,7 @@ export class AdvancedDebounce<T extends (...args: any[]) => any> {
   }
 
   public execute(...args: Parameters<T>): void {
-    const later = () => {
+    const later = (): void => {
       this.timeout = null;
       if (!this.immediate) this.func(...args);
     };

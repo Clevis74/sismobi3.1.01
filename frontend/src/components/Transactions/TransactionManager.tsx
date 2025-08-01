@@ -26,17 +26,17 @@ export const TransactionManager: React.FC<TransactionManagerProps> = ({
   const [filter, setFilter] = useState<'all' | 'income' | 'expense'>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
 
-  const handleAddTransaction = (transactionData: Omit<Transaction, 'id'>) => {
+  const handleAddTransaction = (transactionData: Omit<Transaction, 'id'>): void => {
     onAddTransaction(transactionData);
     setShowForm(false);
   };
 
-  const handleEditTransaction = (transaction: Transaction) => {
+  const handleEditTransaction = (transaction: Transaction): void => {
     setEditingTransaction(transaction);
     setShowForm(true);
   };
 
-  const handleUpdateTransaction = (transactionData: Omit<Transaction, 'id'>) => {
+  const handleUpdateTransaction = (transactionData: Omit<Transaction, 'id'>): void => {
     if (editingTransaction) {
       onUpdateTransaction(editingTransaction.id, transactionData);
       setEditingTransaction(null);
@@ -52,11 +52,11 @@ export const TransactionManager: React.FC<TransactionManagerProps> = ({
 
   const categories = [...new Set(transactions.map(t => t.category))];
 
-  const getTransactionColor = (type: string) => {
+  const getTransactionColor = (type: string): void => {
     return type === 'income' ? 'text-green-600' : 'text-red-600';
   };
 
-  const getTransactionIcon = (type: string) => {
+  const getTransactionIcon = (type: string): void => {
     return type === 'income' ? '+' : '-';
   };
 

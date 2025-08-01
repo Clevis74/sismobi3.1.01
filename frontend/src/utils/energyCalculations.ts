@@ -241,7 +241,7 @@ export const generateConsumptionInsights = (
 /**
  * Calcula estatísticas do histórico de consumo para um grupo específico
  */
-export const calculateConsumptionStats = (bills: EnergyBill[], groupId: string) => {
+export const calculateConsumptionStats = (bills: EnergyBill[], groupId: string): void => {
   // Filtrar apenas contas do grupo específico
   const groupBills = bills.filter(bill => bill.groupId === groupId);
   
