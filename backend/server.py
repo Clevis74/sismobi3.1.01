@@ -8,17 +8,21 @@ from fastapi.responses import JSONResponse
 from motor.motor_asyncio import AsyncIOMotorDatabase
 import structlog
 import sys
+import os
 from datetime import datetime
 
+# Add backend to path for imports
+sys.path.append(os.path.dirname(__file__))
+
 # Internal imports
-from .config import settings
-from .database import connect_to_mongo, close_mongo_connection, get_database
-from .models import HealthResponse, DashboardSummary
-from .utils import calculate_dashboard_summary
-from .auth import get_current_active_user
+from config import settings
+from database import connect_to_mongo, close_mongo_connection, get_database
+from models import HealthResponse, DashboardSummary
+from utils import calculate_dashboard_summary
+from auth import get_current_active_user
 
 # Router imports
-from .routers import auth, properties, tenants
+from routers import auth, properties, tenants
 
 # Configure structured logging
 structlog.configure(
@@ -69,7 +73,9 @@ async def startup_event():
         logger.info("SISMOBI Backend started successfully")
     except Exception as e:
         logger.error("Failed to start backend", error=str(e))
-        sys.exit(1)
+        # Don't exit in production, just log the error
+        if settings.debug:
+            sys.exit(1)
 
 @app.on_event("shutdown")
 async def shutdown_event():
