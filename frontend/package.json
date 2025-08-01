@@ -1,7 +1,7 @@
 {
-  "name": "vite-react-typescript-starter",
+  "name": "sismobi-gestao-imobiliaria-frontend",
   "private": true,
-  "version": "0.0.0",
+  "version": "3.1.0",
   "type": "module",
   "scripts": {
     "start": "vite",
