@@ -165,9 +165,16 @@ const AppContent: React.FC = () => {
   // Efeito otimizado para transações recorrentes
   useEffect(() => {
     if (recurringTransactions.length > 0) {
-      setTransactions(prev => [...prev, ...recurringTransactions]);
+      // Criar transações recorrentes usando a API híbrida
+      recurringTransactions.forEach(async (transaction) => {
+        try {
+          await transactionsActions.create(transaction);
+        } catch (error) {
+          console.warn('Erro ao criar transação recorrente:', error);
+        }
+      });
     }
-  }, [recurringTransactions, setTransactions]);
+  }, [recurringTransactions, transactionsActions]);
 
   // Limpar cache periodicamente
   useEffect(() => {
