@@ -30,6 +30,10 @@ import { Property, Tenant, Transaction, Alert, Document, EnergyBill, WaterBill }
 const AppContent: React.FC = () => {
   useRenderMonitor('App');
   
+  // Auth state
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const [isRegisterMode, setIsRegisterMode] = useState(false);
+  
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showValues, setShowValues] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
