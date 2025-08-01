@@ -734,6 +734,22 @@ def main():
     tester.run_test("Get Property by ID", tester.test_get_property_by_id)
     tester.run_test("Create Tenant", tester.test_create_tenant)
     tester.run_test("Get Tenants List", tester.test_get_tenants)
+    
+    # NEW TRANSACTION TESTS
+    tester.run_test("Create Transaction", tester.test_create_transaction)
+    tester.run_test("Get Transactions List", tester.test_get_transactions)
+    tester.run_test("Get Transaction by ID", tester.test_get_transaction_by_id)
+    tester.run_test("Update Transaction", tester.test_update_transaction)
+    tester.run_test("Transactions Filtering", tester.test_transactions_filtering)
+    
+    # NEW ALERT TESTS
+    tester.run_test("Create Alert", tester.test_create_alert)
+    tester.run_test("Get Alerts List", tester.test_get_alerts)
+    tester.run_test("Get Alert by ID", tester.test_get_alert_by_id)
+    tester.run_test("Update Alert", tester.test_update_alert)
+    tester.run_test("Resolve Alert", tester.test_resolve_alert)
+    tester.run_test("Alerts Filtering", tester.test_alerts_filtering)
+    
     tester.run_test("Dashboard Summary", tester.test_dashboard_summary)
     tester.run_test("Cleanup Test Data", tester.cleanup_test_data)
     
