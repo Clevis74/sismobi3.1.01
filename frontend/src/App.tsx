@@ -437,7 +437,8 @@ const AppContent: React.FC = () => {
       const backup = createBackup(properties, tenants, transactions, alerts, documents, energyBills, waterBills);
       exportBackup(backup);
       // Não mostra notificação de sucesso aqui pois o download é automático
-    } catch (_error) {
+    } catch (error) {
+      console.error('Export error:', error);
       backupAlerts.importError('Erro ao criar backup');
     }
   }, [properties, tenants, transactions, alerts, documents, energyBills, waterBills, backupAlerts]);
