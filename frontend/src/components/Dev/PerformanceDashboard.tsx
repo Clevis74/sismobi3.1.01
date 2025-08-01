@@ -60,7 +60,7 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVi
         setRefreshInterval(null);
       }
     }
-  }, [isVisible]);
+  }, [isVisible, refreshInterval]);
 
   const updateReport = () => {
     try {
