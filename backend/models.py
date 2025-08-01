@@ -139,7 +139,7 @@ class AlertBase(BaseModel):
     title: str = Field(..., min_length=1, max_length=200)
     message: str = Field(..., min_length=1, max_length=1000)
     type: AlertType
-    priority: str = Field(default="medium", regex=r'^(low|medium|high|critical)$')
+    priority: str = Field(default="medium", pattern=r'^(low|medium|high|critical)$')
     resolved: bool = False
     resolved_at: Optional[datetime] = None
     due_date: Optional[datetime] = None
