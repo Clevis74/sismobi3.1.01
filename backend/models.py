@@ -151,7 +151,7 @@ class AlertUpdate(BaseModel):
     title: Optional[str] = Field(None, min_length=1, max_length=200)
     message: Optional[str] = Field(None, min_length=1, max_length=1000)
     type: Optional[AlertType] = None
-    priority: Optional[str] = Field(None, regex=r'^(low|medium|high|critical)$')
+    priority: Optional[str] = Field(None, pattern=r'^(low|medium|high|critical)$')
     resolved: Optional[bool] = None
     resolved_at: Optional[datetime] = None
     due_date: Optional[datetime] = None
