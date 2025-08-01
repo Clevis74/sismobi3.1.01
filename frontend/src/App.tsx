@@ -617,6 +617,7 @@ const AppContent: React.FC = () => {
               onImport={handleImport} 
               showValues={showValues}
               onToggleValues={() => setShowValues(!showValues)}
+              onShowSummary={() => setShowSummaryModal(true)}
               connectionStatus={{
                 isOnline: propertiesState.isOnline && transactionsState.isOnline,
                 dataSource: propertiesState.source === 'api' || transactionsState.source === 'api' ? 'api' : 
