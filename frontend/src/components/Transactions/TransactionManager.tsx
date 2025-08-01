@@ -6,7 +6,7 @@ import { formatCurrency, formatDate } from '../../utils/calculations';
 
 interface TransactionManagerProps {
   transactions: Transaction[];
-  properties: any[];
+  properties: unknown[];
   showValues: boolean;
   onAddTransaction: (transaction: Omit<Transaction, 'id'>) => void;
   onUpdateTransaction: (id: string, transaction: Partial<Transaction>) => void;

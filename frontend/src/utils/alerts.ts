@@ -45,7 +45,7 @@ export const generateAutomaticAlerts = (
     energyBills.forEach(bill => {
       // Verificar se o bill existe e tem propertiesInGroup válido
       if (bill && (bill as any).propertiesInGroup && Array.isArray((bill as any).propertiesInGroup)) {
-        (bill as any).propertiesInGroup.forEach((property: any) => {
+        (bill as any).propertiesInGroup.forEach((property: unknown) => {
           // Verificar se a conta proporcional está pendente e vencida
           if (!property.isPaid && property.dueDate && new Date(property.dueDate) < now) {
             const _linkedProperty = properties.find(p => p.id === property.propertyId);
@@ -73,7 +73,7 @@ export const generateAutomaticAlerts = (
     waterBills.forEach(bill => {
       // Verificar se o bill existe e tem propertiesInGroup válido
       if (bill && bill.propertiesInGroup && Array.isArray(bill.propertiesInGroup)) {
-        bill.propertiesInGroup.forEach((property: any) => {
+        bill.propertiesInGroup.forEach((property: unknown) => {
           // Verificar se a conta proporcional está pendente e vencida
           if (!property.isPaid && property.dueDate && new Date(property.dueDate) < now) {
             const _linkedProperty = properties.find(p => p.id === property.propertyId);

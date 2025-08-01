@@ -5,7 +5,7 @@ import { formatDate } from '../../utils/calculations';
 
 interface AlertManagerProps {
   alerts: Alert[];
-  properties: any[];
+  properties: unknown[];
   onResolveAlert: (id: string) => void;
   onDeleteAlert: (id: string) => void;
 }

@@ -6,7 +6,7 @@ import { formatDate, formatCurrency } from '../../utils/calculations';
 
 interface TenantManagerProps {
   tenants: Tenant[];
-  properties: any[];
+  properties: unknown[];
   showValues: boolean;
   onAddTenant: (tenant: Omit<Tenant, 'id'>) => void;
   onUpdateTenant: (id: string, tenant: Partial<Tenant>) => void;

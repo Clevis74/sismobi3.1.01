@@ -15,7 +15,7 @@ import { formatCurrency, formatDate, createLocalDate } from '../../utils/calcula
 
 interface EnergyCalculatorProps {
   energyBills: EnergyBill[];
-  properties: any[]; // Lista de propriedades para vinculação
+  properties: unknown[]; // Lista de propriedades para vinculação
   showValues: boolean;
   onAddEnergyBill: (bill: Omit<EnergyBill, 'id' | 'createdAt' | 'lastUpdated'>) => void;
   onUpdateEnergyBill: (id: string, bill: Partial<EnergyBill>) => void;

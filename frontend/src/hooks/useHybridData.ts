@@ -276,7 +276,7 @@ export function useHybridData<T>(
 
     try {
       const currentData = Array.isArray(state.data) ? state.data : [];
-      const pendingItems = currentData.filter((item: any) => item._pendingSync);
+      const pendingItems = currentData.filter((item: unknown) => item._pendingSync);
 
       for (const item of pendingItems) {
         const { _pendingSync, ...cleanItem } = item as any;

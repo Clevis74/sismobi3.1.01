@@ -2,7 +2,7 @@
 import React from 'react';
 
 // Função de debounce padrão
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: unknown[]) => any>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
@@ -23,7 +23,7 @@ export function debounce<T extends (...args: any[]) => any>(
 }
 
 // Função de throttle
-export function throttle<T extends (...args: any[]) => any>(
+export function throttle<T extends (...args: unknown[]) => any>(
   func: T,
   limit: number
 ): (...args: Parameters<T>) => void {
@@ -39,7 +39,7 @@ export function throttle<T extends (...args: any[]) => any>(
 }
 
 // Debounce avançado com cancelamento
-export class AdvancedDebounce<T extends (...args: any[]) => any> {
+export class AdvancedDebounce<T extends (...args: unknown[]) => any> {
   private timeout: NodeJS.Timeout | null = null;
   private func: T;
   private wait: number;
@@ -88,9 +88,9 @@ export class AdvancedDebounce<T extends (...args: any[]) => any> {
 
 // Gerenciador de debounce para múltiplas operações
 export class DebounceManager {
-  private debouncers: Map<string, AdvancedDebounce<any>> = new Map();
+  private debouncers: Map<string, AdvancedDebounce<unknown>> = new Map();
 
-  public register<T extends (...args: any[]) => any>(
+  public register<T extends (...args: unknown[]) => any>(
     key: string,
     func: T,
     wait: number,
@@ -99,7 +99,7 @@ export class DebounceManager {
     this.debouncers.set(key, new AdvancedDebounce(func, wait, immediate));
   }
 
-  public execute(key: string, ...args: any[]): void {
+  public execute(key: string, ...args: unknown[]): void {
     const debouncer = this.debouncers.get(key);
     if (debouncer) {
       debouncer.execute(...args);
@@ -147,7 +147,7 @@ export function useDebounce<T>(value: T, delay: number): T {
 }
 
 // Hook React para debounce de callback
-export function useDebouncedCallback<T extends (...args: any[]) => any>(
+export function useDebouncedCallback<T extends (...args: unknown[]) => any>(
   callback: T,
   delay: number
 ): (...args: Parameters<T>) => void {
@@ -187,6 +187,6 @@ export const searchDebounce = debounce((searchTerm: string, callback: (term: str
 }, 300);
 
 // Debounce específico para cálculos pesados
-export const calculationDebounce = debounce((data: any, callback: (result: any) => void) => {
+export const calculationDebounce = debounce((data: any, callback: (result: unknown) => void) => {
   callback(data);
 }, 500);

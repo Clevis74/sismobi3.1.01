@@ -103,7 +103,7 @@ export const formatInputDate = (date: Date | string | null): string => {
 };
 
 // Validador de data para formulários
-export const isValidDate = (date: any): date is Date => {
+export const isValidDate = (date: unknown): date is Date => {
   return date instanceof Date && !isNaN(date.getTime());
 };
 

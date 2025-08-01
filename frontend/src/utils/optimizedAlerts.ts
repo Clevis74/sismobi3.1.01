@@ -83,7 +83,7 @@ export const generateAutomaticAlerts = (
   if (energyBills && Array.isArray(energyBills)) {
     energyBills.forEach(bill => {
       if (bill?.propertiesInGroup && Array.isArray(bill.propertiesInGroup)) {
-        bill.propertiesInGroup.forEach((property: any) => {
+        bill.propertiesInGroup.forEach((property: unknown) => {
           if (property && 
               !property.isPaid && 
               property.dueDate && 
@@ -111,7 +111,7 @@ export const generateAutomaticAlerts = (
   if (waterBills && Array.isArray(waterBills)) {
     waterBills.forEach(bill => {
       if (bill?.propertiesInGroup && Array.isArray(bill.propertiesInGroup)) {
-        bill.propertiesInGroup.forEach((property: any) => {
+        bill.propertiesInGroup.forEach((property: unknown) => {
           if (property && 
               !property.isPaid && 
               property.dueDate && 

@@ -170,7 +170,7 @@ export function monitorFunction(functionName: string) {
   return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
     
-    descriptor.value = function (...args: any[]) {
+    descriptor.value = function (...args: unknown[]) {
       performanceMonitor.startTimer(functionName);
       const result = originalMethod.apply(this, args);
       performanceMonitor.endTimer(functionName);

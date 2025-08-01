@@ -15,7 +15,7 @@ import { formatCurrency, formatDate, createLocalDate } from '../../utils/calcula
 
 interface WaterCalculatorProps {
   waterBills: WaterBill[];
-  properties: any[]; // Lista de propriedades para vinculação
+  properties: unknown[]; // Lista de propriedades para vinculação
   showValues: boolean;
   onAddWaterBill: (bill: Omit<WaterBill, 'id' | 'createdAt' | 'lastUpdated'>) => void;
   onUpdateWaterBill: (id: string, bill: Partial<WaterBill>) => void;

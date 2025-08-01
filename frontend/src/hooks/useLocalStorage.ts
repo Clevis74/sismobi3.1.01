@@ -1,7 +1,7 @@
 import { useState, /* useEffect */ } from 'react'; // useEffect not used in current implementation
 
 // Helper function to convert date strings back to Date objects
-function reviveDates(key: string, value: any): any {
+function reviveDates(key: string, value: unknown): any {
   // Define which keys should be converted to dates
   const dateFields = ['createdAt', 'startDate', 'agreedPaymentDate', 'date', 'nextDate', 'issueDate', 'validityDate', 'lastUpdated'];
   
@@ -17,7 +17,7 @@ function reviveDates(key: string, value: any): any {
 }
 
 // Helper function to recursively process objects and arrays
-function processStoredData(data: any): any {
+function processStoredData(data: unknown): any {
   if (data === null || data === undefined) {
     return data;
   }
@@ -27,7 +27,7 @@ function processStoredData(data: any): any {
   }
   
   if (typeof data === 'object') {
-    const processed: any = {};
+    const processed: unknown = {};
     for (const [key, value] of Object.entries(data)) {
       processed[key] = reviveDates(key, processStoredData(value));
     }

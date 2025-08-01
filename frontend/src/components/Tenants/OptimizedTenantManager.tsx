@@ -8,7 +8,7 @@ import { useDebouncedCallback } from '../../utils/debounceUtils';
 
 interface OptimizedTenantManagerProps {
   tenants: Tenant[];
-  properties: any[];
+  properties: unknown[];
   showValues: boolean;
   onAddTenant: (tenant: Omit<Tenant, 'id'>) => void;
   onUpdateTenant: (id: string, tenant: Partial<Tenant>) => void;
@@ -24,7 +24,7 @@ const TenantCard = React.memo(({
   onDelete 
 }: {
   tenant: Tenant;
-  linkedProperty: any;
+  linkedProperty: unknown;
   showValues: boolean;
   onEdit: (tenant: Tenant) => void;
   onDelete: (id: string) => void;
