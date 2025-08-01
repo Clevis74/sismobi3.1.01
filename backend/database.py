@@ -5,7 +5,7 @@ import motor.motor_asyncio
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from typing import Optional
 import structlog
-from .config import settings
+from config import settings
 
 logger = structlog.get_logger(__name__)
 
