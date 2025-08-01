@@ -1,7 +1,7 @@
 // SISMOBI API Service Layer
 // Replaces localStorage operations with backend API calls
 
-import { Property, Tenant, Transaction, Alert, Document, EnergyBill, WaterBill } from '../types';
+import { Property, Tenant, Transaction, Alert, Document, /* EnergyBill, WaterBill */ } from '../types';
 
 // API Configuration
 const API_BASE_URL = import.meta.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
