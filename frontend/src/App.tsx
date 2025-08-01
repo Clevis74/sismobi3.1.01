@@ -593,6 +593,29 @@ const AppContent: React.FC = () => {
     }
   };
 
+  // Loading durante verificação de autenticação
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <LoadingSpinner 
+          size="lg" 
+          text="Carregando SISMOBI..." 
+        />
+      </div>
+    );
+  }
+
+  // Mostrar formulário de login se não estiver autenticado
+  if (!isAuthenticated) {
+    return (
+      <LoginForm 
+        onToggleMode={() => setIsRegisterMode(!isRegisterMode)}
+        isRegisterMode={isRegisterMode}
+      />
+    );
+  }
+
+  // Aplicação principal (usuário autenticado)
   return (
     <>
       <SkipLinks />
