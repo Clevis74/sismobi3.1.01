@@ -8,6 +8,7 @@ interface HeaderProps {
   onImport: () => void;
   showValues: boolean;
   onToggleValues: () => void;
+  onShowSummary?: () => void; // Nova prop para o modal de resumo
   // Novo: indicadores de status da conexão
   connectionStatus?: {
     isOnline: boolean;
