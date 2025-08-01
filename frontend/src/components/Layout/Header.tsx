@@ -22,6 +22,7 @@ export const Header: React.FC<HeaderProps> = ({
   onImport, 
   showValues, 
   onToggleValues, 
+  onShowSummary,
   connectionStatus 
 }) => {
   const [showPerformanceDashboard, setShowPerformanceDashboard] = useState(false);
