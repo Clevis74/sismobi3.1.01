@@ -1,6 +1,6 @@
 # 📋 Controle de Versões - SISMOBI
 
-## 🏷️ Versão Atual: **3.2.0** - VALIDATION COMPLETE ✅
+## 🏷️ Versão Atual: **3.2.0-validation** - VALIDAÇÃO TOTAL EM ANDAMENTO 🔍
 
 ### 📅 Histórico de Versões
 
