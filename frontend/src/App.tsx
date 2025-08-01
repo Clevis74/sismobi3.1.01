@@ -710,9 +710,11 @@ const AppContent: React.FC = () => {
 function App(): React.ReactElement {
   return (
     <ErrorBoundary>
-      <NotificationProvider>
-        <AppContent />
-      </NotificationProvider>
+      <AuthProvider>
+        <NotificationProvider>
+          <AppContent />
+        </NotificationProvider>
+      </AuthProvider>
     </ErrorBoundary>
   );
 }
