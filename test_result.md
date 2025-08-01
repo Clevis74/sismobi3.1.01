@@ -27,7 +27,7 @@
 **Date**: August 1, 2025  
 **Agent**: Testing Sub-Agent (Backend Specialist)  
 **Focus**: Complete technical analysis and validation of SISMOBI backend 3.2.0
-**Backend URL**: https://a56b342c-49e4-445e-ad89-b74bcc3c3aff.preview.emergentagent.com
+**Backend URL**: https://e95dfad6-6927-41ce-a4fa-6bfb24f29f74.preview.emergentagent.com
 **Test Scope**: Full production-level validation as requested
 
 ### VALIDATION RESULTS: ✅ **COMPLETELY SUCCESSFUL**
