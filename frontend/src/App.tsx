@@ -374,27 +374,38 @@ const AppContent: React.FC = () => {
   }, [energyBillsActions]);
 
   // Callbacks para water bills
-  const addWaterBill = useCallback((billData: Omit<WaterBill, 'id' | 'createdAt' | 'lastUpdated'>) => {
-    const newBill: WaterBill = {
-      ...billData,
-      id: Date.now().toString(),
-      createdAt: new Date(),
-      lastUpdated: new Date()
-    };
-    setWaterBills(prev => [...prev, newBill]);
-  }, [setWaterBills]);
+  const addWaterBill = useCallback(async (billData: Omit<WaterBill, 'id' | 'createdAt' | 'lastUpdated'>) => {
+    try {
+      const newBill: Omit<WaterBill, 'id'> = {
+        ...billData,
+        createdAt: new Date(),
+        lastUpdated: new Date()
+      };
+      await waterBillsActions.create(newBill);
+    } catch (error) {
+      console.error('Erro ao adicionar conta de água:', error);
+    }
+  }, [waterBillsActions]);
 
-  const updateWaterBill = useCallback((id: string, updates: Partial<WaterBill>) => {
-    setWaterBills(prev => prev.map(bill => 
-      bill.id === id 
-        ? { ...bill, ...updates, lastUpdated: new Date() }
-        : bill
-    ));
-  }, [setWaterBills]);
+  const updateWaterBill = useCallback(async (id: string, updates: Partial<WaterBill>) => {
+    try {
+      const updatesWithTimestamp = {
+        ...updates,
+        lastUpdated: new Date()
+      };
+      await waterBillsActions.update(id, updatesWithTimestamp);
+    } catch (error) {
+      console.error('Erro ao atualizar conta de água:', error);
+    }
+  }, [waterBillsActions]);
 
-  const deleteWaterBill = useCallback((id: string) => {
-    setWaterBills(prev => prev.filter(bill => bill.id !== id));
-  }, [setWaterBills]);
+  const deleteWaterBill = useCallback(async (id: string) => {
+    try {
+      await waterBillsActions.delete(id);
+    } catch (error) {
+      console.error('Erro ao deletar conta de água:', error);
+    }
+  }, [waterBillsActions]);
 
   // Callbacks para backup com sistema de notificações
   const handleExport = useCallback(() => {
