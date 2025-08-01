@@ -600,6 +600,12 @@ const AppContent: React.FC = () => {
               onImport={handleImport} 
               showValues={showValues}
               onToggleValues={() => setShowValues(!showValues)}
+              connectionStatus={{
+                isOnline: propertiesState.isOnline && transactionsState.isOnline,
+                dataSource: propertiesState.source === 'api' || transactionsState.source === 'api' ? 'api' : 
+                           propertiesState.source === 'localStorage' || transactionsState.source === 'localStorage' ? 'localStorage' : 'default',
+                lastSync: propertiesState.lastSync || transactionsState.lastSync
+              }}
             />
           </ErrorBoundary>
           
