@@ -32,14 +32,41 @@ const AppContent: React.FC = () => {
   // Hooks de backup com sistema de notificações
   const backupAlerts = useBackupAlerts();
   
-  // Usar hook otimizado para localStorage
-  const [properties, setProperties] = useOptimizedLocalStorage<Property[]>('properties', []);
-  const [tenants, setTenants] = useOptimizedLocalStorage<Tenant[]>('tenants', []);
-  const [transactions, setTransactions] = useOptimizedLocalStorage<Transaction[]>('transactions', []);
-  const [alerts, setAlerts] = useOptimizedLocalStorage<Alert[]>('alerts', []);
-  const [documents, setDocuments] = useOptimizedLocalStorage<Document[]>('documents', []);
-  const [energyBills, setEnergyBills] = useOptimizedLocalStorage<EnergyBill[]>('energyBills', []);
-  const [waterBills, setWaterBills] = useOptimizedLocalStorage<WaterBill[]>('waterBills', []);
+  // Sistema híbrido: API + localStorage fallback
+  const [propertiesState, propertiesActions] = useProperties();
+  const [tenantsState, tenantsActions] = useTenants();
+  const [transactionsState, transactionsActions] = useTransactions();
+  const [alertsState, alertsActions] = useAlerts();
+  const [documentsState, documentsActions] = useDocuments();
+  const [energyBillsState, energyBillsActions] = useEnergyBills();
+  const [waterBillsState, waterBillsActions] = useWaterBills();
+
+  // Extrair dados dos estados híbridos
+  const properties = propertiesState.data;
+  const tenants = tenantsState.data;
+  const transactions = transactionsState.data;
+  const alerts = alertsState.data;
+  const documents = documentsState.data;
+  const energyBills = energyBillsState.data;
+  const waterBills = waterBillsState.data;
+
+  // Estado de loading geral
+  const isLoading = propertiesState.loading || tenantsState.loading || transactionsState.loading;
+  
+  // Exibir erros não críticos
+  useEffect(() => {
+    const errors = [
+      propertiesState.error,
+      tenantsState.error,
+      transactionsState.error,
+      alertsState.error
+    ].filter(Boolean);
+
+    if (errors.length > 0) {
+      console.warn('Avisos do sistema híbrido:', errors);
+      // Aqui você pode adicionar notificações para o usuário se necessário
+    }
+  }, [propertiesState.error, tenantsState.error, transactionsState.error, alertsState.error]);
 
   // Refs para dependências estáveis
   const stablePropertiesRef = useRef<Property[]>([]);
