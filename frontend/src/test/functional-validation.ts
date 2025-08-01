@@ -1,7 +1,7 @@
 // Teste funcional simples para validar a correção do TypeError
 // Este teste simula o cenário original que causava o erro
 
-import { getAlertCacheMetrics } from '../utils/optimizedAlerts';
+// import { getAlertCacheMetrics } from '../utils/optimizedAlerts'; // Not used in current test
 
 // Simular dados corrompidos que poderiam vir da função getAlertCacheMetrics
 const testScenarios = [
