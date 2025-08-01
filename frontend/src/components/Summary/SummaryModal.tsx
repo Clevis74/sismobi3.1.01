@@ -6,7 +6,7 @@ import {
   AlertTriangle, 
   TrendingUp, 
   TrendingDown, 
-  Calendar,
+  // Calendar, // Not used in current implementation
   FileText,
   Zap,
   Droplets,
