@@ -16,7 +16,13 @@ interface HeaderProps {
   };
 }
 
-export const Header: React.FC<HeaderProps> = ({ onExport, onImport, showValues, onToggleValues }) => {
+export const Header: React.FC<HeaderProps> = ({ 
+  onExport, 
+  onImport, 
+  showValues, 
+  onToggleValues, 
+  connectionStatus 
+}) => {
   const [showPerformanceDashboard, setShowPerformanceDashboard] = useState(false);
   
   const currentDate = formatDate(new Date(), {
@@ -34,6 +40,38 @@ export const Header: React.FC<HeaderProps> = ({ onExport, onImport, showValues, 
       action();
     }
   };
+
+  // Status da conexão com cores e ícones
+  const getConnectionDisplay = () => {
+    if (!connectionStatus) return null;
+
+    const { isOnline, dataSource, lastSync } = connectionStatus;
+    
+    if (dataSource === 'api' && isOnline) {
+      return {
+        icon: <Wifi className="w-4 h-4" />,
+        text: 'Online',
+        color: 'text-green-600 bg-green-50',
+        title: `Conectado à API${lastSync ? ` - Última sync: ${lastSync.toLocaleTimeString()}` : ''}`
+      };
+    } else if (dataSource === 'localStorage') {
+      return {
+        icon: <WifiOff className="w-4 h-4" />,
+        text: 'Offline',
+        color: 'text-yellow-600 bg-yellow-50',
+        title: 'Usando dados locais - Conecte-se para sincronizar'
+      };
+    } else {
+      return {
+        icon: <WifiOff className="w-4 h-4" />,
+        text: 'Sem dados',
+        color: 'text-gray-600 bg-gray-50',
+        title: 'Nenhum dado disponível'
+      };
+    }
+  };
+
+  const connectionDisplay = getConnectionDisplay();
 
   return (
     <>
