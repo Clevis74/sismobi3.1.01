@@ -8,10 +8,10 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 import structlog
 import uuid
 
-from ..database import get_database
-from ..models import Tenant, TenantCreate, TenantUpdate, MessageResponse, User
-from ..auth import get_current_active_user
-from ..utils import get_paginated_results, convert_objectid_to_str, validate_property_exists
+from database import get_database
+from models import Tenant, TenantCreate, TenantUpdate, MessageResponse, User
+from auth import get_current_active_user
+from utils import get_paginated_results, convert_objectid_to_str, validate_property_exists
 
 logger = structlog.get_logger(__name__)
 router = APIRouter(prefix="/tenants", tags=["tenants"])
