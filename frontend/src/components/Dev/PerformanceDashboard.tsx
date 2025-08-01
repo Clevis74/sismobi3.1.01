@@ -30,7 +30,7 @@ const _formatConditionalValue = (value: number | string, showValues: boolean, su
 };
 
 // Função helper para formatação condicional de moeda
-const formatConditionalCurrency = (value: number, showValues: boolean): string => {
+const _formatConditionalCurrency = (value: number, showValues: boolean): string => {
   if (!showValues) return '****';
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
