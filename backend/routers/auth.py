@@ -7,10 +7,10 @@ from fastapi.security import OAuth2PasswordRequestForm
 from motor.motor_asyncio import AsyncIOMotorDatabase
 import structlog
 
-from ..database import get_database
-from ..models import Token, User, UserCreate, MessageResponse
-from ..auth import authenticate_user, create_access_token, create_user, get_current_active_user
-from ..config import settings
+from database import get_database
+from models import Token, User, UserCreate, MessageResponse
+from auth import authenticate_user, create_access_token, create_user, get_current_active_user
+from config import settings
 
 logger = structlog.get_logger(__name__)
 router = APIRouter(prefix="/auth", tags=["authentication"])
