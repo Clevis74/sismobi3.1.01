@@ -91,6 +91,16 @@ async def create_alert(
         # Convert alert to dict
         alert_dict = alert.dict()
         
+        # Generate UUID for the alert if not present
+        if "id" not in alert_dict:
+            import uuid
+            alert_dict["id"] = str(uuid.uuid4())
+        
+        # Set timestamps
+        from datetime import datetime
+        alert_dict["created_at"] = datetime.now()
+        alert_dict["updated_at"] = datetime.now()
+        
         # Verify property exists if provided
         if alert_dict.get("property_id"):
             property_doc = await db.properties.find_one({"id": alert_dict["property_id"]})
