@@ -13,7 +13,7 @@ import { WaterCalculator } from './Water/WaterCalculator';
 import { useOptimizedLocalStorage } from '../hooks/useOptimizedLocalStorage';
 import { calculateFinancialSummary } from '../utils/optimizedCalculations';
 import { generateAutomaticAlerts, processRecurringTransactions } from '../utils/optimizedAlerts';
-import { createBackup, exportBackup, importBackup, validateBackup, BackupData } from '../utils/dataBackup';
+import { createBackup, exportBackup, importBackup, validateBackup, /* BackupData */ } from '../utils/dataBackup';
 import { Property, Tenant, Transaction, Alert, Document, EnergyBill, WaterBill } from '../types';
 
 // Componente otimizado para renderização condicional
