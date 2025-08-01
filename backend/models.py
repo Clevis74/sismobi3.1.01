@@ -233,7 +233,7 @@ class WaterBill(WaterBillBase, BaseDocument):
 
 # User Models (for authentication)
 class UserBase(BaseModel):
-    email: str = Field(..., regex=r'^[^@]+@[^@]+\.[^@]+$')
+    email: str = Field(..., pattern=r'^[^@]+@[^@]+\.[^@]+$')
     full_name: str = Field(..., min_length=1, max_length=200)
     is_active: bool = True
 
