@@ -134,27 +134,24 @@ export function useHybridData<T>(
         } catch (apiError) {
           console.warn(`API failed for ${key}, falling back to localStorage:`, apiError);
           
-          // API falhou, mas não é erro fatal se temos localStorage
-          if (!enableOfflineMode) {
-            throw apiError;
-          }
+          // API falhou, mas não é erro fatal se temos localStorage ou modo offline habilitado
         }
       }
 
       // Fallback para localStorage
-      if (enableOfflineMode && localData !== defaultValue) {
+      if (enableOfflineMode) {
         setState(prev => ({
           ...prev,
           data: localData,
           loading: false,
           error: state.isOnline ? 'API temporariamente indisponível, usando dados locais' : null,
-          source: 'localStorage'
+          source: localData !== defaultValue ? 'localStorage' : 'default'
         }));
         isInitializedRef.current = true;
         return;
       }
 
-      // Se chegou até aqui, usa dados padrão
+      // Se chegou até aqui e não há modo offline, usar dados padrão
       setState(prev => ({
         ...prev,
         data: defaultValue,
@@ -162,15 +159,21 @@ export function useHybridData<T>(
         error: state.isOnline ? 'Nenhum dado disponível' : 'Modo offline - nenhum dado local encontrado',
         source: 'default'
       }));
+      isInitializedRef.current = true;
       
     } catch (error) {
+      // Em caso de erro geral, usar localStorage ou padrão
+      const finalData = enableOfflineMode && localData !== defaultValue ? localData : defaultValue;
+      const finalSource = enableOfflineMode && localData !== defaultValue ? 'localStorage' : 'default';
+      
       setState(prev => ({
         ...prev,
-        data: localData !== defaultValue ? localData : defaultValue,
+        data: finalData,
         loading: false,
         error: error instanceof Error ? error.message : 'Erro desconhecido',
-        source: localData !== defaultValue ? 'localStorage' : 'default'
+        source: finalSource
       }));
+      isInitializedRef.current = true;
     }
   }, [key, state.isOnline, localData, defaultValue, apiService, apiRequestWithRetry, setLocalData, enableOfflineMode]);
 
