@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Download, Calendar, TrendingUp, PieChart, BarChart3 } from 'lucide-react';
+import { Download, /* Calendar, */ TrendingUp, PieChart, BarChart3 } from 'lucide-react';
 import { Property, Transaction, FinancialSummary } from '../../types';
 import { formatCurrency, formatDate } from '../../utils/calculations';
 
