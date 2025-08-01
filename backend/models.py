@@ -75,7 +75,7 @@ class Property(PropertyBase, BaseDocument):
 # Tenant Models
 class TenantBase(BaseModel):
     name: str = Field(..., min_length=1, max_length=200)
-    email: str = Field(..., regex=r'^[^@]+@[^@]+\.[^@]+$')
+    email: str = Field(..., pattern=r'^[^@]+@[^@]+\.[^@]+$')
     phone: str = Field(..., min_length=1, max_length=50)
     document: str = Field(..., min_length=1, max_length=50)
     property_id: Optional[str] = None
