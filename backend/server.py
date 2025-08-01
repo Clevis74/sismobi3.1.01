@@ -84,6 +84,7 @@ async def shutdown_event():
 # Include routers
 app.include_router(auth.router, prefix="/api/v1")
 app.include_router(properties.router, prefix="/api/v1")
+app.include_router(tenants.router, prefix="/api/v1")
 
 # Root endpoints
 @app.get("/")
