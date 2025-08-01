@@ -48,11 +48,12 @@ export const ReportManager: React.FC<ReportManagerProps> = ({
       case 'month':
         return transactionDate.getMonth() === now.getMonth() && 
                transactionDate.getFullYear() === now.getFullYear();
-      case 'quarter':
+      case 'quarter': {
         const currentQuarter = Math.floor(now.getMonth() / 3);
         const transactionQuarter = Math.floor(transactionDate.getMonth() / 3);
         return transactionQuarter === currentQuarter && 
                transactionDate.getFullYear() === now.getFullYear();
+      }
       case 'year':
         return transactionDate.getFullYear() === now.getFullYear();
       default:
