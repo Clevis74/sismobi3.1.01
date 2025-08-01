@@ -5,10 +5,10 @@ from typing import List, Optional
 from datetime import datetime
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
-from ..database import get_database
-from ..models import Alert, AlertCreate, AlertUpdate
-from ..utils import convert_objectid_to_str
-from ..auth import get_current_user
+from database import get_database
+from models import Alert, AlertCreate, AlertUpdate
+from utils import convert_objectid_to_str
+from auth import get_current_user
 
 router = APIRouter(
     prefix="/alerts",
