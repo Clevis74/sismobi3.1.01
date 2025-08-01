@@ -593,6 +593,26 @@ const AppContent: React.FC = () => {
             onDeleteWaterBill={deleteWaterBill}
           />
         );
+      case 'accessibility':
+        return (
+          <div className="p-6">
+            <div className="max-w-2xl mx-auto text-center">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-8">
+                <h2 className="text-2xl font-bold text-blue-900 mb-4">Accessibility Testing</h2>
+                <p className="text-blue-700 mb-6">
+                  Execute testes automatizados de acessibilidade para garantir que a aplicação 
+                  atenda aos padrões WCAG 2.1 e seja inclusiva para todos os usuários.
+                </p>
+                <button
+                  onClick={() => setShowAccessibilityDashboard(true)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium"
+                >
+                  🛡️ Abrir Dashboard de Acessibilidade
+                </button>
+              </div>
+            </div>
+          </div>
+        );
       default:
         return <OptimizedDashboard summary={summary} properties={properties} transactions={transactions} showValues={showValues} />;
     }
