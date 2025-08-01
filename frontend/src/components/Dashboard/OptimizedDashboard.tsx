@@ -32,24 +32,28 @@ const FinancialSummaryCards = React.memo(({
         value={formatValue(summary.totalIncome)}
         color="green"
         icon={DollarSign}
+        showValues={showValues}
       />
       <MetricCard
         title="Despesas Totais"
         value={formatValue(summary.totalExpenses)}
         color="red"
         icon={CreditCard}
+        showValues={showValues}
       />
       <MetricCard
         title="Lucro Líquido"
         value={formatValue(summary.netIncome)}
         color={summary.netIncome > 0 ? 'green' : summary.netIncome < 0 ? 'red' : 'blue'}
         icon={TrendingUp}
+        showValues={showValues}
       />
       <MetricCard
         title="Taxa de Ocupação"
         value={formatPercent(summary.occupancyRate)}
         color={summary.occupancyRate > 80 ? 'green' : summary.occupancyRate < 60 ? 'red' : 'yellow'}
         icon={Home}
+        showValues={showValues}
       />
     </div>
   );
