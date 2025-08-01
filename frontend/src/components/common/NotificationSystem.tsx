@@ -54,7 +54,7 @@ export const NotificationProvider: React.FC<{ children }> = ({ children }): JSX.
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const addNotification = useCallback((notification: Omit<Notification, 'id'>) => {
-    const id = `notification_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const id = `notification_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
     const newNotification = { ...notification, id };
     
     setNotifications(prev => [newNotification, ...prev.slice(0, 4)]); // Máximo de 5 notificações
