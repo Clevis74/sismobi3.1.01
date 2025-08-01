@@ -316,7 +316,7 @@ export function useHybridData<T>(
   // Carregamento inicial
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   // Cleanup
   useEffect(() => {
