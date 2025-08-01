@@ -167,6 +167,9 @@ export const Header: React.FC<HeaderProps> = ({
               <Download className="w-4 h-4 mr-2" aria-hidden="true" />
               Exportar
             </button>
+            
+            {/* User Profile */}
+            <UserProfile />
           </div>
         </div>
       </header>
