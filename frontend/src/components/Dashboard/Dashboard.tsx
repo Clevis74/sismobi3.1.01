@@ -8,9 +8,22 @@ import { formatCurrency } from '../../utils/calculations';
 
 interface DashboardProps {
   summary: FinancialSummary;
-  properties: any[];
-  transactions: any[];
+  properties: Property[];
+  transactions: Transaction[];
   showValues: boolean;
+}
+
+interface Property {
+  id: string;
+  name: string;
+  status: string;
+}
+
+interface Transaction {
+  id: string;
+  type: string;
+  amount: number;
+  date: string;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({ summary, properties, transactions, showValues }) => {
