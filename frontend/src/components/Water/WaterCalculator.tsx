@@ -101,7 +101,7 @@ export const WaterCalculator: React.FC<WaterCalculatorProps> = ({
     // Validar dados
     const validationResult = validatePeopleData(propertiesInGroup);
     setValidation(validationResult);
-  }, [formData.totalGroupValue, propertiesInGroup.map(p => p.numberOfPeople).join(',')]);
+  }, [formData.totalGroupValue, propertiesInGroup]);
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
