@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, Download, Upload, Eye, EyeOff, Activity, Wifi, WifiOff } from 'lucide-react';
+import { Calendar, Download, Upload, Eye, EyeOff, Activity, Wifi, WifiOff, FileBarChart } from 'lucide-react';
 import { PerformanceDashboard } from '../Dev/PerformanceDashboard';
 import { formatDate } from '../../utils/safeDateFormatting';
 
