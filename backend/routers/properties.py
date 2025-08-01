@@ -6,10 +6,10 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from motor.motor_asyncio import AsyncIOMotorDatabase
 import structlog
 
-from ..database import get_database
-from ..models import Property, PropertyCreate, PropertyUpdate, MessageResponse, User
-from ..auth import get_current_active_user
-from ..utils import get_paginated_results, convert_objectid_to_str, create_property_filter
+from database import get_database
+from models import Property, PropertyCreate, PropertyUpdate, MessageResponse, User
+from auth import get_current_active_user
+from utils import get_paginated_results, convert_objectid_to_str, create_property_filter
 
 logger = structlog.get_logger(__name__)
 router = APIRouter(prefix="/properties", tags=["properties"])
