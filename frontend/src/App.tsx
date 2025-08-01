@@ -18,12 +18,14 @@ import { ReportManager } from './components/Reports/ReportManager';
 import { DocumentManager } from './components/Documents/DocumentManager';
 import { EnergyCalculator } from './components/Energy/EnergyCalculator';
 import { WaterCalculator } from './components/Water/WaterCalculator';
+import { AccessibilityDashboard } from './components/Accessibility/AccessibilityDashboard';
 // import { useOptimizedLocalStorage } from './hooks/useOptimizedLocalStorage'; // Not used in current implementation
 import { useProperties, useTenants, useTransactions, useAlerts, useDocuments, useEnergyBills, useWaterBills } from './hooks/useHybridServices';
 import { calculateFinancialSummary, clearCalculationCache } from './utils/optimizedCalculations';
 import { generateAutomaticAlerts, processRecurringTransactions, clearAlertCache } from './utils/optimizedAlerts';
 import { createBackup, exportBackup, importBackup, validateBackup } from './utils/dataBackup';
 import { useRenderMonitor, performanceMonitor } from './utils/performanceMonitor';
+import { accessibilityTester } from './utils/accessibilityTester';
 import { Property, Tenant, Transaction, /* Alert, */ Document, EnergyBill, WaterBill } from './types';
 
 // Componente interno que usa os hooks
