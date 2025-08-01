@@ -142,7 +142,7 @@ const AppContent: React.FC = () => {
     );
     performanceMonitor.endTimer('alert-generation');
     return result;
-  }, [tenants, energyBills, waterBills, propertiesHash, transactionsHash, tenantsHash, energyBillsHash, waterBillsHash]); // Added missing dependencies
+  }, [tenants, energyBills, waterBills]); // Only include direct dependencies, refs are stable
 
   // Transações recorrentes com dependências hash
   const recurringTransactions = useMemo(() => {
