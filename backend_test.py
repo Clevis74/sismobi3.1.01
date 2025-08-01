@@ -64,6 +64,8 @@ class SISMOBIBackendTester:
         self.test_user_name = "SISMOBI Administrator"
         self.created_property_id = None
         self.created_tenant_id = None
+        self.created_transaction_id = None
+        self.created_alert_id = None
 
     def run_test(self, name: str, test_func):
         """Run a single test"""
