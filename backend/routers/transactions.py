@@ -74,6 +74,16 @@ async def create_transaction(
         # Convert transaction to dict and ensure property_id exists
         transaction_dict = transaction.dict()
         
+        # Generate UUID for the transaction if not present
+        if "id" not in transaction_dict:
+            import uuid
+            transaction_dict["id"] = str(uuid.uuid4())
+        
+        # Set timestamps
+        from datetime import datetime
+        transaction_dict["created_at"] = datetime.now()
+        transaction_dict["updated_at"] = datetime.now()
+        
         # Verify property exists
         if transaction_dict["property_id"]:
             property_doc = await db.properties.find_one({"id": transaction_dict["property_id"]})
