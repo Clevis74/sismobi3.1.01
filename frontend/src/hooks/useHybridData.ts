@@ -92,7 +92,7 @@ export function useHybridData<T>(
   // Função para fazer requisições com retry
   const apiRequestWithRetry = useCallback(async <R>(
     apiCall: () => Promise<R>,
-    attempts: number = retryAttempts
+    attempts: number = Math.min(retryAttempts, 2) // Reduzir tentativas para fallback mais rápido
   ): Promise<R> => {
     for (let i = 0; i < attempts; i++) {
       try {
@@ -100,8 +100,8 @@ export function useHybridData<T>(
       } catch (error) {
         if (i === attempts - 1) throw error;
         
-        // Exponential backoff
-        await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000));
+        // Backoff mais rápido para desenvolvimento
+        await new Promise(resolve => setTimeout(resolve, Math.min(Math.pow(2, i) * 500, 2000)));
       }
     }
     throw new Error('Max retry attempts exceeded');
