@@ -22,7 +22,14 @@ const FinancialSummaryCards = React.memo(({
   summary: FinancialSummary; 
   showValues: boolean; 
 }) => {
-  const formatValue = (value: number) => showValues ? formatCurrency(value) : '****';
+  // Debug para verificar o estado
+  console.log('FinancialSummaryCards render:', { showValues, summary });
+  
+  const formatValue = (value: number) => {
+    const result = showValues ? formatCurrency(value) : '****';
+    console.log('formatValue:', { value, showValues, result });
+    return result;
+  };
   const formatPercent = (value: number) => showValues ? `${value.toFixed(1)}%` : '****';
 
   return (
