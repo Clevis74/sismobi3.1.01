@@ -30,6 +30,7 @@ const AppContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showValues, setShowValues] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showSummaryModal, setShowSummaryModal] = useState(false);
   
   // Hooks de backup com sistema de notificações
   const backupAlerts = useBackupAlerts();
