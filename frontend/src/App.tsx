@@ -340,27 +340,38 @@ const AppContent: React.FC = () => {
   }, [documentsActions]);
 
   // Callbacks para energy bills
-  const addEnergyBill = useCallback((billData: Omit<EnergyBill, 'id' | 'createdAt' | 'lastUpdated'>) => {
-    const newBill: EnergyBill = {
-      ...billData,
-      id: Date.now().toString(),
-      createdAt: new Date(),
-      lastUpdated: new Date()
-    };
-    setEnergyBills(prev => [...prev, newBill]);
-  }, [setEnergyBills]);
+  const addEnergyBill = useCallback(async (billData: Omit<EnergyBill, 'id' | 'createdAt' | 'lastUpdated'>) => {
+    try {
+      const newBill: Omit<EnergyBill, 'id'> = {
+        ...billData,
+        createdAt: new Date(),
+        lastUpdated: new Date()
+      };
+      await energyBillsActions.create(newBill);
+    } catch (error) {
+      console.error('Erro ao adicionar conta de energia:', error);
+    }
+  }, [energyBillsActions]);
 
-  const updateEnergyBill = useCallback((id: string, updates: Partial<EnergyBill>) => {
-    setEnergyBills(prev => prev.map(bill => 
-      bill.id === id 
-        ? { ...bill, ...updates, lastUpdated: new Date() }
-        : bill
-    ));
-  }, [setEnergyBills]);
+  const updateEnergyBill = useCallback(async (id: string, updates: Partial<EnergyBill>) => {
+    try {
+      const updatesWithTimestamp = {
+        ...updates,
+        lastUpdated: new Date()
+      };
+      await energyBillsActions.update(id, updatesWithTimestamp);
+    } catch (error) {
+      console.error('Erro ao atualizar conta de energia:', error);
+    }
+  }, [energyBillsActions]);
 
-  const deleteEnergyBill = useCallback((id: string) => {
-    setEnergyBills(prev => prev.filter(bill => bill.id !== id));
-  }, [setEnergyBills]);
+  const deleteEnergyBill = useCallback(async (id: string) => {
+    try {
+      await energyBillsActions.delete(id);
+    } catch (error) {
+      console.error('Erro ao deletar conta de energia:', error);
+    }
+  }, [energyBillsActions]);
 
   // Callbacks para water bills
   const addWaterBill = useCallback((billData: Omit<WaterBill, 'id' | 'createdAt' | 'lastUpdated'>) => {
