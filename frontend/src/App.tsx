@@ -150,7 +150,7 @@ const AppContent: React.FC = () => {
     const result = processRecurringTransactions(stableTransactionsRef.current);
     performanceMonitor.endTimer('recurring-transactions');
     return result;
-  }, [transactionsHash]);
+  }, []); // Removed unnecessary dependency as it uses ref
 
   // Efeito otimizado para alertas automáticos
   useEffect(() => {
