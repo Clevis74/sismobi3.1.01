@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { LoadingSpinner } from './components/common/LoadingSpinner';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { SkipLinks } from './components/common/SkipLinks';
 import { NotificationProvider, useBackupAlerts } from './components/common/NotificationSystem';
