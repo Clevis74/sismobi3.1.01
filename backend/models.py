@@ -241,7 +241,7 @@ class UserCreate(UserBase):
     password: str = Field(..., min_length=8, max_length=100)
 
 class UserUpdate(BaseModel):
-    email: Optional[str] = Field(None, regex=r'^[^@]+@[^@]+\.[^@]+$')
+    email: Optional[str] = Field(None, pattern=r'^[^@]+@[^@]+\.[^@]+$')
     full_name: Optional[str] = Field(None, min_length=1, max_length=200)
     is_active: Optional[bool] = None
 
