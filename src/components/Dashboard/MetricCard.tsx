@@ -5,7 +5,6 @@ interface MetricCardProps {
   title: string;
   value: string;
   icon: LucideIcon;
-  showValues: boolean;
   trend?: {
     value: number;
     isPositive: boolean;
