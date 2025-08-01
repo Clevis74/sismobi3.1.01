@@ -134,6 +134,20 @@ export const Header: React.FC<HeaderProps> = ({
                 </>
               )}
             </button>
+            
+            {/* Botão Ver Resumo */}
+            {onShowSummary && (
+              <button
+                onClick={onShowSummary}
+                onKeyDown={(e) => handleKeyDown(e, onShowSummary)}
+                aria-label="Ver resumo detalhado do portfólio"
+                className="flex items-center px-4 py-2 text-purple-700 hover:text-purple-800 hover:bg-purple-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+              >
+                <FileBarChart className="w-4 h-4 mr-2" aria-hidden="true" />
+                📋 Ver Resumo
+              </button>
+            )}
+            
             <button
               onClick={onImport}
               onKeyDown={(e) => handleKeyDown(e, onImport)}
