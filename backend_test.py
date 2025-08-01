@@ -364,9 +364,336 @@ class SISMOBIBackendTester:
             print(f"  - Exception: {str(e)}")
             return False
 
+    def test_create_transaction(self) -> bool:
+        """Test creating a transaction"""
+        if not self.created_property_id:
+            print("  - No property ID available for transaction testing")
+            return False
+            
+        try:
+            transaction_data = {
+                "property_id": self.created_property_id,
+                "tenant_id": self.created_tenant_id,
+                "description": "Pagamento de aluguel - Janeiro 2025",
+                "amount": 2500.00,
+                "type": "income",
+                "category": "Aluguel",
+                "date": "2025-01-15T10:00:00",
+                "recurring": True,
+                "recurring_day": 5,
+                "notes": "Transação de teste para API"
+            }
+            
+            response = self.make_request("POST", "/api/v1/transactions/", data=transaction_data)
+            print(f"  - Status Code: {response.status_code}")
+            
+            if response.status_code == 201:
+                data = response.json()
+                self.created_transaction_id = data.get('id')
+                print(f"  - Transaction ID: {self.created_transaction_id}")
+                print(f"  - Description: {data.get('description')}")
+                print(f"  - Amount: R$ {data.get('amount')}")
+                print(f"  - Type: {data.get('type')}")
+                return self.created_transaction_id is not None
+            else:
+                print(f"  - Error: {response.text}")
+                return False
+        except Exception as e:
+            print(f"  - Exception: {str(e)}")
+            return False
+
+    def test_get_transactions(self) -> bool:
+        """Test getting transactions list"""
+        try:
+            response = self.make_request("GET", "/api/v1/transactions/")
+            print(f"  - Status Code: {response.status_code}")
+            
+            if response.status_code == 200:
+                data = response.json()
+                items = data.get('items', [])
+                total = data.get('total', 0)
+                print(f"  - Total Transactions: {total}")
+                print(f"  - Items in Response: {len(items)}")
+                print(f"  - Has More: {data.get('has_more', False)}")
+                return True
+            else:
+                print(f"  - Error: {response.text}")
+                return False
+        except Exception as e:
+            print(f"  - Exception: {str(e)}")
+            return False
+
+    def test_get_transaction_by_id(self) -> bool:
+        """Test getting specific transaction by ID"""
+        if not self.created_transaction_id:
+            print("  - No transaction ID available for testing")
+            return False
+            
+        try:
+            response = self.make_request("GET", f"/api/v1/transactions/{self.created_transaction_id}")
+            print(f"  - Status Code: {response.status_code}")
+            
+            if response.status_code == 200:
+                data = response.json()
+                print(f"  - Transaction Description: {data.get('description')}")
+                print(f"  - Transaction Amount: R$ {data.get('amount')}")
+                print(f"  - Transaction Type: {data.get('type')}")
+                return data.get('id') == self.created_transaction_id
+            else:
+                print(f"  - Error: {response.text}")
+                return False
+        except Exception as e:
+            print(f"  - Exception: {str(e)}")
+            return False
+
+    def test_update_transaction(self) -> bool:
+        """Test updating a transaction"""
+        if not self.created_transaction_id:
+            print("  - No transaction ID available for testing")
+            return False
+            
+        try:
+            update_data = {
+                "description": "Pagamento de aluguel - Janeiro 2025 (Atualizado)",
+                "amount": 2600.00,
+                "notes": "Transação atualizada via API"
+            }
+            
+            response = self.make_request("PUT", f"/api/v1/transactions/{self.created_transaction_id}", data=update_data)
+            print(f"  - Status Code: {response.status_code}")
+            
+            if response.status_code == 200:
+                data = response.json()
+                print(f"  - Updated Description: {data.get('description')}")
+                print(f"  - Updated Amount: R$ {data.get('amount')}")
+                print(f"  - Updated Notes: {data.get('notes')}")
+                return data.get('amount') == 2600.00
+            else:
+                print(f"  - Error: {response.text}")
+                return False
+        except Exception as e:
+            print(f"  - Exception: {str(e)}")
+            return False
+
+    def test_create_alert(self) -> bool:
+        """Test creating an alert"""
+        if not self.created_property_id:
+            print("  - No property ID available for alert testing")
+            return False
+            
+        try:
+            alert_data = {
+                "property_id": self.created_property_id,
+                "tenant_id": self.created_tenant_id,
+                "title": "Aluguel em Atraso",
+                "message": "O aluguel do mês de Janeiro está em atraso há 5 dias",
+                "type": "payment_overdue",
+                "priority": "high",
+                "resolved": False,
+                "due_date": "2025-01-20T23:59:59"
+            }
+            
+            response = self.make_request("POST", "/api/v1/alerts/", data=alert_data)
+            print(f"  - Status Code: {response.status_code}")
+            
+            if response.status_code == 201:
+                data = response.json()
+                self.created_alert_id = data.get('id')
+                print(f"  - Alert ID: {self.created_alert_id}")
+                print(f"  - Alert Title: {data.get('title')}")
+                print(f"  - Alert Priority: {data.get('priority')}")
+                print(f"  - Alert Type: {data.get('type')}")
+                return self.created_alert_id is not None
+            else:
+                print(f"  - Error: {response.text}")
+                return False
+        except Exception as e:
+            print(f"  - Exception: {str(e)}")
+            return False
+
+    def test_get_alerts(self) -> bool:
+        """Test getting alerts list"""
+        try:
+            response = self.make_request("GET", "/api/v1/alerts/")
+            print(f"  - Status Code: {response.status_code}")
+            
+            if response.status_code == 200:
+                data = response.json()
+                items = data.get('items', [])
+                total = data.get('total', 0)
+                print(f"  - Total Alerts: {total}")
+                print(f"  - Items in Response: {len(items)}")
+                print(f"  - Has More: {data.get('has_more', False)}")
+                return True
+            else:
+                print(f"  - Error: {response.text}")
+                return False
+        except Exception as e:
+            print(f"  - Exception: {str(e)}")
+            return False
+
+    def test_get_alert_by_id(self) -> bool:
+        """Test getting specific alert by ID"""
+        if not self.created_alert_id:
+            print("  - No alert ID available for testing")
+            return False
+            
+        try:
+            response = self.make_request("GET", f"/api/v1/alerts/{self.created_alert_id}")
+            print(f"  - Status Code: {response.status_code}")
+            
+            if response.status_code == 200:
+                data = response.json()
+                print(f"  - Alert Title: {data.get('title')}")
+                print(f"  - Alert Message: {data.get('message')}")
+                print(f"  - Alert Priority: {data.get('priority')}")
+                print(f"  - Alert Resolved: {data.get('resolved')}")
+                return data.get('id') == self.created_alert_id
+            else:
+                print(f"  - Error: {response.text}")
+                return False
+        except Exception as e:
+            print(f"  - Exception: {str(e)}")
+            return False
+
+    def test_update_alert(self) -> bool:
+        """Test updating an alert"""
+        if not self.created_alert_id:
+            print("  - No alert ID available for testing")
+            return False
+            
+        try:
+            update_data = {
+                "title": "Aluguel em Atraso - Crítico",
+                "priority": "critical",
+                "message": "O aluguel do mês de Janeiro está em atraso há 10 dias - situação crítica"
+            }
+            
+            response = self.make_request("PUT", f"/api/v1/alerts/{self.created_alert_id}", data=update_data)
+            print(f"  - Status Code: {response.status_code}")
+            
+            if response.status_code == 200:
+                data = response.json()
+                print(f"  - Updated Title: {data.get('title')}")
+                print(f"  - Updated Priority: {data.get('priority')}")
+                print(f"  - Updated Message: {data.get('message')}")
+                return data.get('priority') == 'critical'
+            else:
+                print(f"  - Error: {response.text}")
+                return False
+        except Exception as e:
+            print(f"  - Exception: {str(e)}")
+            return False
+
+    def test_resolve_alert(self) -> bool:
+        """Test resolving an alert using the convenience endpoint"""
+        if not self.created_alert_id:
+            print("  - No alert ID available for testing")
+            return False
+            
+        try:
+            response = self.make_request("PUT", f"/api/v1/alerts/{self.created_alert_id}/resolve")
+            print(f"  - Status Code: {response.status_code}")
+            
+            if response.status_code == 200:
+                data = response.json()
+                print(f"  - Alert Resolved: {data.get('resolved')}")
+                print(f"  - Resolved At: {data.get('resolved_at')}")
+                return data.get('resolved') == True
+            else:
+                print(f"  - Error: {response.text}")
+                return False
+        except Exception as e:
+            print(f"  - Exception: {str(e)}")
+            return False
+
+    def test_transactions_filtering(self) -> bool:
+        """Test transactions filtering by property and type"""
+        if not self.created_property_id:
+            print("  - No property ID available for filtering test")
+            return False
+            
+        try:
+            # Test filtering by property_id
+            params = {"property_id": self.created_property_id}
+            response = self.make_request("GET", "/api/v1/transactions/", params=params)
+            print(f"  - Property Filter Status Code: {response.status_code}")
+            
+            if response.status_code == 200:
+                data = response.json()
+                print(f"  - Filtered Transactions: {len(data.get('items', []))}")
+                
+                # Test filtering by type
+                params = {"type": "income"}
+                response = self.make_request("GET", "/api/v1/transactions/", params=params)
+                print(f"  - Type Filter Status Code: {response.status_code}")
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    print(f"  - Income Transactions: {len(data.get('items', []))}")
+                    return True
+                else:
+                    print(f"  - Type Filter Error: {response.text}")
+                    return False
+            else:
+                print(f"  - Property Filter Error: {response.text}")
+                return False
+        except Exception as e:
+            print(f"  - Exception: {str(e)}")
+            return False
+
+    def test_alerts_filtering(self) -> bool:
+        """Test alerts filtering by priority and resolved status"""
+        try:
+            # Test filtering by priority
+            params = {"priority": "high"}
+            response = self.make_request("GET", "/api/v1/alerts/", params=params)
+            print(f"  - Priority Filter Status Code: {response.status_code}")
+            
+            if response.status_code == 200:
+                data = response.json()
+                print(f"  - High Priority Alerts: {len(data.get('items', []))}")
+                
+                # Test filtering by resolved status
+                params = {"resolved": "false"}
+                response = self.make_request("GET", "/api/v1/alerts/", params=params)
+                print(f"  - Resolved Filter Status Code: {response.status_code}")
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    print(f"  - Unresolved Alerts: {len(data.get('items', []))}")
+                    return True
+                else:
+                    print(f"  - Resolved Filter Error: {response.text}")
+                    return False
+            else:
+                print(f"  - Priority Filter Error: {response.text}")
+                return False
+        except Exception as e:
+            print(f"  - Exception: {str(e)}")
+            return False
+
     def cleanup_test_data(self) -> bool:
         """Clean up test data"""
         success = True
+        
+        # Delete test transaction
+        if self.created_transaction_id:
+            try:
+                response = self.make_request("DELETE", f"/api/v1/transactions/{self.created_transaction_id}")
+                print(f"  - Transaction deletion status: {response.status_code}")
+            except Exception as e:
+                print(f"  - Error deleting transaction: {str(e)}")
+                success = False
+        
+        # Delete test alert
+        if self.created_alert_id:
+            try:
+                response = self.make_request("DELETE", f"/api/v1/alerts/{self.created_alert_id}")
+                print(f"  - Alert deletion status: {response.status_code}")
+            except Exception as e:
+                print(f"  - Error deleting alert: {str(e)}")
+                success = False
         
         # Delete test tenant
         if self.created_tenant_id:
