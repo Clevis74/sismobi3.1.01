@@ -283,7 +283,7 @@ export function useHybridData<T>(
         
         if (cleanItem.id?.startsWith('temp_')) {
           // Item temporário - criar via API
-          const { id, ...createData } = cleanItem;
+          const { id: _id, ...createData } = cleanItem;
           await apiRequestWithRetry(() => apiService.create(createData));
         } else {
           // Item existente - atualizar via API  
