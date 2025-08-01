@@ -307,26 +307,37 @@ const AppContent: React.FC = () => {
     }
   }, [alertsActions]);
 
-  const addDocument = useCallback((documentData: Omit<Document, 'id' | 'lastUpdated'>) => {
-    const newDocument: Document = {
-      ...documentData,
-      id: Date.now().toString(),
-      lastUpdated: new Date()
-    };
-    setDocuments(prev => [...prev, newDocument]);
-  }, [setDocuments]);
+  const addDocument = useCallback(async (documentData: Omit<Document, 'id' | 'lastUpdated'>) => {
+    try {
+      const newDocument: Omit<Document, 'id'> = {
+        ...documentData,
+        lastUpdated: new Date()
+      };
+      await documentsActions.create(newDocument);
+    } catch (error) {
+      console.error('Erro ao adicionar documento:', error);
+    }
+  }, [documentsActions]);
 
-  const updateDocument = useCallback((id: string, updates: Partial<Document>) => {
-    setDocuments(prev => prev.map(d => 
-      d.id === id 
-        ? { ...d, ...updates, lastUpdated: new Date() }
-        : d
-    ));
-  }, [setDocuments]);
+  const updateDocument = useCallback(async (id: string, updates: Partial<Document>) => {
+    try {
+      const updatesWithTimestamp = {
+        ...updates,
+        lastUpdated: new Date()
+      };
+      await documentsActions.update(id, updatesWithTimestamp);
+    } catch (error) {
+      console.error('Erro ao atualizar documento:', error);
+    }
+  }, [documentsActions]);
 
-  const deleteDocument = useCallback((id: string) => {
-    setDocuments(prev => prev.filter(d => d.id !== id));
-  }, [setDocuments]);
+  const deleteDocument = useCallback(async (id: string) => {
+    try {
+      await documentsActions.delete(id);
+    } catch (error) {
+      console.error('Erro ao deletar documento:', error);
+    }
+  }, [documentsActions]);
 
   // Callbacks para energy bills
   const addEnergyBill = useCallback((billData: Omit<EnergyBill, 'id' | 'createdAt' | 'lastUpdated'>) => {
