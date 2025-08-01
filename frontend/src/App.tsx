@@ -625,7 +625,16 @@ const AppContent: React.FC = () => {
 
           <main id="main-content" className="flex-1 p-6 overflow-y-auto" role="main">
             <ErrorBoundary>
-              {renderContent()}
+              {isLoading ? (
+                <div className="flex items-center justify-center h-64">
+                  <LoadingSpinner 
+                    size="lg" 
+                    text="Sincronizando dados..." 
+                  />
+                </div>
+              ) : (
+                renderContent()
+              )}
             </ErrorBoundary>
           </main>
         </div>
