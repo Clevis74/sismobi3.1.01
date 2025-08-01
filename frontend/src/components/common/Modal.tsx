@@ -10,14 +10,7 @@ interface ModalProps {
   showCloseButton?: boolean;
 }
 
-export const Modal: React.FC<{
-  isOpen,
-  onClose,
-  title,
-  children,
-  size = 'lg',
-  showCloseButton = true
-}> = ({
+export const Modal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
   title,
