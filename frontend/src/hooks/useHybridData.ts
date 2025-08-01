@@ -87,7 +87,7 @@ export function useHybridData<T>(
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, [enableOfflineMode, refresh]);
+  }, [enableOfflineMode]); // Remove refresh to avoid circular dependency
 
   // Função para fazer requisições com retry
   const apiRequestWithRetry = useCallback(async <R>(
