@@ -4,7 +4,7 @@ import { Transaction } from '../../types';
 import { TransactionForm } from './TransactionForm';
 import { formatCurrency, formatDate } from '../../utils/calculations';
 
-interface TransactionManagerProps {
+interface _TransactionManagerProps {
   transactions: Transaction[];
   properties: unknown[];
   showValues: boolean;

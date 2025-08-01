@@ -6,7 +6,7 @@ import { formatDate, formatCurrency } from '../../utils/optimizedCalculations';
 import { useRenderMonitor } from '../../utils/performanceMonitor';
 import { useDebouncedCallback } from '../../utils/debounceUtils';
 
-interface OptimizedTenantManagerProps {
+interface _OptimizedTenantManagerProps {
   tenants: Tenant[];
   properties: unknown[];
   showValues: boolean;

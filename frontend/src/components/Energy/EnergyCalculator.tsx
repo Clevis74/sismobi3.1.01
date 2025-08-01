@@ -13,7 +13,7 @@ import {
 } from '../../utils/energyCalculations';
 import { formatCurrency, formatDate, createLocalDate } from '../../utils/calculations';
 
-interface EnergyCalculatorProps {
+interface _EnergyCalculatorProps {
   energyBills: EnergyBill[];
   properties: unknown[]; // Lista de propriedades para vinculação
   showValues: boolean;

@@ -6,7 +6,7 @@ import { PropertyList } from './PropertyList';
 import { FinancialSummary } from '../../types';
 import { formatCurrency } from '../../utils/calculations';
 
-interface DashboardProps {
+interface _DashboardProps {
   summary: FinancialSummary;
   properties: Property[];
   transactions: Transaction[];

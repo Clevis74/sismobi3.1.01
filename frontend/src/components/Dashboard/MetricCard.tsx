@@ -1,7 +1,7 @@
 import React from 'react';
 import { DivideIcon as LucideIcon } from 'lucide-react';
 
-interface MetricCardProps {
+interface _MetricCardProps {
   title: string;
   value: string;
   icon: LucideIcon;

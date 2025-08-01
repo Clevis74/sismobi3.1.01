@@ -12,7 +12,7 @@ import {
   Droplets
 } from 'lucide-react';
 
-interface SidebarProps {
+interface _SidebarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
 }

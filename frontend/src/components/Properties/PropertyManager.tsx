@@ -4,7 +4,7 @@ import { Property } from '../../types';
 import { PropertyForm } from './PropertyForm';
 import { formatCurrency } from '../../utils/calculations';
 
-interface PropertyManagerProps {
+interface _PropertyManagerProps {
   properties: Property[];
   showValues: boolean;
   onAddProperty: (property: Omit<Property, 'id' | 'createdAt'>) => void;

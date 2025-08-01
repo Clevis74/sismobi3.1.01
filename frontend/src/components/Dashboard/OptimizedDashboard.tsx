@@ -7,7 +7,7 @@ import { FinancialSummary, Property, Transaction } from '../../types';
 import { useRenderMonitor } from '../../utils/performanceMonitor';
 import { formatCurrency } from '../../utils/optimizedCalculations';
 
-interface OptimizedDashboardProps {
+interface _OptimizedDashboardProps {
   summary: FinancialSummary;
   properties: Property[];
   transactions: Transaction[];

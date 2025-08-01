@@ -3,7 +3,7 @@ import { Download, /* Calendar, */ TrendingUp, PieChart, BarChart3 } from 'lucid
 import { Property, Transaction, FinancialSummary } from '../../types';
 import { formatCurrency, formatDate } from '../../utils/calculations';
 
-interface ReportManagerProps {
+interface _ReportManagerProps {
   properties: Property[];
   transactions: Transaction[];
   summary: FinancialSummary;

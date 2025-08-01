@@ -4,7 +4,7 @@ import { Document, Property, Tenant } from '../../types';
 import { DocumentForm } from './DocumentForm';
 import { formatDate } from '../../utils/calculations';
 
-interface DocumentManagerProps {
+interface _DocumentManagerProps {
   documents: Document[];
   properties: Property[];
   tenants: Tenant[];

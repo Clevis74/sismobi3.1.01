@@ -3,7 +3,7 @@ import { AlertTriangle, CheckCircle, Clock, Home, X, Droplets, Zap } from 'lucid
 import { Alert } from '../../types';
 import { formatDate } from '../../utils/calculations';
 
-interface AlertManagerProps {
+interface _AlertManagerProps {
   alerts: Alert[];
   properties: unknown[];
   onResolveAlert: (id: string) => void;

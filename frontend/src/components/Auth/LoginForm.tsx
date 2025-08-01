@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Lock, Mail, Eye, EyeOff, LogIn, UserPlus } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
-interface LoginFormProps {
+interface _LoginFormProps {
   onToggleMode: () => void;
   isRegisterMode: boolean;
 }

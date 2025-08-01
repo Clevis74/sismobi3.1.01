@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { LoadingSpinner } from '../common/LoadingSpinner';
 
-interface ProtectedRouteProps {
+interface _ProtectedRouteProps {
   children: React.ReactNode;
 }
 

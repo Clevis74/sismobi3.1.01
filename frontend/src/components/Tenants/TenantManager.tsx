@@ -4,7 +4,7 @@ import { Tenant } from '../../types';
 import { TenantForm } from './TenantForm';
 import { formatDate, formatCurrency } from '../../utils/calculations';
 
-interface TenantManagerProps {
+interface _TenantManagerProps {
   tenants: Tenant[];
   properties: unknown[];
   showValues: boolean;

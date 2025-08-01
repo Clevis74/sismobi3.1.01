@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Property } from '../../types';
 // import { createLocalDate } from '../../utils/calculations'; // Not used in current implementation
 
-interface PropertyFormProps {
+interface _PropertyFormProps {
   property?: Property | null;
   onSubmit: (property: Omit<Property, 'id' | 'createdAt'>) => void;
   onCancel: () => void;

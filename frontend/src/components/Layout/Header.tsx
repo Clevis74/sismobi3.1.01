@@ -4,7 +4,7 @@ import { PerformanceDashboard } from '../Dev/PerformanceDashboard';
 import { UserProfile } from '../Auth/UserProfile';
 import { formatDate } from '../../utils/safeDateFormatting';
 
-interface HeaderProps {
+interface _HeaderProps {
   onExport: () => void;
   onImport: () => void;
   showValues: boolean;

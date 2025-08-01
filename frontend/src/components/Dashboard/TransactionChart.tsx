@@ -2,7 +2,7 @@ import React from 'react';
 import { Transaction } from '../../types';
 import { formatCurrency } from '../../utils/calculations';
 
-interface TransactionChartProps {
+interface _TransactionChartProps {
   transactions: Transaction[];
   showValues: boolean;
 }

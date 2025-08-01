@@ -19,7 +19,7 @@ const formatCPF = (value: string): string => {
   }
 };
 
-interface TenantFormProps {
+interface _TenantFormProps {
   tenant?: Tenant | null;
   properties: Property[];
   onSubmit: (tenant: Omit<Tenant, 'id'>) => void;

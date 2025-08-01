@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Document, Property, Tenant } from '../../types';
 import { createLocalDate } from '../../utils/calculations';
 
-interface DocumentFormProps {
+interface _DocumentFormProps {
   document?: Document | null;
   properties: Property[];
   tenants: Tenant[];

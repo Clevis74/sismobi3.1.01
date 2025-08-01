@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Transaction, Property } from '../../types';
 import { createLocalDate } from '../../utils/calculations';
 
-interface TransactionFormProps {
+interface _TransactionFormProps {
   transaction?: Transaction | null;
   properties: Property[];
   onSubmit: (transaction: Omit<Transaction, 'id'>) => void;

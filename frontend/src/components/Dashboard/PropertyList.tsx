@@ -2,7 +2,7 @@ import React from 'react';
 import { Property } from '../../types';
 import { formatCurrency } from '../../utils/calculations';
 
-interface PropertyListProps {
+interface _PropertyListProps {
   properties: Property[];
   showValues: boolean;
 }

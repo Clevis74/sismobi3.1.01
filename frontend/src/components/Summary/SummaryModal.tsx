@@ -20,7 +20,7 @@ import { formatCurrency } from '../../utils/optimizedCalculations';
 import { formatDate } from '../../utils/safeDateFormatting';
 import { Property, Tenant, Transaction, Alert, Document, EnergyBill, WaterBill } from '../../types';
 
-interface SummaryModalProps {
+interface _SummaryModalProps {
   isOpen: boolean;
   onClose: () => void;
   showValues: boolean;

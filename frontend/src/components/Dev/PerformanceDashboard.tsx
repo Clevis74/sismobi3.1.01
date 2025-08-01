@@ -4,7 +4,7 @@ import { getPerformanceMetrics } from '../../utils/optimizedCalculations';
 import { getAlertCacheMetrics } from '../../utils/optimizedAlerts';
 import { PerformanceReport } from '../../types/performance';
 
-interface PerformanceDashboardProps {
+interface _PerformanceDashboardProps {
   isVisible: boolean;
   onClose: () => void;
   showValues: boolean;

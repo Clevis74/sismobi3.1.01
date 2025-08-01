@@ -13,7 +13,7 @@ import {
 } from '../../utils/waterCalculations';
 import { formatCurrency, formatDate, createLocalDate } from '../../utils/calculations';
 
-interface WaterCalculatorProps {
+interface _WaterCalculatorProps {
   waterBills: WaterBill[];
   properties: unknown[]; // Lista de propriedades para vinculação
   showValues: boolean;
