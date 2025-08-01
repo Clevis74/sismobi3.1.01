@@ -741,6 +741,12 @@ const AppContent: React.FC = () => {
             waterBills
           }}
         />
+
+        {/* Accessibility Dashboard */}
+        <AccessibilityDashboard
+          isVisible={showAccessibilityDashboard}
+          onClose={() => setShowAccessibilityDashboard(false)}
+        />
       </div>
     </>
   );
