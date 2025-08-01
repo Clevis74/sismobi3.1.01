@@ -140,7 +140,7 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
       );
       setValidation(validationResult);
     }
-  }, [formData.totalGroupValue, formData.totalGroupConsumption, propertiesInGroup.map(p => p.monthlyConsumption).join(',')]);
+  }, [formData.totalGroupValue, formData.totalGroupConsumption, propertiesInGroup]);
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
