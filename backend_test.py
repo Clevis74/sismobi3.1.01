@@ -1,64 +1,58 @@
 #!/usr/bin/env python3
 """
-Backend Test for React TypeScript Vite Application
+SISMOBI Backend API Test Suite
 
 SYSTEM ARCHITECTURE:
-- Frontend: React TypeScript with Vite
-- Data Storage: localStorage (browser-based)
-- No backend server or API endpoints
-- No database connections
+- Backend: FastAPI with MongoDB integration
+- Authentication: JWT-based with Bearer tokens
+- Database: MongoDB with Motor async driver
+- API Version: 3.2.0
 
 APPLICATION CONTEXT:
-This is a financial management system for rental properties ("Sistema de Controle Financeiro para Imóveis Alugados").
+This is a property management system for rental properties ("SISMOBI - Sistema de Gestão Imobiliária").
 
-RECENT FIXES TESTED:
-1. Vite Build Configuration:
-   - Created missing tsconfig.node.json file
-   - Configured HMR overlay in vite.config.ts
-   - Fixed build and compilation errors
-
-2. UI Updates:
-   - Updated tab titles as requested:
-     * "Energia – Rateio de Consumo" (was "Energia (CPFL)")
-     * "Água – Rateio de Consumo" (was "Cálculo de Água Compartilhada")
-   - Icons displaying correctly for both tabs
-
-3. Hide/Show Values Functionality:
-   - "Ocultar Valores" button in header controls value visibility
-   - Values show as "****" when hidden
-   - Button text changes between "Ocultar Valores" and "Mostrar Valores"
-
-WHAT WAS TESTED:
-1. ✅ Vite build process (successful in 7.44s)
-2. ✅ TypeScript compilation (no errors)
-3. ✅ Application loading and UI rendering
-4. ✅ Tab title updates as requested
-5. ✅ Icon display for Energy and Water tabs
-6. ✅ Navigation between tabs
-7. ✅ Hide/Show values functionality
-8. ✅ No error messages on page
-9. ✅ Responsive design and layout
-
-CONFIGURATION FILES VERIFIED:
-- /app/frontend/vite.config.ts - Properly configured
-- /app/frontend/tsconfig.node.json - Created and working
-- /app/frontend/src/components/Layout/Sidebar.tsx - Tab titles updated
-- /app/frontend/index.html - Application entry point working
-
-TEST RESULTS:
-All requested fixes have been successfully implemented and tested.
-The application is working perfectly without any critical issues.
+ENDPOINTS TO TEST:
+1. Health Check: GET /api/health
+2. Authentication:
+   - POST /api/v1/auth/register
+   - POST /api/v1/auth/login
+   - GET /api/v1/auth/me
+   - GET /api/v1/auth/verify
+3. Properties CRUD:
+   - GET /api/v1/properties/
+   - POST /api/v1/properties/
+   - GET /api/v1/properties/{id}
+   - PUT /api/v1/properties/{id}
+   - DELETE /api/v1/properties/{id}
+4. Tenants CRUD:
+   - GET /api/v1/tenants/
+   - POST /api/v1/tenants/
+   - GET /api/v1/tenants/{id}
+   - PUT /api/v1/tenants/{id}
+   - DELETE /api/v1/tenants/{id}
+5. Dashboard:
+   - GET /api/v1/dashboard/summary
 """
 
 import sys
+import json
+import requests
 from datetime import datetime
+from typing import Dict, Any, Optional
 
-class ReactViteApplicationTester:
-    def __init__(self):
+class SISMOBIBackendTester:
+    def __init__(self, base_url: str = "http://localhost:8001"):
+        self.base_url = base_url
         self.tests_run = 0
         self.tests_passed = 0
+        self.access_token = None
+        self.test_user_email = "admin@sismobi.com"
+        self.test_user_password = "admin123456"
+        self.test_user_name = "SISMOBI Administrator"
+        self.created_property_id = None
+        self.created_tenant_id = None
 
-    def run_test(self, name, test_func):
+    def run_test(self, name: str, test_func):
         """Run a single test"""
         self.tests_run += 1
         print(f"\n🔍 Testing {name}...")
@@ -75,110 +69,343 @@ class ReactViteApplicationTester:
             print(f"❌ Failed - Error: {str(e)}")
             return False
 
-    def test_vite_build_process(self):
-        """Verify Vite build process works correctly"""
-        print("  - Vite build completed successfully in 7.44s")
-        print("  - 1502 modules transformed without errors")
-        print("  - Generated optimized production bundle")
-        print("  - CSS and JS assets created with proper gzip compression")
-        return True
+    def make_request(self, method: str, endpoint: str, data: Dict[str, Any] = None, 
+                    headers: Dict[str, str] = None, params: Dict[str, Any] = None) -> requests.Response:
+        """Make HTTP request to API"""
+        url = f"{self.base_url}{endpoint}"
+        
+        if headers is None:
+            headers = {"Content-Type": "application/json"}
+        
+        if self.access_token and "Authorization" not in headers:
+            headers["Authorization"] = f"Bearer {self.access_token}"
+        
+        if method.upper() == "GET":
+            return requests.get(url, headers=headers, params=params)
+        elif method.upper() == "POST":
+            if endpoint == "/api/v1/auth/login":
+                # Login endpoint expects form data
+                return requests.post(url, data=data, headers={"Content-Type": "application/x-www-form-urlencoded"})
+            else:
+                return requests.post(url, json=data, headers=headers)
+        elif method.upper() == "PUT":
+            return requests.put(url, json=data, headers=headers)
+        elif method.upper() == "DELETE":
+            return requests.delete(url, headers=headers)
+        else:
+            raise ValueError(f"Unsupported HTTP method: {method}")
 
-    def test_typescript_compilation(self):
-        """Verify TypeScript compilation works correctly"""
-        print("  - TypeScript type-check completed without errors")
-        print("  - All type definitions resolved correctly")
-        print("  - No compilation warnings or errors")
-        return True
+    def test_health_check(self) -> bool:
+        """Test health check endpoint"""
+        try:
+            response = self.make_request("GET", "/api/health")
+            print(f"  - Status Code: {response.status_code}")
+            
+            if response.status_code == 200:
+                data = response.json()
+                print(f"  - Status: {data.get('status')}")
+                print(f"  - Database Status: {data.get('database_status')}")
+                print(f"  - Version: {data.get('version')}")
+                return data.get('status') == 'healthy'
+            else:
+                print(f"  - Error: {response.text}")
+                return False
+        except Exception as e:
+            print(f"  - Exception: {str(e)}")
+            return False
 
-    def test_configuration_files(self):
-        """Verify configuration files are correct"""
-        print("  - vite.config.ts: Properly configured with React plugin")
-        print("  - vite.config.ts: Server settings correct (port 3000, host 0.0.0.0)")
-        print("  - vite.config.ts: HMR overlay disabled as requested")
-        print("  - tsconfig.node.json: Created and properly configured")
-        print("  - tsconfig.node.json: Includes vite.config.ts correctly")
-        return True
+    def test_user_registration(self) -> bool:
+        """Test user registration"""
+        try:
+            user_data = {
+                "email": self.test_user_email,
+                "password": self.test_user_password,
+                "full_name": self.test_user_name
+            }
+            
+            response = self.make_request("POST", "/api/v1/auth/register", data=user_data)
+            print(f"  - Status Code: {response.status_code}")
+            
+            if response.status_code in [200, 400]:  # 400 might be "already exists"
+                data = response.json()
+                print(f"  - Message: {data.get('message')}")
+                return True
+            else:
+                print(f"  - Error: {response.text}")
+                return False
+        except Exception as e:
+            print(f"  - Exception: {str(e)}")
+            return False
 
-    def test_ui_loading_and_rendering(self):
-        """Verify UI loads and renders correctly"""
-        print("  - Application loads successfully without critical errors")
-        print("  - Main title 'Gestão Imobiliária' displays correctly")
-        print("  - Sidebar component renders properly")
-        print("  - Dashboard displays financial summary")
-        print("  - No error messages found on page")
-        return True
+    def test_user_login(self) -> bool:
+        """Test user login and get access token"""
+        try:
+            login_data = {
+                "username": self.test_user_email,
+                "password": self.test_user_password
+            }
+            
+            response = self.make_request("POST", "/api/v1/auth/login", data=login_data)
+            print(f"  - Status Code: {response.status_code}")
+            
+            if response.status_code == 200:
+                data = response.json()
+                self.access_token = data.get('access_token')
+                print(f"  - Token Type: {data.get('token_type')}")
+                print(f"  - Access Token: {'*' * 20}...")
+                return self.access_token is not None
+            else:
+                print(f"  - Error: {response.text}")
+                return False
+        except Exception as e:
+            print(f"  - Exception: {str(e)}")
+            return False
 
-    def test_tab_title_updates(self):
-        """Verify tab titles were updated as requested"""
-        print("  - ✅ 'Energia – Rateio de Consumo' (updated from 'Energia (CPFL)')")
-        print("  - ✅ 'Água – Rateio de Consumo' (updated from 'Cálculo de Água Compartilhada')")
-        print("  - Both titles display correctly in sidebar")
-        print("  - Navigation to both tabs works properly")
-        return True
+    def test_get_current_user(self) -> bool:
+        """Test getting current user info"""
+        try:
+            response = self.make_request("GET", "/api/v1/auth/me")
+            print(f"  - Status Code: {response.status_code}")
+            
+            if response.status_code == 200:
+                data = response.json()
+                print(f"  - User Email: {data.get('email')}")
+                print(f"  - Full Name: {data.get('full_name')}")
+                print(f"  - Is Active: {data.get('is_active')}")
+                return data.get('email') == self.test_user_email
+            else:
+                print(f"  - Error: {response.text}")
+                return False
+        except Exception as e:
+            print(f"  - Exception: {str(e)}")
+            return False
 
-    def test_icon_display(self):
-        """Verify icons are displayed correctly"""
-        print("  - Energia tab: Zap icon (⚡) displays correctly")
-        print("  - Água tab: Droplets icon (💧) displays correctly")
-        print("  - All other menu icons render properly")
-        print("  - Icons are properly aligned with text")
-        return True
+    def test_token_verification(self) -> bool:
+        """Test token verification"""
+        try:
+            response = self.make_request("GET", "/api/v1/auth/verify")
+            print(f"  - Status Code: {response.status_code}")
+            
+            if response.status_code == 200:
+                data = response.json()
+                print(f"  - Message: {data.get('message')}")
+                return data.get('status') == 'success'
+            else:
+                print(f"  - Error: {response.text}")
+                return False
+        except Exception as e:
+            print(f"  - Exception: {str(e)}")
+            return False
 
-    def test_hide_show_values_functionality(self):
-        """Verify hide/show values functionality works"""
-        print("  - 'Ocultar Valores' button found in header")
-        print("  - Button toggles between 'Ocultar Valores' and 'Mostrar Valores'")
-        print("  - Values display as '****' when hidden")
-        print("  - Functionality works across all tabs")
-        print("  - No duplicate hide/show controls found")
-        return True
+    def test_create_property(self) -> bool:
+        """Test creating a property"""
+        try:
+            property_data = {
+                "name": "Casa de Teste",
+                "address": "Rua das Flores, 123 - São Paulo, SP",
+                "type": "Casa",
+                "size": 120.5,
+                "rooms": 3,
+                "rent_value": 2500.00,
+                "expenses": 300.00,
+                "status": "vacant",
+                "description": "Casa para teste de API"
+            }
+            
+            response = self.make_request("POST", "/api/v1/properties/", data=property_data)
+            print(f"  - Status Code: {response.status_code}")
+            
+            if response.status_code == 200:
+                data = response.json()
+                self.created_property_id = data.get('id')
+                print(f"  - Property ID: {self.created_property_id}")
+                print(f"  - Property Name: {data.get('name')}")
+                print(f"  - Rent Value: R$ {data.get('rent_value')}")
+                return self.created_property_id is not None
+            else:
+                print(f"  - Error: {response.text}")
+                return False
+        except Exception as e:
+            print(f"  - Exception: {str(e)}")
+            return False
 
-    def test_responsive_design_and_layout(self):
-        """Verify responsive design and layout"""
-        print("  - Layout renders correctly on desktop viewport")
-        print("  - Sidebar displays properly")
-        print("  - Header controls are accessible")
-        print("  - Content areas are properly sized")
-        print("  - No layout overflow or display issues")
-        return True
+    def test_get_properties(self) -> bool:
+        """Test getting properties list"""
+        try:
+            response = self.make_request("GET", "/api/v1/properties/")
+            print(f"  - Status Code: {response.status_code}")
+            
+            if response.status_code == 200:
+                data = response.json()
+                items = data.get('items', [])
+                pagination = data.get('pagination', {})
+                print(f"  - Total Properties: {pagination.get('total_count', 0)}")
+                print(f"  - Current Page: {pagination.get('current_page', 1)}")
+                print(f"  - Items in Response: {len(items)}")
+                return True
+            else:
+                print(f"  - Error: {response.text}")
+                return False
+        except Exception as e:
+            print(f"  - Exception: {str(e)}")
+            return False
 
-    def test_navigation_functionality(self):
-        """Verify navigation between tabs works"""
-        print("  - Dashboard tab navigation works")
-        print("  - Energia tab navigation works")
-        print("  - Água tab navigation works")
-        print("  - Active tab highlighting works correctly")
-        print("  - Tab content loads properly for each section")
-        return True
+    def test_get_property_by_id(self) -> bool:
+        """Test getting specific property by ID"""
+        if not self.created_property_id:
+            print("  - No property ID available for testing")
+            return False
+            
+        try:
+            response = self.make_request("GET", f"/api/v1/properties/{self.created_property_id}")
+            print(f"  - Status Code: {response.status_code}")
+            
+            if response.status_code == 200:
+                data = response.json()
+                print(f"  - Property Name: {data.get('name')}")
+                print(f"  - Property Address: {data.get('address')}")
+                print(f"  - Property Status: {data.get('status')}")
+                return data.get('id') == self.created_property_id
+            else:
+                print(f"  - Error: {response.text}")
+                return False
+        except Exception as e:
+            print(f"  - Exception: {str(e)}")
+            return False
+
+    def test_create_tenant(self) -> bool:
+        """Test creating a tenant"""
+        try:
+            tenant_data = {
+                "name": "João Silva",
+                "email": "joao.silva@email.com",
+                "phone": "(11) 99999-9999",
+                "document": "123.456.789-00",
+                "property_id": self.created_property_id,
+                "rent_value": 2500.00,
+                "rent_due_date": 5,
+                "status": "active",
+                "notes": "Inquilino teste para API"
+            }
+            
+            response = self.make_request("POST", "/api/v1/tenants/", data=tenant_data)
+            print(f"  - Status Code: {response.status_code}")
+            
+            if response.status_code == 200:
+                data = response.json()
+                self.created_tenant_id = data.get('id')
+                print(f"  - Tenant ID: {self.created_tenant_id}")
+                print(f"  - Tenant Name: {data.get('name')}")
+                print(f"  - Tenant Email: {data.get('email')}")
+                return self.created_tenant_id is not None
+            else:
+                print(f"  - Error: {response.text}")
+                return False
+        except Exception as e:
+            print(f"  - Exception: {str(e)}")
+            return False
+
+    def test_get_tenants(self) -> bool:
+        """Test getting tenants list"""
+        try:
+            response = self.make_request("GET", "/api/v1/tenants/")
+            print(f"  - Status Code: {response.status_code}")
+            
+            if response.status_code == 200:
+                data = response.json()
+                items = data.get('items', [])
+                pagination = data.get('pagination', {})
+                print(f"  - Total Tenants: {pagination.get('total_count', 0)}")
+                print(f"  - Current Page: {pagination.get('current_page', 1)}")
+                print(f"  - Items in Response: {len(items)}")
+                return True
+            else:
+                print(f"  - Error: {response.text}")
+                return False
+        except Exception as e:
+            print(f"  - Exception: {str(e)}")
+            return False
+
+    def test_dashboard_summary(self) -> bool:
+        """Test dashboard summary endpoint"""
+        try:
+            response = self.make_request("GET", "/api/v1/dashboard/summary")
+            print(f"  - Status Code: {response.status_code}")
+            
+            if response.status_code == 200:
+                data = response.json()
+                print(f"  - Total Properties: {data.get('total_properties', 0)}")
+                print(f"  - Total Tenants: {data.get('total_tenants', 0)}")
+                print(f"  - Occupied Properties: {data.get('occupied_properties', 0)}")
+                print(f"  - Vacant Properties: {data.get('vacant_properties', 0)}")
+                print(f"  - Monthly Income: R$ {data.get('total_monthly_income', 0)}")
+                print(f"  - Monthly Expenses: R$ {data.get('total_monthly_expenses', 0)}")
+                print(f"  - Pending Alerts: {data.get('pending_alerts', 0)}")
+                return True
+            else:
+                print(f"  - Error: {response.text}")
+                return False
+        except Exception as e:
+            print(f"  - Exception: {str(e)}")
+            return False
+
+    def cleanup_test_data(self) -> bool:
+        """Clean up test data"""
+        success = True
+        
+        # Delete test tenant
+        if self.created_tenant_id:
+            try:
+                response = self.make_request("DELETE", f"/api/v1/tenants/{self.created_tenant_id}")
+                print(f"  - Tenant deletion status: {response.status_code}")
+            except Exception as e:
+                print(f"  - Error deleting tenant: {str(e)}")
+                success = False
+        
+        # Delete test property
+        if self.created_property_id:
+            try:
+                response = self.make_request("DELETE", f"/api/v1/properties/{self.created_property_id}")
+                print(f"  - Property deletion status: {response.status_code}")
+            except Exception as e:
+                print(f"  - Error deleting property: {str(e)}")
+                success = False
+        
+        return success
 
 def main():
-    print("=== REACT TYPESCRIPT VITE APPLICATION TEST ===")
+    print("=== SISMOBI BACKEND API TEST SUITE ===")
     print(f"Test run at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print("Application: Sistema de Controle Financeiro para Imóveis Alugados")
+    print("Application: SISMOBI - Sistema de Gestão Imobiliária")
+    print("Backend URL: http://localhost:8001")
     
-    tester = ReactViteApplicationTester()
+    tester = SISMOBIBackendTester()
     
-    # Run comprehensive tests
-    tester.run_test("Vite Build Process", tester.test_vite_build_process)
-    tester.run_test("TypeScript Compilation", tester.test_typescript_compilation)
-    tester.run_test("Configuration Files", tester.test_configuration_files)
-    tester.run_test("UI Loading and Rendering", tester.test_ui_loading_and_rendering)
-    tester.run_test("Tab Title Updates", tester.test_tab_title_updates)
-    tester.run_test("Icon Display", tester.test_icon_display)
-    tester.run_test("Hide/Show Values Functionality", tester.test_hide_show_values_functionality)
-    tester.run_test("Responsive Design and Layout", tester.test_responsive_design_and_layout)
-    tester.run_test("Navigation Functionality", tester.test_navigation_functionality)
+    # Run comprehensive backend tests
+    tester.run_test("Health Check", tester.test_health_check)
+    tester.run_test("User Registration", tester.test_user_registration)
+    tester.run_test("User Login", tester.test_user_login)
+    tester.run_test("Get Current User", tester.test_get_current_user)
+    tester.run_test("Token Verification", tester.test_token_verification)
+    tester.run_test("Create Property", tester.test_create_property)
+    tester.run_test("Get Properties List", tester.test_get_properties)
+    tester.run_test("Get Property by ID", tester.test_get_property_by_id)
+    tester.run_test("Create Tenant", tester.test_create_tenant)
+    tester.run_test("Get Tenants List", tester.test_get_tenants)
+    tester.run_test("Dashboard Summary", tester.test_dashboard_summary)
+    tester.run_test("Cleanup Test Data", tester.cleanup_test_data)
     
     # Print results
-    print(f"\n📊 Application Test Summary:")
+    print(f"\n📊 Backend API Test Summary:")
     print(f"✅ Tests passed: {tester.tests_passed}/{tester.tests_run}")
-    print(f"📝 Note: This is a frontend-only React TypeScript application")
-    print(f"🔧 All requested fixes have been successfully implemented")
-    print(f"🎯 Build, compilation, and UI functionality all working correctly")
+    print(f"🔧 Backend Version: 3.2.0")
+    print(f"🎯 FastAPI with MongoDB integration")
     
     if tester.tests_passed == tester.tests_run:
-        print(f"\n🎉 ALL TESTS PASSED - Application is working perfectly!")
-        print(f"✨ Ready for production use")
+        print(f"\n🎉 ALL BACKEND TESTS PASSED!")
+        print(f"✨ Backend APIs are working correctly")
+    else:
+        print(f"\n⚠️  Some tests failed - Backend needs attention")
     
     return 0 if tester.tests_passed == tester.tests_run else 1
 
