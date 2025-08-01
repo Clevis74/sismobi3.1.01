@@ -15,7 +15,9 @@ def convert_objectid_to_str(document: Dict[str, Any]) -> Dict[str, Any]:
         return None
     
     if "_id" in document:
-        document["id"] = str(document["_id"])
+        # Only set id from _id if id field doesn't already exist
+        if "id" not in document:
+            document["id"] = str(document["_id"])
         del document["_id"]
     
     return document
