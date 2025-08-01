@@ -1,10 +1,20 @@
 # 📋 Controle de Versões - SISMOBI
 
-## 🏷️ Versão Atual: **3.1.0**
+## 🏷️ Versão Atual: **3.2.0**
 
 ### 📅 Histórico de Versões
 
-#### **v3.1.0** - Current (Julho 2025)
+#### **v3.2.0** - Current (Julho 2025) - **BACKEND EXPANSION COMPLETE! 🚀**
+- ✅ **Backend Completo Implementado** - FastAPI + MongoDB + Autenticação
+- ✅ **APIs REST Completas** - Properties, Tenants, Authentication
+- ✅ **Sistema de Autenticação JWT** - Login, registro, middleware de segurança
+- ✅ **Integração MongoDB** - Motor async, modelos Pydantic avançados
+- ✅ **Sistema de Logs Estruturado** - Structlog com monitoramento completo
+- ✅ **Validação Avançada** - Pydantic models com validações robustas
+- ✅ **Health Check** - Monitoramento de conexão com database
+- ✅ **CORS Configurado** - Integração completa com frontend
+- ✅ **Tratamento de Erros** - Exception handlers globais
+- ✅ **Middleware de Log** - Rastreamento de todas as requisições HTTP
 - ✅ Sistema completo de gestão imobiliária
 - ✅ 100% Acessível (WCAG 2.1 AA)
 - ✅ Testes automatizados (15 testes com Vitest)
