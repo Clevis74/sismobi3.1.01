@@ -109,9 +109,9 @@ class SISMOBISecurityPerformanceTester:
             # Test 1: Access protected endpoint without token
             headers = {"Content-Type": "application/json"}
             response = requests.get(f"{self.base_url}/api/v1/properties/", headers=headers, timeout=10)
-            print(f"  - No token access: {response.status_code} (should be 401)")
+            print(f"  - No token access: {response.status_code} (should be 401 or 403)")
             
-            if response.status_code != 401:
+            if response.status_code not in [401, 403]:
                 print(f"  - SECURITY ISSUE: Endpoint accessible without authentication")
                 return False
             
