@@ -10,16 +10,21 @@ interface ReportManagerProps {
   showValues: boolean;
 }
 
-export const ReportManager: React.FC<ReportManagerProps> = ({
+export const ReportManager: React.FC<{
   properties,
   transactions,
   summary,
   showValues
-}) => {
+}> = ({
+  properties,
+  transactions,
+  summary,
+  showValues
+}): JSX.Element => {
   const [selectedPeriod, setSelectedPeriod] = useState<'month' | 'quarter' | 'year'>('month');
   const [selectedProperty, setSelectedProperty] = useState<string>('all');
 
-  const generateReport = () => {
+  const generateReport = (): boolean => {
     const reportData = {
       period: selectedPeriod,
       property: selectedProperty,

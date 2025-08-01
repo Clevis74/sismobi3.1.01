@@ -22,14 +22,21 @@ interface WaterCalculatorProps {
   onDeleteWaterBill: (id: string) => void;
 }
 
-export const WaterCalculator: React.FC<WaterCalculatorProps> = ({
+export const WaterCalculator: React.FC<{
   waterBills,
   properties,
   showValues,
   onAddWaterBill,
   onUpdateWaterBill,
   onDeleteWaterBill
-}) => {
+}> = ({
+  waterBills,
+  properties,
+  showValues,
+  onAddWaterBill,
+  onUpdateWaterBill,
+  onDeleteWaterBill
+}): JSX.Element => {
   const [showForm, setShowForm] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [editingBill, setEditingBill] = useState<WaterBill | null>(null);
@@ -103,7 +110,7 @@ export const WaterCalculator: React.FC<WaterCalculatorProps> = ({
     setValidation(validationResult);
   }, [formData.totalGroupValue, propertiesInGroup]);
 
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
     const { name, value, type } = e.target;
     
     if (type === 'checkbox') {
@@ -115,25 +122,25 @@ export const WaterCalculator: React.FC<WaterCalculatorProps> = ({
     }
   };
 
-  const handlePropertyPeopleChange = (propertyId: string, numberOfPeople: number) => {
+  const handlePropertyPeopleChange = (propertyId: string, numberOfPeople: number): void => {
     setPropertiesInGroup(prev => prev.map(prop => 
       prop.id === propertyId ? { ...prop, numberOfPeople } : prop
     ));
   };
 
-  const handlePropertyPaymentChange = (propertyId: string, isPaid: boolean) => {
+  const handlePropertyPaymentChange = (propertyId: string, isPaid: boolean): void => {
     setPropertiesInGroup(prev => prev.map(prop => 
       prop.id === propertyId ? { ...prop, isPaid } : prop
     ));
   };
 
-  const handlePropertyDueDateChange = (propertyId: string, dueDate: string) => {
+  const handlePropertyDueDateChange = (propertyId: string, dueDate: string): void => {
     setPropertiesInGroup(prev => prev.map(prop => 
       prop.id === propertyId ? { ...prop, dueDate: createLocalDate(dueDate) } : prop
     ));
   };
 
-  const handleImportPreviousMonth = () => {
+  const handleImportPreviousMonth = (): void => {
     const groupBills = waterBills.filter(bill => bill.groupId === selectedGroup);
     const previousBill = groupBills.length > 0 ? groupBills[groupBills.length - 1] : null;
     
@@ -157,7 +164,7 @@ export const WaterCalculator: React.FC<WaterCalculatorProps> = ({
     }
   };
 
-  const handleExportCSV = () => {
+  const handleExportCSV = (): void => {
     const csvContent = exportWaterDataToCSV(waterBills, selectedGroup);
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
@@ -170,7 +177,7 @@ export const WaterCalculator: React.FC<WaterCalculatorProps> = ({
     document.body.removeChild(link);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
     
     const selectedGroupData = DEFAULT_WATER_GROUPS.find(g => g.id === selectedGroup);
@@ -220,7 +227,7 @@ export const WaterCalculator: React.FC<WaterCalculatorProps> = ({
     }
   };
 
-  const handleEditBill = (bill: WaterBill) => {
+  const handleEditBill = (bill: WaterBill): void => {
     setEditingBill(bill);
     setSelectedGroup(bill.groupId);
     setFormData({

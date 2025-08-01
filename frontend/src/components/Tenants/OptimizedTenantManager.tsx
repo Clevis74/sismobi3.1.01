@@ -120,14 +120,21 @@ const TenantCard = React.memo(({
 
 TenantCard.displayName = 'TenantCard';
 
-export const OptimizedTenantManager: React.FC<OptimizedTenantManagerProps> = ({
+export const OptimizedTenantManager: React.FC<{
   tenants,
   properties,
   showValues,
   onAddTenant,
   onUpdateTenant,
   onDeleteTenant
-}) => {
+}> = ({
+  tenants,
+  properties,
+  showValues,
+  onAddTenant,
+  onUpdateTenant,
+  onDeleteTenant
+}): JSX.Element => {
   useRenderMonitor('TenantManager');
   
   const [showForm, setShowForm] = useState(false);

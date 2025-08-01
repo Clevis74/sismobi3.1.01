@@ -10,19 +10,26 @@ interface ModalProps {
   showCloseButton?: boolean;
 }
 
-export const Modal: React.FC<ModalProps> = ({
+export const Modal: React.FC<{
   isOpen,
   onClose,
   title,
   children,
   size = 'lg',
   showCloseButton = true
-}) => {
+}> = ({
+  isOpen,
+  onClose,
+  title,
+  children,
+  size = 'lg',
+  showCloseButton = true
+}): JSX.Element => {
   const modalRef = useRef<HTMLDivElement>(null);
 
   // Handle ESC key press
   useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
+    const handleEscape = (event: KeyboardEvent): void => {
       if (event.key === 'Escape' && isOpen) {
         onClose();
       }
@@ -41,7 +48,7 @@ export const Modal: React.FC<ModalProps> = ({
   }, [isOpen, onClose]);
 
   // Handle backdrop click
-  const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
+  const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>): void => {
     if (event.target === event.currentTarget) {
       onClose();
     }

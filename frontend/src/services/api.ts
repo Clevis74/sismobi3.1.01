@@ -10,7 +10,7 @@ const API_PREFIX = import.meta.env.REACT_APP_API_PREFIX || '/api/v1';
 // Auth token management
 let authToken: string | null = localStorage.getItem('auth_token');
 
-export const setAuthToken = (token: string | null) => {
+export const setAuthToken = (token: string | null): boolean => {
   authToken = token;
   if (token) {
     localStorage.setItem('auth_token', token);

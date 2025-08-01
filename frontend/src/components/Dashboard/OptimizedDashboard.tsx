@@ -114,12 +114,17 @@ const AdditionalStats = React.memo(({
 
 AdditionalStats.displayName = 'AdditionalStats';
 
-export const OptimizedDashboard: React.FC<OptimizedDashboardProps> = ({
+export const OptimizedDashboard: React.FC<{
   summary,
   properties,
   transactions,
   showValues
-}) => {
+}> = ({
+  summary,
+  properties,
+  transactions,
+  showValues
+}): JSX.Element => {
   useRenderMonitor('Dashboard');
 
   // Memoizar transações do mês atual para o gráfico

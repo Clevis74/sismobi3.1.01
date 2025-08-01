@@ -22,14 +22,21 @@ interface EnergyCalculatorProps {
   onDeleteEnergyBill: (id: string) => void;
 }
 
-export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
+export const EnergyCalculator: React.FC<{
   energyBills,
   properties,
   showValues,
   onAddEnergyBill,
   onUpdateEnergyBill,
   onDeleteEnergyBill
-}) => {
+}> = ({
+  energyBills,
+  properties,
+  showValues,
+  onAddEnergyBill,
+  onUpdateEnergyBill,
+  onDeleteEnergyBill
+}): JSX.Element => {
   const [showForm, setShowForm] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [editingBill, setEditingBill] = useState<EnergyBill | null>(null);
@@ -142,7 +149,7 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
     }
   }, [formData.totalGroupValue, formData.totalGroupConsumption, propertiesInGroup]);
 
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
     const { name, value, type } = e.target;
     
     if (type === 'checkbox') {
@@ -154,7 +161,7 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
     }
   };
 
-  const handlePropertyChange = (propertyId: string, field: keyof SharedPropertyConsumption, value: number) => {
+  const handlePropertyChange = (propertyId: string, field: keyof SharedPropertyConsumption, value: number): void => {
     setPropertiesInGroup(prev => prev.map(prop => {
       if (prop.id === propertyId) {
         const updated = { ...prop, [field]: value };
@@ -172,18 +179,18 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
     }));
   };
 
-  const handlePropertyPaymentChange = (propertyId: string, isPaid: boolean) => {
+  const handlePropertyPaymentChange = (propertyId: string, isPaid: boolean): void => {
     setPropertiesInGroup(prev => prev.map(prop => 
       prop.id === propertyId ? { ...prop, isPaid } : prop
     ));
   };
 
-  const handlePropertyDueDateChange = (propertyId: string, dueDate: string) => {
+  const handlePropertyDueDateChange = (propertyId: string, dueDate: string): void => {
     setPropertiesInGroup(prev => prev.map(prop => 
       prop.id === propertyId ? { ...prop, dueDate: createLocalDate(dueDate) } : prop
     ));
   };
-  const handleImportPreviousMonth = () => {
+  const handleImportPreviousMonth = (): void => {
     const groupBills = energyBills.filter(bill => bill.groupId === selectedGroup);
     const previousBill = groupBills.length > 0 ? groupBills[groupBills.length - 1] : null;
     
@@ -207,7 +214,7 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
     
     const selectedGroupData = DEFAULT_ENERGY_GROUPS.find(g => g.id === selectedGroup);
@@ -261,7 +268,7 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({
     }
   };
 
-  const handleEditBill = (bill: EnergyBill) => {
+  const handleEditBill = (bill: EnergyBill): void => {
     setEditingBill(bill);
     setSelectedGroup(bill.groupId);
     setFormData({

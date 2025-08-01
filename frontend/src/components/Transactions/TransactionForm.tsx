@@ -29,12 +29,17 @@ const expenseCategories = [
   'Outros'
 ];
 
-export const TransactionForm: React.FC<TransactionFormProps> = ({ 
+export const TransactionForm: React.FC<{ 
   transaction, 
   properties, 
   onSubmit, 
   onCancel 
-}) => {
+}> = ({ 
+  transaction, 
+  properties, 
+  onSubmit, 
+  onCancel 
+}): JSX.Element => {
   const [formData, setFormData] = useState({
     propertyId: '',
     type: 'income' as const,

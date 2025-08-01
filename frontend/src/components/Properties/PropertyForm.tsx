@@ -8,7 +8,7 @@ interface PropertyFormProps {
   onCancel: () => void;
 }
 
-export const PropertyForm: React.FC<PropertyFormProps> = ({ property, onSubmit, onCancel }) => {
+export const PropertyForm: React.FC<{ property, onSubmit, onCancel }> = ({ property, onSubmit, onCancel }): JSX.Element => {
   const [formData, setFormData] = useState({
     name: '',
     address: '',
@@ -31,12 +31,12 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({ property, onSubmit, 
     }
   }, [property]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
     onSubmit(formData);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,

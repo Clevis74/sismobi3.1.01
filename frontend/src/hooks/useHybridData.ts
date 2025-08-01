@@ -68,7 +68,7 @@ export function useHybridData<T>(
 
   // Detectar mudanças de conectividade
   useEffect(() => {
-    const handleOnline = () => {
+    const handleOnline = (): void => {
       setState(prev => ({ ...prev, isOnline: true }));
       // Quando voltar online, tenta sincronizar
       if (enableOfflineMode) {
@@ -76,7 +76,7 @@ export function useHybridData<T>(
       }
     };
 
-    const handleOffline = () => {
+    const handleOffline = (): void => {
       setState(prev => ({ ...prev, isOnline: false }));
     };
 

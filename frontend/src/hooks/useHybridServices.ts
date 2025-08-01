@@ -4,7 +4,7 @@ import { propertyService, tenantService, transactionService, alertService } from
 import { Property, Tenant, Transaction, Alert, Document, EnergyBill, WaterBill } from '../types';
 
 // Hook para propriedades
-export function useProperties() {
+export function useProperties(): any {
   return useHybridData<Property[]>(
     'properties',
     [],
@@ -23,7 +23,7 @@ export function useProperties() {
 }
 
 // Hook para inquilinos
-export function useTenants() {
+export function useTenants(): any {
   return useHybridData<Tenant[]>(
     'tenants',
     [],
@@ -42,7 +42,7 @@ export function useTenants() {
 }
 
 // Hook para transações
-export function useTransactions() {
+export function useTransactions(): any {
   return useHybridData<Transaction[]>(
     'transactions',
     [],
@@ -61,7 +61,7 @@ export function useTransactions() {
 }
 
 // Hook para alertas
-export function useAlerts() {
+export function useAlerts(): any {
   return useHybridData<Alert[]>(
     'alerts',
     [],
@@ -80,7 +80,7 @@ export function useAlerts() {
 }
 
 // Hook para documentos (mantém localStorage por enquanto, já que não há API ainda)
-export function useDocuments() {
+export function useDocuments(): any {
   return useHybridData<Document[]>(
     'documents',
     [],
@@ -123,7 +123,7 @@ export function useDocuments() {
 }
 
 // Hook para contas de energia (localStorage-only por enquanto)
-export function useEnergyBills() {
+export function useEnergyBills(): any {
   return useHybridData<EnergyBill[]>(
     'energyBills',
     [],
@@ -165,7 +165,7 @@ export function useEnergyBills() {
 }
 
 // Hook para contas de água (localStorage-only por enquanto)
-export function useWaterBills() {
+export function useWaterBills(): any {
   return useHybridData<WaterBill[]>(
     'waterBills',
     [],

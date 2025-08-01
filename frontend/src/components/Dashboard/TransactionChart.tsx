@@ -7,7 +7,7 @@ interface TransactionChartProps {
   showValues: boolean;
 }
 
-export const TransactionChart: React.FC<TransactionChartProps> = ({ transactions, showValues }) => {
+export const TransactionChart: React.FC<{ transactions, showValues }> = ({ transactions, showValues }): JSX.Element => {
   const last6Months = Array.from({ length: 6 }, (_, i) => {
     const date = new Date();
     date.setMonth(date.getMonth() - i);

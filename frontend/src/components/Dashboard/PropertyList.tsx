@@ -7,7 +7,7 @@ interface PropertyListProps {
   showValues: boolean;
 }
 
-export const PropertyList: React.FC<PropertyListProps> = ({ properties, showValues }) => {
+export const PropertyList: React.FC<{ properties, showValues }> = ({ properties, showValues }): JSX.Element => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'rented': return 'bg-green-100 text-green-800';

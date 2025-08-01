@@ -6,11 +6,15 @@ interface LoadingSpinnerProps {
   overlay?: boolean;
 }
 
-export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ 
+export const LoadingSpinner: React.FC<{ 
   size = 'md', 
   text = 'Carregando...', 
   overlay = false 
-}) => {
+}> = ({ 
+  size = 'md', 
+  text = 'Carregando...', 
+  overlay = false 
+}): JSX.Element => {
   const sizeClasses = {
     sm: 'w-4 h-4',
     md: 'w-8 h-8', 

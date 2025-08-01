@@ -10,12 +10,17 @@ interface AlertManagerProps {
   onDeleteAlert: (id: string) => void;
 }
 
-export const AlertManager: React.FC<AlertManagerProps> = ({
+export const AlertManager: React.FC<{
   alerts,
   properties,
   onResolveAlert,
   onDeleteAlert
-}) => {
+}> = ({
+  alerts,
+  properties,
+  onResolveAlert,
+  onDeleteAlert
+}): JSX.Element => {
   const [filter, setFilter] = useState<'all' | 'unresolved' | 'resolved'>('unresolved');
 
   const filteredAlerts = alerts.filter(alert => {

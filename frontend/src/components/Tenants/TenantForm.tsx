@@ -26,7 +26,7 @@ interface TenantFormProps {
   onCancel: () => void;
 }
 
-export const TenantForm: React.FC<TenantFormProps> = ({ tenant, properties, onSubmit, onCancel }) => {
+export const TenantForm: React.FC<{ tenant, properties, onSubmit, onCancel }> = ({ tenant, properties, onSubmit, onCancel }): JSX.Element => {
   const [formData, setFormData] = useState({
     propertyId: '',
     name: '',
@@ -82,7 +82,7 @@ export const TenantForm: React.FC<TenantFormProps> = ({ tenant, properties, onSu
     setDepositPaidInstallments(new Array(installmentCount).fill(false));
   }, [formData.paymentMethod, formData.installments]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
     
     const tenantData: Omit<Tenant, 'id'> = {
@@ -109,7 +109,7 @@ export const TenantForm: React.FC<TenantFormProps> = ({ tenant, properties, onSu
     onSubmit(tenantData);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
     const { name, value, type } = e.target;
     
     if (type === 'checkbox') {
@@ -133,7 +133,7 @@ export const TenantForm: React.FC<TenantFormProps> = ({ tenant, properties, onSu
     }
   };
 
-  const handleDepositInstallmentChange = (index: number, checked: boolean) => {
+  const handleDepositInstallmentChange = (index: number, checked: boolean): void => {
     setDepositPaidInstallments(prev => {
       const newInstallments = [...prev];
       newInstallments[index] = checked;
@@ -141,7 +141,7 @@ export const TenantForm: React.FC<TenantFormProps> = ({ tenant, properties, onSu
     });
   };
 
-  const getInstallmentLabel = (index: number, total: number) => {
+  const getInstallmentLabel = (index: number, total: number): boolean => {
     if (total === 1) return 'Parcela única paga';
     return `Parcela ${index + 1} paga`;
   };

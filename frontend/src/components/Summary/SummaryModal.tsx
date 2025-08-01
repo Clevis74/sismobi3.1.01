@@ -35,12 +35,17 @@ interface SummaryModalProps {
   };
 }
 
-export const SummaryModal: React.FC<SummaryModalProps> = ({
+export const SummaryModal: React.FC<{
   isOpen,
   onClose,
   showValues,
   data
-}) => {
+}> = ({
+  isOpen,
+  onClose,
+  showValues,
+  data
+}): JSX.Element => {
   const { properties, tenants, transactions, alerts, documents, energyBills, waterBills } = data;
 
   // Cálculos do resumo

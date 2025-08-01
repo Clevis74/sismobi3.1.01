@@ -12,27 +12,33 @@ interface PropertyManagerProps {
   onDeleteProperty: (id: string) => void;
 }
 
-export const PropertyManager: React.FC<PropertyManagerProps> = ({
+export const PropertyManager: React.FC<{
   properties,
   showValues,
   onAddProperty,
   onUpdateProperty,
   onDeleteProperty
-}) => {
+}> = ({
+  properties,
+  showValues,
+  onAddProperty,
+  onUpdateProperty,
+  onDeleteProperty
+}): JSX.Element => {
   const [showForm, setShowForm] = useState(false);
   const [editingProperty, setEditingProperty] = useState<Property | null>(null);
 
-  const handleAddProperty = (propertyData: Omit<Property, 'id' | 'createdAt'>) => {
+  const handleAddProperty = (propertyData: Omit<Property, 'id' | 'createdAt'>): void => {
     onAddProperty(propertyData);
     setShowForm(false);
   };
 
-  const handleEditProperty = (property: Property) => {
+  const handleEditProperty = (property: Property): void => {
     setEditingProperty(property);
     setShowForm(true);
   };
 
-  const handleUpdateProperty = (propertyData: Omit<Property, 'id' | 'createdAt'>) => {
+  const handleUpdateProperty = (propertyData: Omit<Property, 'id' | 'createdAt'>): void => {
     if (editingProperty) {
       onUpdateProperty(editingProperty.id, propertyData);
       setEditingProperty(null);

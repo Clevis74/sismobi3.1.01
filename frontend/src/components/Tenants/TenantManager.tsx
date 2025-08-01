@@ -13,28 +13,35 @@ interface TenantManagerProps {
   onDeleteTenant: (id: string) => void;
 }
 
-export const TenantManager: React.FC<TenantManagerProps> = ({
+export const TenantManager: React.FC<{
   tenants,
   properties,
   showValues,
   onAddTenant,
   onUpdateTenant,
   onDeleteTenant
-}) => {
+}> = ({
+  tenants,
+  properties,
+  showValues,
+  onAddTenant,
+  onUpdateTenant,
+  onDeleteTenant
+}): JSX.Element => {
   const [showForm, setShowForm] = useState(false);
   const [editingTenant, setEditingTenant] = useState<Tenant | null>(null);
 
-  const handleAddTenant = (tenantData: Omit<Tenant, 'id'>) => {
+  const handleAddTenant = (tenantData: Omit<Tenant, 'id'>): void => {
     onAddTenant(tenantData);
     setShowForm(false);
   };
 
-  const handleEditTenant = (tenant: Tenant) => {
+  const handleEditTenant = (tenant: Tenant): void => {
     setEditingTenant(tenant);
     setShowForm(true);
   };
 
-  const handleUpdateTenant = (tenantData: Omit<Tenant, 'id'>) => {
+  const handleUpdateTenant = (tenantData: Omit<Tenant, 'id'>): void => {
     if (editingTenant) {
       onUpdateTenant(editingTenant.id, tenantData);
       setEditingTenant(null);

@@ -13,30 +13,37 @@ interface DocumentManagerProps {
   onDeleteDocument: (id: string) => void;
 }
 
-export const DocumentManager: React.FC<DocumentManagerProps> = ({
+export const DocumentManager: React.FC<{
   documents,
   properties,
   tenants,
   onAddDocument,
   onUpdateDocument,
   onDeleteDocument
-}) => {
+}> = ({
+  documents,
+  properties,
+  tenants,
+  onAddDocument,
+  onUpdateDocument,
+  onDeleteDocument
+}): JSX.Element => {
   const [showForm, setShowForm] = useState(false);
   const [editingDocument, setEditingDocument] = useState<Document | null>(null);
   const [filter, setFilter] = useState<'all' | 'valid' | 'expired' | 'pending'>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
 
-  const handleAddDocument = (documentData: Omit<Document, 'id' | 'lastUpdated'>) => {
+  const handleAddDocument = (documentData: Omit<Document, 'id' | 'lastUpdated'>): void => {
     onAddDocument(documentData);
     setShowForm(false);
   };
 
-  const handleEditDocument = (document: Document) => {
+  const handleEditDocument = (document: Document): void => {
     setEditingDocument(document);
     setShowForm(true);
   };
 
-  const handleUpdateDocument = (documentData: Omit<Document, 'id' | 'lastUpdated'>) => {
+  const handleUpdateDocument = (documentData: Omit<Document, 'id' | 'lastUpdated'>): void => {
     if (editingDocument) {
       onUpdateDocument(editingDocument.id, documentData);
       setEditingDocument(null);

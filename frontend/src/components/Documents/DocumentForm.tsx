@@ -26,13 +26,19 @@ const documentStatuses = [
   'Revisão'
 ] as const;
 
-export const DocumentForm: React.FC<DocumentFormProps> = ({
+export const DocumentForm: React.FC<{
   document,
   properties,
   tenants,
   onSubmit,
   onCancel
-}) => {
+}> = ({
+  document,
+  properties,
+  tenants,
+  onSubmit,
+  onCancel
+}): JSX.Element => {
   const [formData, setFormData] = useState({
     type: 'Contrato de locação' as const,
     issueDate: new Date().toISOString().split('T')[0],
@@ -63,7 +69,7 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
     }
   }, [document]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
     
     const documentData: Omit<Document, 'id' | 'lastUpdated'> = {
@@ -83,7 +89,7 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
     onSubmit(documentData);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>): void => {
     const { name, value, type } = e.target;
     
     if (type === 'checkbox') {

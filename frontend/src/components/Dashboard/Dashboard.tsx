@@ -26,7 +26,7 @@ interface Transaction {
   date: string;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ summary, properties, transactions, showValues }) => {
+export const Dashboard: React.FC<{ summary, properties, transactions, showValues }> = ({ summary, properties, transactions, showValues }): JSX.Element => {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

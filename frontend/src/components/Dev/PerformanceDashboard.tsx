@@ -38,7 +38,7 @@ const _formatConditionalCurrency = (value: number, showValues: boolean): string 
   }).format(value);
 };
 
-export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVisible, onClose, showValues }) => {
+export const PerformanceDashboard: React.FC<{ isVisible, onClose, showValues }> = ({ isVisible, onClose, showValues }): JSX.Element => {
   const [report, setReport] = useState<PerformanceReport | null>(null);
   const [refreshInterval, setRefreshInterval] = useState<NodeJS.Timeout | null>(null);
 

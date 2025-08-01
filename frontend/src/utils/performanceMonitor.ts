@@ -151,14 +151,14 @@ class PerformanceMonitor {
 export const performanceMonitor = PerformanceMonitor.getInstance();
 
 // Hook para monitorar renders de componentes
-export function useRenderMonitor(componentName: string) {
+export function useRenderMonitor(componentName: string): any {
   if (process.env.NODE_ENV === 'development') {
     performanceMonitor.logRender(componentName);
   }
 }
 
 // Hook para monitorar operações custosas
-export function useOperationMonitor(operationName: string) {
+export function useOperationMonitor(operationName: string): any {
   const startTimer = () => performanceMonitor.startTimer(operationName);
   const endTimer = () => performanceMonitor.endTimer(operationName);
   

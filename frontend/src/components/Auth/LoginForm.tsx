@@ -7,7 +7,7 @@ interface LoginFormProps {
   isRegisterMode: boolean;
 }
 
-export const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode, isRegisterMode }) => {
+export const LoginForm: React.FC<{ onToggleMode, isRegisterMode }> = ({ onToggleMode, isRegisterMode }): JSX.Element => {
   const { login, register, error, isLoading, clearError } = useAuth();
   
   // Form states
@@ -23,7 +23,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode, isRegisterMo
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   // Handle input changes
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     
@@ -76,7 +76,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode, isRegisterMo
   };
 
   // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     
     if (!validateForm()) {

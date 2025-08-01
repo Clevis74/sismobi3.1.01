@@ -13,14 +13,21 @@ interface MetricCardProps {
   color: 'green' | 'red' | 'blue' | 'yellow';
 }
 
-export const MetricCard: React.FC<MetricCardProps> = ({ 
+export const MetricCard: React.FC<{ 
   title, 
   value, 
   icon: Icon, 
   showValues,
   trend, 
   color 
-}) => {
+}> = ({ 
+  title, 
+  value, 
+  icon: Icon, 
+  showValues,
+  trend, 
+  color 
+}): JSX.Element => {
   const colorClasses = {
     green: 'bg-green-50 text-green-600',
     red: 'bg-red-50 text-red-600',

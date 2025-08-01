@@ -133,7 +133,7 @@ export function useOptimizedLocalStorage<T>(
 }
 
 // Hook para operações batch no localStorage
-export function useBatchLocalStorage() {
+export function useBatchLocalStorage(): any {
   const batchRef = useRef<Map<string, any>>(new Map());
   const timeoutRef = useRef<NodeJS.Timeout>();
 

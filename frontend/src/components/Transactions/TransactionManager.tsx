@@ -13,14 +13,21 @@ interface TransactionManagerProps {
   onDeleteTransaction: (id: string) => void;
 }
 
-export const TransactionManager: React.FC<TransactionManagerProps> = ({
+export const TransactionManager: React.FC<{
   transactions,
   properties,
   showValues,
   onAddTransaction,
   onUpdateTransaction,
   onDeleteTransaction
-}) => {
+}> = ({
+  transactions,
+  properties,
+  showValues,
+  onAddTransaction,
+  onUpdateTransaction,
+  onDeleteTransaction
+}): JSX.Element => {
   const [showForm, setShowForm] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [filter, setFilter] = useState<'all' | 'income' | 'expense'>('all');

@@ -7,7 +7,7 @@ const MAX_CACHE_SIZE = 20;
 const CACHE_CLEANUP_THRESHOLD = 15;
 
 // Função auxiliar para criar chave de cache com validação segura
-const createCacheKey = (properties: Property[], transactions: Transaction[], suffix: string = '') => {
+const createCacheKey = (properties: Property[], transactions: Transaction[], suffix: string = ''): boolean => {
   try {
     const propHash = properties.map(p => `${p.id}-${p.status}-${p.rentValue}`).join('|');
     const transHash = transactions.map(t => {

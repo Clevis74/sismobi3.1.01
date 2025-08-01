@@ -18,14 +18,21 @@ interface HeaderProps {
   };
 }
 
-export const Header: React.FC<HeaderProps> = ({ 
+export const Header: React.FC<{ 
   onExport, 
   onImport, 
   showValues, 
   onToggleValues, 
   onShowSummary,
   connectionStatus 
-}) => {
+}> = ({ 
+  onExport, 
+  onImport, 
+  showValues, 
+  onToggleValues, 
+  onShowSummary,
+  connectionStatus 
+}): JSX.Element => {
   const [showPerformanceDashboard, setShowPerformanceDashboard] = useState(false);
   
   const currentDate = formatDate(new Date(), {

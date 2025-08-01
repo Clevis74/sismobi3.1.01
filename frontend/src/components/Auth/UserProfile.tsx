@@ -9,7 +9,7 @@ export const UserProfile: React.FC = () => {
 
   // Close dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: MouseEvent): void => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
@@ -22,13 +22,13 @@ export const UserProfile: React.FC = () => {
   }, []);
 
   // Handle logout
-  const handleLogout = () => {
+  const handleLogout = (): void => {
     logout();
     setIsOpen(false);
   };
 
   // Handle keyboard navigation
-  const handleKeyDown = (event: React.KeyboardEvent) => {
+  const handleKeyDown = (event: React.KeyboardEvent): void => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       setIsOpen(!isOpen);

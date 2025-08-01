@@ -30,7 +30,7 @@ const menuItems = [
   { id: 'settings', label: 'Configurações', icon: Settings },
 ];
 
-export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
+export const Sidebar: React.FC<{ activeTab, setActiveTab }> = ({ activeTab, setActiveTab }): JSX.Element => {
   const handleKeyDown = (event: React.KeyboardEvent, itemId: string): void => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
