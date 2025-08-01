@@ -24,7 +24,7 @@ import { calculateFinancialSummary, clearCalculationCache } from './utils/optimi
 import { generateAutomaticAlerts, processRecurringTransactions, clearAlertCache } from './utils/optimizedAlerts';
 import { createBackup, exportBackup, importBackup, validateBackup } from './utils/dataBackup';
 import { useRenderMonitor, performanceMonitor } from './utils/performanceMonitor';
-import { Property, Tenant, Transaction, Alert, Document, EnergyBill, WaterBill } from './types';
+import { Property, Tenant, Transaction, /* Alert, */ Document, EnergyBill, WaterBill } from './types';
 
 // Componente interno que usa os hooks
 const AppContent: React.FC = () => {
