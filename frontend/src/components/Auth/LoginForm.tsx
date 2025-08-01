@@ -7,7 +7,7 @@ interface _LoginFormProps {
   isRegisterMode: boolean;
 }
 
-export const LoginForm: React.FC<{ onToggleMode, isRegisterMode }> = ({ onToggleMode, isRegisterMode }): JSX.Element => {
+export const LoginForm: React.FC<_LoginFormProps> = ({ onToggleMode, isRegisterMode }): JSX.Element => {
   const { login, register, error, isLoading, clearError } = useAuth();
   
   // Form states
