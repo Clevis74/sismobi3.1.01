@@ -13,11 +13,11 @@ const testScenarios = [
   { name: 'null object', data: null }
 ];
 
-console.log('🧪 Testando cenários que causavam TypeError...\n');
+// console.log('🧪 Testando cenários que causavam TypeError...\n');
 
 testScenarios.forEach(scenario => {
   try {
-    console.log(`📋 Cenário: ${scenario.name}`);
+    // console.log(`📋 Cenário: ${scenario.name}`);
     
     // Simular o que aconteceria no componente
     const alertMetrics = scenario.data;
@@ -28,27 +28,27 @@ testScenarios.forEach(scenario => {
     };
     
     // Validações que eram aplicadas no componente original (sem correção)
-    console.log('  ❌ Código original teria falhado aqui:');
+    // console.log('  ❌ Código original teria falhado aqui:');
     try {
       // Esta linha causava o erro original
       // const length = alertMetrics.cacheKeys.length; // TypeError!
-      console.log('    - alertMetrics.cacheKeys.length teria causado TypeError');
+      // console.log('    - alertMetrics.cacheKeys.length teria causado TypeError');
     } catch (e) {
-      console.log(`    - Erro capturado: ${e}`);
+      // console.log(`    - Erro capturado: ${e}`);
     }
     
     // Validações com a correção aplicada
-    console.log('  ✅ Código corrigido:');
+    // console.log('  ✅ Código corrigido:');
     const alertCacheSize = alertMetrics?.alertCacheSize ?? 0;
     const cacheKeysLength = safeArrayAccess(alertMetrics?.cacheKeys).length;
     
-    console.log(`    - alertCacheSize: ${alertCacheSize}`);
-    console.log(`    - cacheKeys.length: ${cacheKeysLength}`);
-    console.log('    - ✅ Sucesso! Sem errors\n');
+    // console.log(`    - alertCacheSize: ${alertCacheSize}`);
+    // console.log(`    - cacheKeys.length: ${cacheKeysLength}`);
+    // console.log('    - ✅ Sucesso! Sem errors\n');
     
   } catch (error) {
     console.error(`  ❌ Falha inesperada: ${error}\n`);
   }
 });
 
-console.log('🎉 Todos os cenários foram tratados com segurança!');
+// console.log('🎉 Todos os cenários foram tratados com segurança!');

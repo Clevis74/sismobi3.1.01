@@ -100,7 +100,7 @@ export const UserProfile: React.FC = () => {
               onClick={() => {
                 setIsOpen(false);
                 // TODO: Implement settings modal
-                console.log('Settings clicked - to be implemented');
+                // console.log('Settings clicked - to be implemented');
               }}
             >
               <Settings className="w-4 h-4 mr-3 text-gray-400" />

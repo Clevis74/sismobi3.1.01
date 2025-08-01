@@ -185,7 +185,7 @@ export function monitorFunction(functionName: string) {
 export function debugPerformance() {
   if (process.env.NODE_ENV === 'development') {
     console.group('🚀 Performance Report');
-    console.log(performanceMonitor.getPerformanceReport());
+    // console.log(performanceMonitor.getPerformanceReport());
     console.groupEnd();
   }
 }
