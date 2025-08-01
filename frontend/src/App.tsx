@@ -172,23 +172,38 @@ const AppContent: React.FC = () => {
   }, []);
 
   // Callbacks memoizados para funções de propriedades
-  const addProperty = useCallback((propertyData: Omit<Property, 'id' | 'createdAt'>) => {
-    const newProperty: Property = {
-      ...propertyData,
-      id: Date.now().toString(),
-      createdAt: new Date()
-    };
-    setProperties(prev => [...prev, newProperty]);
-  }, [setProperties]);
+  const addProperty = useCallback(async (propertyData: Omit<Property, 'id' | 'createdAt'>) => {
+    try {
+      const newProperty: Omit<Property, 'id'> = {
+        ...propertyData,
+        createdAt: new Date()
+      };
+      await propertiesActions.create(newProperty);
+    } catch (error) {
+      console.error('Erro ao adicionar propriedade:', error);
+    }
+  }, [propertiesActions]);
 
-  const updateProperty = useCallback((id: string, updates: Partial<Property>) => {
-    setProperties(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));
-  }, [setProperties]);
+  const updateProperty = useCallback(async (id: string, updates: Partial<Property>) => {
+    try {
+      await propertiesActions.update(id, updates);
+    } catch (error) {
+      console.error('Erro ao atualizar propriedade:', error);
+    }
+  }, [propertiesActions]);
 
-  const deleteProperty = useCallback((id: string) => {
-    setProperties(prev => prev.filter(p => p.id !== id));
-    setTransactions(prev => prev.filter(t => t.propertyId !== id));
-  }, [setProperties, setTransactions]);
+  const deleteProperty = useCallback(async (id: string) => {
+    try {
+      await propertiesActions.delete(id);
+      // Também limpar transações relacionadas
+      const relatedTransactions = transactions.filter(t => t.propertyId === id);
+      for (const transaction of relatedTransactions) {
+        await transactionsActions.delete(transaction.id);
+      }
+    } catch (error) {
+      console.error('Erro ao deletar propriedade:', error);
+    }
+  }, [propertiesActions, transactions, transactionsActions]);
 
   // Callbacks memoizados para funções de inquilinos
   const addTenant = useCallback((tenantData: Omit<Tenant, 'id'>) => {
