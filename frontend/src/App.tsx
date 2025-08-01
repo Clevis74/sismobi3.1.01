@@ -194,6 +194,22 @@ const AppContent: React.FC = () => {
       clearCalculationCache();
       clearAlertCache();
     }, 10 * 60 * 1000); // 10 minutos
+    
+    // Run accessibility tests in development mode
+    if (process.env.NODE_ENV === 'development' && isAuthenticated) {
+      const runAccessibilityTests = async (): Promise<void> => {
+        try {
+          // Wait for components to fully render
+          setTimeout(async () => {
+            await accessibilityTester.runTests();
+          }, 2000);
+        } catch (error) {
+          console.warn('Accessibility test failed:', error);
+        }
+      };
+      
+      runAccessibilityTests();
+    }
 
     return (): void => clearInterval(interval);
   }, []);
