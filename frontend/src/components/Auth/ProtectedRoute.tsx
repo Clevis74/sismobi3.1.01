@@ -6,7 +6,7 @@ interface _ProtectedRouteProps {
   children: React.ReactNode;
 }
 
-export const ProtectedRoute: React.FC<{ children }> = ({ children }): JSX.Element => {
+export const ProtectedRoute: React.FC<_ProtectedRouteProps> = ({ children }): JSX.Element => {
   const { isAuthenticated, isLoading } = useAuth();
 
   // Show loading spinner while checking authentication
