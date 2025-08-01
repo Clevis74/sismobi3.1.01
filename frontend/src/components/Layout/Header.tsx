@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, Download, Upload, Eye, EyeOff, Activity } from 'lucide-react';
+import { Calendar, Download, Upload, Eye, EyeOff, Activity, Wifi, WifiOff } from 'lucide-react';
 import { PerformanceDashboard } from '../Dev/PerformanceDashboard';
 import { formatDate } from '../../utils/safeDateFormatting';
 
@@ -8,6 +8,12 @@ interface HeaderProps {
   onImport: () => void;
   showValues: boolean;
   onToggleValues: () => void;
+  // Novo: indicadores de status da conexão
+  connectionStatus?: {
+    isOnline: boolean;
+    dataSource: 'api' | 'localStorage' | 'default';
+    lastSync?: Date | null;
+  };
 }
 
 export const Header: React.FC<HeaderProps> = ({ onExport, onImport, showValues, onToggleValues }) => {
