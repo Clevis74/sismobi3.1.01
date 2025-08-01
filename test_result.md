@@ -236,3 +236,117 @@ The SISMOBI FastAPI backend is completely functional and ready for frontend inte
 **Agent**: Full-stack Developer (Main Agent)
 **Status**: Bug Successfully Resolved ✅
 **Impact**: Critical UX issue affecting data visibility - RESOLVED
+
+---
+
+## NEW API Testing Session: Transactions & Alerts CRUD Operations
+
+### Test Overview
+**Date**: August 1, 2025  
+**Agent**: Testing Sub-Agent (Backend Specialist)  
+**Focus**: NEW Transactions and Alerts API endpoints that were previously returning 404 errors
+**Backend URL**: http://localhost:8001  
+**Backend Version**: 3.2.0  
+
+### Test Scope - NEW ENDPOINTS TESTED
+**Transactions API - COMPLETE CRUD**:
+1. ✅ **GET /api/v1/transactions/** - List with pagination and filtering
+2. ✅ **POST /api/v1/transactions/** - Create new transaction  
+3. ✅ **GET /api/v1/transactions/{id}** - Get transaction by ID
+4. ✅ **PUT /api/v1/transactions/{id}** - Update transaction
+5. ✅ **DELETE /api/v1/transactions/{id}** - Delete transaction
+
+**Alerts API - COMPLETE CRUD + RESOLVE**:
+1. ✅ **GET /api/v1/alerts/** - List with pagination and filtering
+2. ✅ **POST /api/v1/alerts/** - Create new alert
+3. ✅ **GET /api/v1/alerts/{id}** - Get alert by ID  
+4. ✅ **PUT /api/v1/alerts/{id}** - Update alert
+5. ✅ **PUT /api/v1/alerts/{id}/resolve** - Resolve alert (convenience endpoint)
+6. ✅ **DELETE /api/v1/alerts/{id}** - Delete alert
+
+### Critical Issues Found and Fixed During Testing
+
+**Issue 1: Import Path Errors**
+- **Root Cause**: Transactions and Alerts routers used incorrect relative imports (`from ..database` instead of `from database`)
+- **Impact**: Backend server failed to start, returning connection refused errors
+- **Fix Applied**: Corrected import statements in both router files
+- **Files Modified**: `/app/backend/routers/transactions.py`, `/app/backend/routers/alerts.py`
+
+**Issue 2: UUID Generation Missing**
+- **Root Cause**: Transactions and Alerts were created with MongoDB ObjectIDs instead of UUIDs
+- **Impact**: Created items could not be retrieved by ID (404 errors on GET/PUT/DELETE by ID)
+- **Fix Applied**: Added UUID generation and timestamp setting in creation endpoints
+- **Result**: All CRUD operations now work correctly with proper UUID-based IDs
+
+### Test Results: ✅ **ALL NEW API TESTS PASSED (23/23)**
+
+#### NEW Transactions API: ✅ **FULLY WORKING**
+- ✅ **Create Transaction**: Successfully creates transactions with proper UUID IDs
+- ✅ **List Transactions**: Returns paginated results with filtering support
+- ✅ **Get Transaction by ID**: Retrieves specific transactions correctly
+- ✅ **Update Transaction**: Modifies transaction data successfully
+- ✅ **Delete Transaction**: Removes transactions properly (204 status)
+- ✅ **Filtering Support**: Property ID, tenant ID, and transaction type filters working
+- ✅ **Data Validation**: Proper validation of property/tenant existence
+- ✅ **Authentication**: JWT token authentication working correctly
+
+#### NEW Alerts API: ✅ **FULLY WORKING**  
+- ✅ **Create Alert**: Successfully creates alerts with proper UUID IDs
+- ✅ **List Alerts**: Returns paginated results with priority-based sorting
+- ✅ **Get Alert by ID**: Retrieves specific alerts correctly
+- ✅ **Update Alert**: Modifies alert data successfully including priority changes
+- ✅ **Resolve Alert**: Convenience endpoint marks alerts as resolved with timestamp
+- ✅ **Delete Alert**: Removes alerts properly (204 status)
+- ✅ **Filtering Support**: Priority, resolved status, property/tenant filters working
+- ✅ **Priority Validation**: Proper validation of priority levels (low/medium/high/critical)
+- ✅ **Authentication**: JWT token authentication working correctly
+
+#### Comprehensive Testing Coverage
+- ✅ **Authentication Flow**: Registration, login, token verification all working
+- ✅ **Properties API**: Full CRUD operations confirmed working
+- ✅ **Tenants API**: Full CRUD operations confirmed working  
+- ✅ **Dashboard API**: Summary endpoint returning correct statistics
+- ✅ **Health Check**: Backend connectivity and database status confirmed
+- ✅ **Data Cleanup**: All test data properly removed after testing
+
+### API Integration Status - RESOLVED
+**BEFORE**: Transactions and Alerts APIs returned 404 errors (not implemented)
+**AFTER**: Both APIs fully functional with complete CRUD operations
+
+- **Transactions**: ✅ All endpoints working - no more 404 errors
+- **Alerts**: ✅ All endpoints working including resolve functionality - no more 404 errors  
+- **Authentication**: ✅ JWT integration working for all protected endpoints
+- **Data Persistence**: ✅ MongoDB integration working correctly
+- **Error Handling**: ✅ Proper HTTP status codes and error messages
+
+### Backend Infrastructure Status
+- ✅ **FastAPI Server**: Running correctly on port 8001 via supervisor
+- ✅ **MongoDB Database**: Connected and operational with proper collections
+- ✅ **JWT Authentication**: Working with proper token validation for all endpoints
+- ✅ **CORS Configuration**: Properly configured for frontend integration
+- ✅ **API Documentation**: Available at `/api/docs` with all new endpoints documented
+- ✅ **UUID Management**: Proper UUID generation for all entities
+- ✅ **Data Relationships**: Foreign key validation working (property/tenant references)
+
+### Test Data Validation
+- ✅ **Real-world Data**: Used realistic Portuguese property management data
+- ✅ **Data Integrity**: All relationships properly maintained
+- ✅ **Filtering Logic**: Complex filtering scenarios tested and working
+- ✅ **Pagination**: Proper pagination with skip/limit parameters working
+- ✅ **Sorting**: Priority-based sorting for alerts working correctly
+
+### Backend Readiness Assessment  
+**Status**: ✅ **FULLY OPERATIONAL - ALL NEW APIS WORKING**
+
+The SISMOBI FastAPI backend now has complete API coverage:
+- ✅ **All CRUD operations** working for Properties, Tenants, Transactions, Alerts
+- ✅ **Authentication system** fully implemented and secure
+- ✅ **Database operations** stable and reliable with proper UUID management
+- ✅ **API responses** properly formatted with consistent error handling
+- ✅ **No more 404 errors** - all endpoints implemented and accessible
+
+### Next Steps for Main Agent
+1. ✅ **NEW APIs are ready** - Transactions and Alerts fully implemented
+2. ✅ **Frontend Integration** - Can now connect to all backend APIs without 404 errors
+3. ✅ **Hybrid System** - Backend APIs ready for the hybrid localStorage/API architecture
+4. ✅ **Authentication** - JWT tokens working for all protected endpoints
