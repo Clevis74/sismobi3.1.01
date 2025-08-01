@@ -1,5 +1,5 @@
 import React from 'react';
-import { DollarSign, TrendingUp, Home, Percent } from 'lucide-react';
+import { DollarSign, TrendingUp, /* Home, */ Percent } from 'lucide-react';
 import { MetricCard } from './MetricCard';
 import { TransactionChart } from './TransactionChart';
 import { PropertyList } from './PropertyList';
