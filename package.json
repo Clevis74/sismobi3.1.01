@@ -20,7 +20,7 @@
     "security:audit": "npm audit --audit-level moderate",
     "security:fix": "npm audit fix",
     "pre-commit": "npm run lint && npm run type-check && npm run test:run",
-    "version-check": "echo 'SISMOBI v3.2.0-validation - PHASES 1+2 COMPLETED - READY FOR NEXT PHASE' && cat VERSION.md"
+    "version-check": "echo 'SISMOBI v3.2.0-validation - PHASE 3: ACCESSIBILITY TESTING INITIATED' && cat VERSION.md"
   },
   "dependencies": {
     "lucide-react": "^0.344.0",
