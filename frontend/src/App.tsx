@@ -428,13 +428,28 @@ const AppContent: React.FC = () => {
         try {
           const backupData = await importBackup(file);
           if (validateBackup(backupData)) {
-            setProperties(backupData.properties);
-            setTenants(backupData.tenants);
-            setTransactions(backupData.transactions);
-            setAlerts(backupData.alerts);
-            setDocuments(backupData.documents || []);
-            setEnergyBills(backupData.energyBills || []);
-            setWaterBills(backupData.waterBills || []);
+            // Para dados híbridos, precisamos usar os actions para criar novos itens
+            // Por enquanto, vamos manter a lógica de backup/restore do localStorage
+            // TODO: Implementar importação via API quando necessário
+            
+            // Fallback para localStorage direto
+            localStorage.setItem('properties', JSON.stringify(backupData.properties));
+            localStorage.setItem('tenants', JSON.stringify(backupData.tenants));
+            localStorage.setItem('transactions', JSON.stringify(backupData.transactions));
+            localStorage.setItem('alerts', JSON.stringify(backupData.alerts));
+            localStorage.setItem('documents', JSON.stringify(backupData.documents || []));
+            localStorage.setItem('energyBills', JSON.stringify(backupData.energyBills || []));
+            localStorage.setItem('waterBills', JSON.stringify(backupData.waterBills || []));
+            
+            // Refresh todos os dados
+            await propertiesActions.refresh();
+            await tenantsActions.refresh();
+            await transactionsActions.refresh();
+            await alertsActions.refresh();
+            await documentsActions.refresh();
+            await energyBillsActions.refresh();
+            await waterBillsActions.refresh();
+            
             backupAlerts.importSuccess();
           } else {
             backupAlerts.invalidFile();
@@ -445,7 +460,7 @@ const AppContent: React.FC = () => {
       }
     };
     input.click();
-  }, [setProperties, setTenants, setTransactions, setAlerts, setDocuments, setEnergyBills, setWaterBills, backupAlerts]);
+  }, [backupAlerts, propertiesActions, tenantsActions, transactionsActions, alertsActions, documentsActions, energyBillsActions, waterBillsActions]);
 
   const renderContent = (): React.ReactElement => {
     switch (activeTab) {
