@@ -382,12 +382,12 @@ function OptimizedApp() {
             setDocuments(backupData.documents || []);
             setEnergyBills(backupData.energyBills || []);
             setWaterBills(backupData.waterBills || []);
-            alert('Backup importado com sucesso!');
+            console.warn('Backup importado com sucesso!');
           } else {
-            alert('Arquivo de backup inválido!');
+            console.warn('Arquivo de backup inválido!');
           }
         } catch (error) {
-          alert('Erro ao importar backup: ' + error);
+          console.warn('Erro ao importar backup: ' + error);
         }
       }
     };
