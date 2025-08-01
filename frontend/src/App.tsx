@@ -40,6 +40,7 @@ const AppContent: React.FC = () => {
   const [showValues, setShowValues] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showSummaryModal, setShowSummaryModal] = useState(false);
+  const [showAccessibilityDashboard, setShowAccessibilityDashboard] = useState(false);
   
   // Hooks de backup com sistema de notificações
   const backupAlerts = useBackupAlerts();
