@@ -28,6 +28,7 @@ const menuItems = [
   { id: 'energy', label: 'Energia – Rateio de Consumo', icon: Zap },
   { id: 'water', label: 'Água – Rateio de Consumo', icon: Droplets },
   { id: 'documents', label: 'Documentos', icon: FileText },
+  { id: 'accessibility', label: 'Acessibilidade', icon: Shield },
   { id: 'settings', label: 'Configurações', icon: Settings },
 ];
 
