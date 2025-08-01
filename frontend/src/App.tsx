@@ -192,7 +192,7 @@ const AppContent: React.FC = () => {
       clearAlertCache();
     }, 10 * 60 * 1000); // 10 minutos
 
-    return () => clearInterval(interval);
+    return (): void => clearInterval(interval);
   }, []);
 
   // Callbacks memoizados para funções de propriedades
