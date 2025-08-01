@@ -719,7 +719,7 @@ def main():
     print("=== SISMOBI BACKEND API TEST SUITE ===")
     print(f"Test run at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("Application: SISMOBI - Sistema de Gestão Imobiliária")
-    print("Backend URL: http://localhost:8001")
+    print("Backend URL: https://a56b342c-49e4-445e-ad89-b74bcc3c3aff.preview.emergentagent.com")
     
     tester = SISMOBIBackendTester()
     
