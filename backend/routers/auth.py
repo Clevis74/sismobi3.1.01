@@ -48,10 +48,18 @@ async def register(
     logger.info("User registered successfully", email=user_data.email)
     return {"message": "User registered successfully", "status": "success"}
 
-@router.get("/me", response_model=User)
+@router.get("/me", response_model=UserResponse)
 async def read_users_me(current_user: User = Depends(get_current_active_user)):
     """Get current user information"""
-    return current_user
+    # Return safe user data without hashed_password
+    return UserResponse(
+        id=current_user.id,
+        email=current_user.email,
+        full_name=current_user.full_name,
+        is_active=current_user.is_active,
+        created_at=current_user.created_at,
+        updated_at=current_user.updated_at
+    )
 
 @router.get("/verify", response_model=MessageResponse)
 async def verify_token(current_user: User = Depends(get_current_active_user)):
