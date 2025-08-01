@@ -655,6 +655,22 @@ const AppContent: React.FC = () => {
             </ErrorBoundary>
           </main>
         </div>
+
+        {/* Modal de Resumo */}
+        <SummaryModal
+          isOpen={showSummaryModal}
+          onClose={() => setShowSummaryModal(false)}
+          showValues={showValues}
+          data={{
+            properties,
+            tenants,
+            transactions,
+            alerts,
+            documents,
+            energyBills,
+            waterBills
+          }}
+        />
       </div>
     </>
   );
