@@ -21,7 +21,7 @@ const safeObjectAccess = function<T extends Record<string, any>>(obj: T | undefi
 };
 
 // Função helper para formatação condicional de valores
-const formatConditionalValue = (value: number | string, showValues: boolean, suffix: string = ''): string => {
+const _formatConditionalValue = (value: number | string, showValues: boolean, suffix: string = ''): string => {
   if (!showValues) return '****' + (suffix ? ` ${suffix}` : '');
   if (typeof value === 'number') {
     return value.toFixed(2) + (suffix ? ` ${suffix}` : '');
