@@ -237,6 +237,11 @@ class UserBase(BaseModel):
     full_name: str = Field(..., min_length=1, max_length=200)
     is_active: bool = True
 
+# User Response Model (safe for API responses - excludes sensitive data)
+class UserResponse(UserBase, BaseDocument):
+    """User model without sensitive data for API responses"""
+    pass
+
 class UserCreate(UserBase):
     password: str = Field(..., min_length=8, max_length=100)
 
