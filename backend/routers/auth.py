@@ -8,7 +8,7 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 import structlog
 
 from database import get_database
-from models import Token, User, UserCreate, MessageResponse
+from models import Token, User, UserCreate, UserResponse, MessageResponse
 from auth import authenticate_user, create_access_token, create_user, get_current_active_user
 from config import settings
 
