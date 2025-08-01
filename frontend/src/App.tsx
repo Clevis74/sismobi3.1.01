@@ -267,29 +267,45 @@ const AppContent: React.FC = () => {
   }, [tenantsActions, tenants, propertiesActions]);
 
   // Callbacks memoizados para outras funções
-  const addTransaction = useCallback((transactionData: Omit<Transaction, 'id'>) => {
-    const newTransaction: Transaction = {
-      ...transactionData,
-      id: Date.now().toString()
-    };
-    setTransactions(prev => [...prev, newTransaction]);
-  }, [setTransactions]);
+  const addTransaction = useCallback(async (transactionData: Omit<Transaction, 'id'>) => {
+    try {
+      await transactionsActions.create(transactionData);
+    } catch (error) {
+      console.error('Erro ao adicionar transação:', error);
+    }
+  }, [transactionsActions]);
 
-  const updateTransaction = useCallback((id: string, updates: Partial<Transaction>) => {
-    setTransactions(prev => prev.map(t => t.id === id ? { ...t, ...updates } : t));
-  }, [setTransactions]);
+  const updateTransaction = useCallback(async (id: string, updates: Partial<Transaction>) => {
+    try {
+      await transactionsActions.update(id, updates);
+    } catch (error) {
+      console.error('Erro ao atualizar transação:', error);
+    }
+  }, [transactionsActions]);
 
-  const deleteTransaction = useCallback((id: string) => {
-    setTransactions(prev => prev.filter(t => t.id !== id));
-  }, [setTransactions]);
+  const deleteTransaction = useCallback(async (id: string) => {
+    try {
+      await transactionsActions.delete(id);
+    } catch (error) {
+      console.error('Erro ao deletar transação:', error);
+    }
+  }, [transactionsActions]);
 
-  const resolveAlert = useCallback((id: string) => {
-    setAlerts(prev => prev.map(a => a.id === id ? { ...a, resolved: true } : a));
-  }, [setAlerts]);
+  const resolveAlert = useCallback(async (id: string) => {
+    try {
+      await alertsActions.update(id, { resolved: true });
+    } catch (error) {
+      console.error('Erro ao resolver alerta:', error);
+    }
+  }, [alertsActions]);
 
-  const deleteAlert = useCallback((id: string) => {
-    setAlerts(prev => prev.filter(a => a.id !== id));
-  }, [setAlerts]);
+  const deleteAlert = useCallback(async (id: string) => {
+    try {
+      await alertsActions.delete(id);
+    } catch (error) {
+      console.error('Erro ao deletar alerta:', error);
+    }
+  }, [alertsActions]);
 
   const addDocument = useCallback((documentData: Omit<Document, 'id' | 'lastUpdated'>) => {
     const newDocument: Document = {
