@@ -133,15 +133,17 @@ export const useNotification = () => {
 export const useAsyncNotification = () => {
   const notification = useNotification();
 
+  type AsyncHandlerMessages = {
+    loading: { title: string; message?: string };
+    success: { title: string; message?: string };
+    error: { title: string; message?: string };
+  };
+
   const handleAsync = useCallback(
-    async <T>(
+    async function <T>(
       asyncFn: () => Promise<T>,
-      messages: {
-        loading: { title: string; message?: string };
-        success: { title: string; message?: string };
-        error: { title: string; message?: string };
-      }
-    ): Promise<T> => {
+      messages: AsyncHandlerMessages
+    ): Promise<T> {
       const loadingId = notification.loading(messages.loading.title, messages.loading.message);
       
       try {
