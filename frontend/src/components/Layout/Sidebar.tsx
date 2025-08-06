@@ -4,7 +4,6 @@ import {
   Building, 
   Users, 
   DollarSign, 
-  TrendingUp, 
   Bell, 
   Settings,
   Zap,
@@ -13,9 +12,7 @@ import {
   Shield,
   ChevronDown,
   ChevronRight,
-  BarChart3,
-  Receipt,
-  BookOpen
+  BarChart3
 } from 'lucide-react';
 import { utils } from '../../styles/designSystem';
 
