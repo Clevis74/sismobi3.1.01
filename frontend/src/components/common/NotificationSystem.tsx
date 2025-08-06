@@ -1,7 +1,7 @@
 // ⚡ SISTEMA DE NOTIFICAÇÕES UNIFICADO
 // Integração com o novo sistema de Toast para melhor UX
 import React from 'react';
-import { NotificationProvider as UnifiedNotificationProvider, useNotification, useCommonNotifications } from '../../hooks/useNotification';
+import { NotificationProvider as UnifiedNotificationProvider, useCommonNotifications } from '../../hooks/useNotification';
 
 // ⚡ WRAPPER PARA COMPATIBILIDADE COM SISTEMA ANTIGO
 // Mantém compatibilidade enquanto migra para o novo sistema
