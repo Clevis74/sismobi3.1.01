@@ -133,30 +133,33 @@ export const useNotification = () => {
 export const useAsyncNotification = () => {
   const notification = useNotification();
 
-  const handleAsync = useCallback(async <T>(
-    asyncFn: () => Promise<T>,
-    messages: {
-      loading: { title: string; message?: string };
-      success: { title: string; message?: string };
-      error: { title: string; message?: string };
-    }
-  ): Promise<T> => {
-    const loadingId = notification.loading(messages.loading.title, messages.loading.message);
-    
-    try {
-      const result = await asyncFn();
-      notification.dismiss(loadingId);
-      notification.success(messages.success.title, messages.success.message);
-      return result;
-    } catch (error) {
-      notification.dismiss(loadingId);
-      notification.error(
-        messages.error.title, 
-        messages.error.message || (error instanceof Error ? error.message : 'Erro desconhecido')
-      );
-      throw error;
-    }
-  }, [notification]);
+  const handleAsync = useCallback(
+    async <T>(
+      asyncFn: () => Promise<T>,
+      messages: {
+        loading: { title: string; message?: string };
+        success: { title: string; message?: string };
+        error: { title: string; message?: string };
+      }
+    ): Promise<T> => {
+      const loadingId = notification.loading(messages.loading.title, messages.loading.message);
+      
+      try {
+        const result = await asyncFn();
+        notification.dismiss(loadingId);
+        notification.success(messages.success.title, messages.success.message);
+        return result;
+      } catch (error) {
+        notification.dismiss(loadingId);
+        notification.error(
+          messages.error.title, 
+          messages.error.message || (error instanceof Error ? error.message : 'Erro desconhecido')
+        );
+        throw error;
+      }
+    },
+    [notification]
+  );
 
   return { handleAsync, ...notification };
 };
