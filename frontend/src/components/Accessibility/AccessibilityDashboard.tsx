@@ -2,8 +2,8 @@
 // Displays accessibility test results and provides controls
 
 import React, { useState, useEffect } from 'react';
-import { Shield, Eye, AlertTriangle, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
-import { accessibilityTester, AccessibilityTestResult, ViolationSummary } from '../../utils/accessibilityTester';
+import { Shield, Eye, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
+import { accessibilityTester, AccessibilityTestResult } from '../../utils/accessibilityTester';
 
 interface AccessibilityDashboardProps {
   isVisible: boolean;
