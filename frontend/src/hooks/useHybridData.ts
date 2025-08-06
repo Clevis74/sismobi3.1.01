@@ -121,8 +121,8 @@ export function useHybridData<T>(
     setState(prev => ({ ...prev, loading: true, error: null }));
 
     try {
-      // Tenta carregar da API primeiro (se online)
-      if (state.isOnline && (forceFromApi || !isInitializedRef.current)) {
+      // Tenta carregar da API primeiro (se online) - use navigator.onLine directly to avoid circular dependency
+      if (navigator.onLine && (forceFromApi || !isInitializedRef.current)) {
         try {
           const apiData = await apiRequestWithRetry(() => apiService.getAll());
           const dataArray = Array.isArray(apiData) ? apiData : [apiData];
@@ -135,7 +135,8 @@ export function useHybridData<T>(
             loading: false,
             error: null,
             lastSync: new Date(),
-            source: 'api'
+            source: 'api',
+            isOnline: true
           }));
           
           isInitializedRef.current = true;
@@ -153,8 +154,9 @@ export function useHybridData<T>(
           ...prev,
           data: localData,
           loading: false,
-          error: state.isOnline ? 'API temporariamente indisponível, usando dados locais' : null,
-          source: localData !== defaultValue ? 'localStorage' : 'default'
+          error: navigator.onLine ? 'API temporariamente indisponível, usando dados locais' : null,
+          source: localData !== defaultValue ? 'localStorage' : 'default',
+          isOnline: navigator.onLine
         }));
         isInitializedRef.current = true;
         return;
@@ -165,8 +167,9 @@ export function useHybridData<T>(
         ...prev,
         data: defaultValue,
         loading: false,
-        error: state.isOnline ? 'Nenhum dado disponível' : 'Modo offline - nenhum dado local encontrado',
-        source: 'default'
+        error: navigator.onLine ? 'Nenhum dado disponível' : 'Modo offline - nenhum dado local encontrado',
+        source: 'default',
+        isOnline: navigator.onLine
       }));
       isInitializedRef.current = true;
       
@@ -180,11 +183,12 @@ export function useHybridData<T>(
         data: finalData,
         loading: false,
         error: error instanceof Error ? error.message : 'Erro desconhecido',
-        source: finalSource
+        source: finalSource,
+        isOnline: navigator.onLine
       }));
       isInitializedRef.current = true;
     }
-  }, [key, state.isOnline, localData, defaultValue, apiService, apiRequestWithRetry, setLocalData, enableOfflineMode]);
+  }, [key, localData, defaultValue, apiService, apiRequestWithRetry, setLocalData, enableOfflineMode]);
 
   // Update refresh reference once loadData is available
   useEffect(() => {
