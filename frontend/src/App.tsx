@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
 import { LoadingSpinner } from './components/common/LoadingSpinner';
 import { SummaryModal } from './components/Summary/SummaryModal';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
@@ -10,14 +10,6 @@ import { NotificationProvider, useBackupAlerts } from './components/common/Notif
 import { Sidebar } from './components/Layout/Sidebar';
 import { Header } from './components/Layout/Header';
 import { OptimizedDashboard } from './components/Dashboard/OptimizedDashboard';
-import { PropertyManager } from './components/Properties/PropertyManager';
-import { OptimizedTenantManager } from './components/Tenants/OptimizedTenantManager';
-import { TransactionManager } from './components/Transactions/TransactionManager';
-import { AlertManager } from './components/Alerts/AlertManager';
-import { ReportManager } from './components/Reports/ReportManager';
-import { DocumentManager } from './components/Documents/DocumentManager';
-import { EnergyCalculator } from './components/Energy/EnergyCalculator';
-import { WaterCalculator } from './components/Water/WaterCalculator';
 import { AccessibilityDashboard } from './components/Accessibility/AccessibilityDashboard';
 // import { useOptimizedLocalStorage } from './hooks/useOptimizedLocalStorage'; // Not used in current implementation
 import { useProperties, useTenants, useTransactions, useAlerts, useDocuments, useEnergyBills, useWaterBills } from './hooks/useHybridServices';
@@ -27,6 +19,23 @@ import { createBackup, exportBackup, importBackup, validateBackup } from './util
 import { useRenderMonitor, performanceMonitor } from './utils/performanceMonitor';
 import { accessibilityTester } from './utils/accessibilityTester';
 import { Property, Tenant, Transaction, /* Alert, */ Document, EnergyBill, WaterBill } from './types';
+
+// ⚡ LAZY LOADING - Componentes carregados sob demanda para melhor performance
+const PropertyManager = React.lazy(() => import('./components/Properties/PropertyManager'));
+const OptimizedTenantManager = React.lazy(() => import('./components/Tenants/OptimizedTenantManager'));
+const TransactionManager = React.lazy(() => import('./components/Transactions/TransactionManager'));
+const AlertManager = React.lazy(() => import('./components/Alerts/AlertManager'));
+const ReportManager = React.lazy(() => import('./components/Reports/ReportManager'));
+const DocumentManager = React.lazy(() => import('./components/Documents/DocumentManager'));
+const EnergyCalculator = React.lazy(() => import('./components/Energy/EnergyCalculator'));
+const WaterCalculator = React.lazy(() => import('./components/Water/WaterCalculator'));
+
+// Componente de loading customizado para lazy components
+const LazyComponentLoader: React.FC<{ text?: string }> = ({ text = 'Carregando módulo...' }) => (
+  <div className="flex items-center justify-center h-64">
+    <LoadingSpinner size="md" text={text} />
+  </div>
+);
 
 // Componente interno que usa os hooks
 const AppContent: React.FC = () => {
@@ -506,92 +515,109 @@ const AppContent: React.FC = () => {
     input.click();
   }, [backupAlerts, propertiesActions, tenantsActions, transactionsActions, alertsActions, documentsActions, energyBillsActions, waterBillsActions]);
 
+  // ⚡ RENDERIZAÇÃO OTIMIZADA COM LAZY LOADING
   const renderContent = (): React.ReactElement => {
     switch (activeTab) {
       case 'dashboard':
         return <OptimizedDashboard summary={summary} properties={properties} transactions={transactions} showValues={showValues} />;
       case 'properties':
         return (
-          <PropertyManager
-            properties={properties}
-            showValues={showValues}
-            onAddProperty={addProperty}
-            onUpdateProperty={updateProperty}
-            onDeleteProperty={deleteProperty}
-          />
+          <Suspense fallback={<LazyComponentLoader text="Carregando Gestão de Propriedades..." />}>
+            <PropertyManager
+              properties={properties}
+              showValues={showValues}
+              onAddProperty={addProperty}
+              onUpdateProperty={updateProperty}
+              onDeleteProperty={deleteProperty}
+            />
+          </Suspense>
         );
       case 'tenants':
         return (
-          <OptimizedTenantManager
-            tenants={tenants}
-            properties={properties}
-            showValues={showValues}
-            onAddTenant={addTenant}
-            onUpdateTenant={updateTenant}
-            onDeleteTenant={deleteTenant}
-          />
+          <Suspense fallback={<LazyComponentLoader text="Carregando Gestão de Inquilinos..." />}>
+            <OptimizedTenantManager
+              tenants={tenants}
+              properties={properties}
+              showValues={showValues}
+              onAddTenant={addTenant}
+              onUpdateTenant={updateTenant}
+              onDeleteTenant={deleteTenant}
+            />
+          </Suspense>
         );
       case 'transactions':
         return (
-          <TransactionManager
-            transactions={transactions}
-            properties={properties}
-            showValues={showValues}
-            onAddTransaction={addTransaction}
-            onUpdateTransaction={updateTransaction}
-            onDeleteTransaction={deleteTransaction}
-          />
+          <Suspense fallback={<LazyComponentLoader text="Carregando Transações Financeiras..." />}>
+            <TransactionManager
+              transactions={transactions}
+              properties={properties}
+              showValues={showValues}
+              onAddTransaction={addTransaction}
+              onUpdateTransaction={updateTransaction}
+              onDeleteTransaction={deleteTransaction}
+            />
+          </Suspense>
         );
       case 'alerts':
         return (
-          <AlertManager
-            alerts={alerts}
-            properties={properties}
-            onResolveAlert={resolveAlert}
-            onDeleteAlert={deleteAlert}
-          />
+          <Suspense fallback={<LazyComponentLoader text="Carregando Central de Alertas..." />}>
+            <AlertManager
+              alerts={alerts}
+              properties={properties}
+              onResolveAlert={resolveAlert}
+              onDeleteAlert={deleteAlert}
+            />
+          </Suspense>
         );
       case 'reports':
         return (
-          <ReportManager
-            properties={properties}
-            transactions={transactions}
-            summary={summary}
-            showValues={showValues}
-          />
+          <Suspense fallback={<LazyComponentLoader text="Carregando Sistema de Relatórios..." />}>
+            <ReportManager
+              properties={properties}
+              transactions={transactions}
+              summary={summary}
+              showValues={showValues}
+            />
+          </Suspense>
         );
       case 'documents':
         return (
-          <DocumentManager
-            documents={documents}
-            properties={properties}
-            tenants={tenants}
-            onAddDocument={addDocument}
-            onUpdateDocument={updateDocument}
-            onDeleteDocument={deleteDocument}
-          />
+          <Suspense fallback={<LazyComponentLoader text="Carregando Gestão de Documentos..." />}>
+            <DocumentManager
+              documents={documents}
+              properties={properties}
+              tenants={tenants}
+              onAddDocument={addDocument}
+              onUpdateDocument={updateDocument}
+              onDeleteDocument={deleteDocument}
+            />
+          </Suspense>
         );
       case 'energy':
         return (
-          <EnergyCalculator
-            energyBills={energyBills}
-            properties={properties}
-            showValues={showValues}
-            onAddEnergyBill={addEnergyBill}
-            onUpdateEnergyBill={updateEnergyBill}
-            onDeleteEnergyBill={deleteEnergyBill}
-          />
+          <Suspense fallback={<LazyComponentLoader text="Carregando Calculadora de Energia..." />}>
+            <EnergyCalculator
+              energyBills={energyBills}
+              properties={properties}
+              showValues={showValues}
+              onAddEnergyBill={addEnergyBill}
+              onUpdateEnergyBill={updateEnergyBill}
+              onDeleteEnergyBill={deleteEnergyBill}
+            />
+          </Suspense>
         );
       case 'water':
         return (
-          <WaterCalculator
-            waterBills={waterBills}
-            properties={properties}
-            showValues={showValues}
-            onAddWaterBill={addWaterBill}
-            onUpdateWaterBill={updateWaterBill}
-            onDeleteWaterBill={deleteWaterBill}
-          />
+          <Suspense fallback={<LazyComponentLoader text="Carregando Calculadora de Água..." />}>
+            <WaterCalculator
+              waterBills={waterBills}
+              properties={properties}
+              showValues={showValues}
+              onAddWaterBill={addWaterBill}
+              onUpdateWaterBill={updateWaterBill}
+              onDeleteWaterBill={deleteWaterBill}
+            />
+          </Suspense>
         );
       case 'accessibility':
         return (
