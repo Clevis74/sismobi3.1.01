@@ -51,8 +51,9 @@ const AppContent: React.FC = () => {
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [showAccessibilityDashboard, setShowAccessibilityDashboard] = useState(false);
   
-  // Hooks de backup com sistema de notificações
+  // ⚡ SISTEMA DE NOTIFICAÇÕES UNIFICADO
   const backupAlerts = useBackupAlerts();
+  const { handleAsync, success, error, warning } = useAsyncNotification();
   
   // Sistema híbrido: API + localStorage fallback
   const [propertiesState, propertiesActions] = useProperties();
