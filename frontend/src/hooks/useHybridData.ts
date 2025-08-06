@@ -70,9 +70,9 @@ export function useHybridData<T>(
   useEffect(() => {
     const handleOnline = (): void => {
       setState(prev => ({ ...prev, isOnline: true }));
-      // Quando voltar online, tenta sincronizar
+      // Quando voltar online, agenda sincronização
       if (enableOfflineMode) {
-        refresh();
+        setTimeout(() => refresh(), 100);
       }
     };
 
@@ -87,7 +87,7 @@ export function useHybridData<T>(
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, [enableOfflineMode]); // Remove refresh to avoid circular dependency
+  }, [enableOfflineMode, refresh]);
 
   // Função para fazer requisições com retry
   const apiRequestWithRetry = useCallback(async <R>(
