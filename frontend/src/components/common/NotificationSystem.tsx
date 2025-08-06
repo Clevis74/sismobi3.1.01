@@ -3,33 +3,36 @@
 import React from 'react';
 import { NotificationProvider as UnifiedNotificationProvider, useNotification, useCommonNotifications } from '../../hooks/useNotification';
 
-// Hook para substituir alert() nativo
-export const useAlert = (): {
-  success: (message: string, title?: string) => string;
-  error: (message: string, title?: string) => string;
-  warning: (message: string, title?: string) => string;
-  info: (message: string, title?: string) => string;
-} => {
-  const { addNotification } = useNotifications();
+// ⚡ WRAPPER PARA COMPATIBILIDADE COM SISTEMA ANTIGO
+// Mantém compatibilidade enquanto migra para o novo sistema
+
+// Provider principal - agora usa o sistema unificado
+export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return (
+    <UnifiedNotificationProvider position="top-right" maxToasts={5}>
+      {children}
+    </UnifiedNotificationProvider>
+  );
+};
+
+// Hook para substituir alert() nativo - agora usa sistema unificado
+export const useAlert = () => {
+  const notifications = useCommonNotifications();
   
   return {
     success: (message: string, title = 'Sucesso') => 
-      addNotification({ type: 'success', title, message }),
+      notifications.success(title, message),
     error: (message: string, title = 'Erro') => 
-      addNotification({ type: 'error', title, message, persistent: true }),
+      notifications.error(title, message, { duration: 0 }), // Persistent
     warning: (message: string, title = 'Atenção') => 
-      addNotification({ type: 'warning', title, message }),
+      notifications.warning(title, message),
     info: (message: string, title = 'Informação') => 
-      addNotification({ type: 'info', title, message })
+      notifications.info(title, message)
   };
 };
 
-// Hook para alerts específicos do backup
-export const useBackupAlerts = (): {
-  importSuccess: () => string;
-  importError: (errorMsg: string) => string;
-  invalidFile: () => string;
-} => {
+// Hook para alerts específicos do backup - mantém compatibilidade
+export const useBackupAlerts = () => {
   const { success, error } = useAlert();
   
   return {
@@ -38,3 +41,6 @@ export const useBackupAlerts = (): {
     invalidFile: () => error('Arquivo de backup inválido!')
   };
 };
+
+// Export do hook principal para uso direto do novo sistema
+export { useNotification, useCommonNotifications, useAsyncNotification } from '../../hooks/useNotification';
