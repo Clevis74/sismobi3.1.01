@@ -222,7 +222,7 @@ const AppContent: React.FC = () => {
     }
 
     return (): void => clearInterval(interval);
-  }, []);
+  }, [isAuthenticated]); // Added missing dependency
 
   // ⚡ CALLBACKS COM NOTIFICAÇÕES UNIFICADAS - Propriedades
   const addProperty = useCallback(async (propertyData: Omit<Property, 'id' | 'createdAt'>) => {
