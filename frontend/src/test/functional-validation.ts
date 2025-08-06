@@ -33,7 +33,7 @@ testScenarios.forEach(scenario => {
       // Esta linha causava o erro original
       // const length = alertMetrics.cacheKeys.length; // TypeError!
       // console.log('    - alertMetrics.cacheKeys.length teria causado TypeError');
-    } catch (_e) {
+    } catch {
       // console.log(`    - Erro capturado: ${e}`);
     }
     
