@@ -67,8 +67,12 @@ export function useHybridData<T>(
   const isInitializedRef = useRef(false);
 
   // Função de refresh manual (definida antes do useEffect para evitar temporal dead zone)
+  const refreshRef = useRef<() => Promise<void>>();
+  
   const refresh = useCallback(async (): Promise<void> => {
-    return loadData(true);
+    if (refreshRef.current) {
+      return refreshRef.current();
+    }
   }, []);
 
   // Detectar mudanças de conectividade
