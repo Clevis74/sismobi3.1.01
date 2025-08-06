@@ -316,9 +316,9 @@ export function useHybridData<T>(
     }
   }, [state.data, apiService, apiRequestWithRetry, enableOfflineMode]);
 
-  // Auto-sync periódico
+  // Auto-sync periódico (disabled for development)
   useEffect(() => {
-    if (syncInterval > 0 && state.isOnline && enableOfflineMode) {
+    if (syncInterval > 0 && navigator.onLine && enableOfflineMode) {
       syncTimeoutRef.current = setTimeout(() => {
         syncToApi();
       }, syncInterval);
@@ -329,7 +329,7 @@ export function useHybridData<T>(
         clearTimeout(syncTimeoutRef.current);
       }
     };
-  }, [syncInterval, state.isOnline, syncToApi, enableOfflineMode]);
+  }, [syncInterval, syncToApi, enableOfflineMode]);
 
   // Carregamento inicial
   useEffect(() => {
