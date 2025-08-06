@@ -44,8 +44,8 @@ export function useHybridData<T>(
   }
 ] {
   const {
-    syncInterval = 5 * 60 * 1000, // 5 minutos
-    retryAttempts = 3,
+    syncInterval = 0, // Disabled during development to prevent API spam
+    retryAttempts = 1, // Reduce retry attempts for faster fallback
     enableOfflineMode = true
   } = options;
 
