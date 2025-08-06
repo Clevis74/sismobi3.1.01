@@ -200,7 +200,7 @@ export function useHybridData<T>(
   // Função para criar item
   const create = useCallback(async (item: Omit<T, 'id'>): Promise<void> => {
     try {
-      if (state.isOnline) {
+      if (navigator.onLine) {
         // Tenta criar via API
         const newItem = await apiRequestWithRetry(() => apiService.create(item));
         
@@ -208,7 +208,7 @@ export function useHybridData<T>(
         const currentData = Array.isArray(state.data) ? state.data : [];
         const updatedData = [...currentData, newItem] as T;
         setLocalData(updatedData);
-        setState(prev => ({ ...prev, data: updatedData, lastSync: new Date(), source: 'api' }));
+        setState(prev => ({ ...prev, data: updatedData, lastSync: new Date(), source: 'api', isOnline: true }));
       } else if (enableOfflineMode) {
         // Modo offline - salva localmente com ID temporário
         const tempItem = {
@@ -220,15 +220,15 @@ export function useHybridData<T>(
         const currentData = Array.isArray(state.data) ? state.data : [];
         const updatedData = [...currentData, tempItem] as T;
         setLocalData(updatedData);
-        setState(prev => ({ ...prev, data: updatedData, source: 'localStorage' }));
+        setState(prev => ({ ...prev, data: updatedData, source: 'localStorage', isOnline: false }));
       } else {
         throw new Error('Operação requer conexão com internet');
       }
     } catch (error) {
-      setState(prev => ({ ...prev, error: error instanceof Error ? error.message : 'Erro ao criar item' }));
+      setState(prev => ({ ...prev, error: error instanceof Error ? error.message : 'Erro ao criar item', isOnline: navigator.onLine }));
       throw error;
     }
-  }, [state.data, state.isOnline, apiService, apiRequestWithRetry, setLocalData, enableOfflineMode]);
+  }, [state.data, apiService, apiRequestWithRetry, setLocalData, enableOfflineMode]);
 
   // Função para atualizar item
   const update = useCallback(async (id: string, updates: Partial<T>): Promise<void> => {
