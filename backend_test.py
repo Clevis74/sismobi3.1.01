@@ -54,7 +54,7 @@ from datetime import datetime
 from typing import Dict, Any, Optional
 
 class SISMOBIBackendTester:
-    def __init__(self, base_url: str = "https://88731d64-e9c6-4905-927b-07bbc2c08a12.preview.emergentagent.com"):
+    def __init__(self, base_url: str = "https://ed992144-9057-44aa-9d5f-b404a77a6603.preview.emergentagent.com"):
         self.base_url = base_url
         self.tests_run = 0
         self.tests_passed = 0
@@ -719,7 +719,7 @@ def main():
     print("=== SISMOBI BACKEND API TEST SUITE ===")
     print(f"Test run at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("Application: SISMOBI - Sistema de Gestão Imobiliária")
-    print("Backend URL: https://88731d64-e9c6-4905-927b-07bbc2c08a12.preview.emergentagent.com")
+    print("Backend URL: https://ed992144-9057-44aa-9d5f-b404a77a6603.preview.emergentagent.com")
     
     tester = SISMOBIBackendTester()
     
