@@ -25,14 +25,14 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast, onDismiss }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
 
-  const handleDismiss = (): void => {
+  const handleDismiss = useCallback((): void => {
     if (!toast.dismissible && toast.type === 'loading') return;
     
     setIsExiting(true);
     setTimeout(() => {
       onDismiss(toast.id);
     }, 300);
-  };
+  }, [toast.dismissible, toast.type, toast.id, onDismiss]);
 
   useEffect(() => {
     // Mostrar toast com animação
