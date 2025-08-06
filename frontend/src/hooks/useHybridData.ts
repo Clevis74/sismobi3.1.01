@@ -66,6 +66,11 @@ export function useHybridData<T>(
   const syncTimeoutRef = useRef<NodeJS.Timeout>();
   const isInitializedRef = useRef(false);
 
+  // Função de refresh manual (definida antes do useEffect para evitar temporal dead zone)
+  const refresh = useCallback(async (): Promise<void> => {
+    return loadData(true);
+  }, []);
+
   // Detectar mudanças de conectividade
   useEffect(() => {
     const handleOnline = (): void => {
