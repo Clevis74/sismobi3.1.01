@@ -12,7 +12,7 @@ from datetime import datetime
 from typing import Dict, Any, List
 
 class SISMOBISecurityPerformanceTester:
-    def __init__(self, base_url: str = "https://ed992144-9057-44aa-9d5f-b404a77a6603.preview.emergentagent.com"):
+    def __init__(self, base_url: str = "https://cbd5ede2-1130-4bc6-8213-9f7587bb4e56.preview.emergentagent.com"):
         self.base_url = base_url
         self.tests_run = 0
         self.tests_passed = 0
@@ -400,7 +400,7 @@ def main():
     print("=== SISMOBI BACKEND SECURITY & PERFORMANCE ANALYSIS ===")
     print(f"Test run at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("Focus: Security validation and performance metrics")
-    print("Backend URL: https://ed992144-9057-44aa-9d5f-b404a77a6603.preview.emergentagent.com")
+    print("Backend URL: https://cbd5ede2-1130-4bc6-8213-9f7587bb4e56.preview.emergentagent.com")
     
     tester = SISMOBISecurityPerformanceTester()
     
