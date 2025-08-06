@@ -264,7 +264,7 @@ export function useHybridData<T>(
   // Função para deletar item
   const deleteItem = useCallback(async (id: string): Promise<void> => {
     try {
-      if (state.isOnline && !id.startsWith('temp_')) {
+      if (navigator.onLine && !id.startsWith('temp_')) {
         // Tenta deletar via API
         await apiRequestWithRetry(() => apiService.delete(id));
       }
@@ -276,14 +276,15 @@ export function useHybridData<T>(
       setState(prev => ({ 
         ...prev, 
         data: updatedData, 
-        lastSync: state.isOnline ? new Date() : prev.lastSync,
-        source: state.isOnline ? 'api' : 'localStorage'
+        lastSync: navigator.onLine ? new Date() : prev.lastSync,
+        source: navigator.onLine ? 'api' : 'localStorage',
+        isOnline: navigator.onLine
       }));
     } catch (error) {
-      setState(prev => ({ ...prev, error: error instanceof Error ? error.message : 'Erro ao deletar item' }));
+      setState(prev => ({ ...prev, error: error instanceof Error ? error.message : 'Erro ao deletar item', isOnline: navigator.onLine }));
       throw error;
     }
-  }, [state.data, state.isOnline, apiService, apiRequestWithRetry, setLocalData]);
+  }, [state.data, apiService, apiRequestWithRetry, setLocalData]);
 
   // Sincronizar dados pendentes para API
   const syncToApi = useCallback(async (): Promise<void> => {
