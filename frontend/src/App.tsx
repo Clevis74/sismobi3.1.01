@@ -53,7 +53,7 @@ const AppContent: React.FC = () => {
   
   // ⚡ SISTEMA DE NOTIFICAÇÕES UNIFICADO
   const backupAlerts = useBackupAlerts();
-  const { handleAsync, success, error, warning } = useAsyncNotification();
+  const { handleAsync } = useAsyncNotification(); // Only use what we need
   
   // Sistema híbrido: API + localStorage fallback
   const [propertiesState, propertiesActions] = useProperties();
