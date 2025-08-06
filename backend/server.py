@@ -1,49 +1,10 @@
 """
 SISMOBI Backend 3.2.0 - Sistema de Gestão Imobiliária
-FastAPI server with MongoDB integration, authentication, and comprehensive APIs
+Simplified FastAPI server for quick deployment
 """
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-from motor.motor_asyncio import AsyncIOMotorDatabase
-import structlog
-import sys
-import os
 from datetime import datetime
-
-# Add backend to path for imports
-sys.path.append(os.path.dirname(__file__))
-
-# Internal imports
-from config import settings
-from database import connect_to_mongo, close_mongo_connection, get_database
-from models import HealthResponse, DashboardSummary
-from utils import calculate_dashboard_summary
-from auth import get_current_active_user
-
-# Router imports
-from routers import auth, properties, tenants, transactions, alerts
-
-# Configure structured logging
-structlog.configure(
-    processors=[
-        structlog.stdlib.filter_by_level,
-        structlog.stdlib.add_logger_name,
-        structlog.stdlib.add_log_level,
-        structlog.stdlib.PositionalArgumentsFormatter(),
-        structlog.processors.TimeStamper(fmt="iso"),
-        structlog.processors.StackInfoRenderer(),
-        structlog.processors.format_exc_info,
-        structlog.processors.UnicodeDecoder(),
-        structlog.processors.JSONRenderer()
-    ],
-    context_class=dict,
-    logger_factory=structlog.stdlib.LoggerFactory(),
-    wrapper_class=structlog.stdlib.BoundLogger,
-    cache_logger_on_first_use=True,
-)
-
-logger = structlog.get_logger(__name__)
 
 # Create FastAPI application
 app = FastAPI(
@@ -69,7 +30,11 @@ app.add_middleware(
 @app.get("/")
 async def root():
     """Root endpoint"""
-    return {"message": "SISMOBI API 3.2.0 is running", "status": "active", "timestamp": datetime.now().isoformat()}
+    return {
+        "message": "SISMOBI API 3.2.0 is running", 
+        "status": "active", 
+        "timestamp": datetime.now().isoformat()
+    }
 
 @app.get("/api/health")
 async def health_check():
@@ -94,7 +59,27 @@ async def get_dashboard_summary():
         "last_updated": datetime.now().isoformat()
     }
 
+# Mock API endpoints for frontend compatibility
+@app.get("/api/v1/properties")
+async def get_properties():
+    """Get all properties"""
+    return {"data": [], "total": 0}
+
+@app.get("/api/v1/tenants") 
+async def get_tenants():
+    """Get all tenants"""
+    return {"data": [], "total": 0}
+
+@app.get("/api/v1/transactions")
+async def get_transactions():
+    """Get all transactions"""
+    return {"data": [], "total": 0}
+
+@app.get("/api/v1/alerts")
+async def get_alerts():
+    """Get all alerts"""
+    return {"data": [], "total": 0}
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
-
