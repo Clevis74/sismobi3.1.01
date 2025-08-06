@@ -275,66 +275,83 @@ const AppContent: React.FC = () => {
     );
   }, [propertiesActions, transactions, transactionsActions, properties, handleAsync]);
 
-  // Callbacks memoizados para funções de inquilinos
+  // ⚡ CALLBACKS COM NOTIFICAÇÕES UNIFICADAS - Inquilinos
   const addTenant = useCallback(async (tenantData: Omit<Tenant, 'id'>) => {
-    try {
-      await tenantsActions.create(tenantData);
-      
-      // Atualizar propriedade se necessário
-      if (tenantData.propertyId) {
-        const property = properties.find(p => p.id === tenantData.propertyId);
-        if (property) {
-          await propertiesActions.update(property.id, { 
-            status: 'rented' as const 
-          });
+    await handleAsync(
+      async () => {
+        await tenantsActions.create(tenantData);
+        
+        // Atualizar propriedade se necessário
+        if (tenantData.propertyId) {
+          const property = properties.find(p => p.id === tenantData.propertyId);
+          if (property) {
+            await propertiesActions.update(property.id, { 
+              status: 'rented' as const 
+            });
+          }
         }
+      },
+      {
+        loading: { title: 'Cadastrando inquilino...', message: 'Adicionando inquilino e atualizando propriedade' },
+        success: { title: 'Inquilino cadastrado!', message: `${tenantData.name} foi adicionado com sucesso` },
+        error: { title: 'Erro ao cadastrar inquilino', message: 'Não foi possível cadastrar o inquilino' }
       }
-    } catch (error) {
-      console.error('Erro ao adicionar inquilino:', error);
-    }
-  }, [tenantsActions, properties, propertiesActions]);
+    );
+  }, [tenantsActions, properties, propertiesActions, handleAsync]);
 
   const updateTenant = useCallback(async (id: string, updates: Partial<Tenant>) => {
-    try {
-      const oldTenant = tenants.find(t => t.id === id);
-      await tenantsActions.update(id, updates);
-      
-      // Atualizar status das propriedades se necessário
-      if (oldTenant) {
-        // Propriedade antiga fica vaga
-        if (oldTenant.propertyId && oldTenant.propertyId !== updates.propertyId) {
-          await propertiesActions.update(oldTenant.propertyId, { 
+    const oldTenant = tenants.find(t => t.id === id);
+    
+    await handleAsync(
+      async () => {
+        await tenantsActions.update(id, updates);
+        
+        // Atualizar status das propriedades se necessário
+        if (oldTenant) {
+          // Propriedade antiga fica vaga
+          if (oldTenant.propertyId && oldTenant.propertyId !== updates.propertyId) {
+            await propertiesActions.update(oldTenant.propertyId, { 
+              status: 'vacant' as const 
+            });
+          }
+          
+          // Nova propriedade fica ocupada
+          if (updates.propertyId && updates.propertyId !== oldTenant.propertyId) {
+            await propertiesActions.update(updates.propertyId, { 
+              status: 'rented' as const 
+            });
+          }
+        }
+      },
+      {
+        loading: { title: 'Atualizando inquilino...', message: 'Salvando alterações e atualizando propriedades' },
+        success: { title: 'Inquilino atualizado!', message: 'As alterações foram salvas com sucesso' },
+        error: { title: 'Erro ao atualizar inquilino', message: 'Não foi possível salvar as alterações' }
+      }
+    );
+  }, [tenantsActions, tenants, propertiesActions, handleAsync]);
+
+  const deleteTenant = useCallback(async (id: string) => {
+    const tenant = tenants.find(t => t.id === id);
+    
+    await handleAsync(
+      async () => {
+        await tenantsActions.delete(id);
+        
+        // Marcar propriedade como vaga
+        if (tenant?.propertyId) {
+          await propertiesActions.update(tenant.propertyId, { 
             status: 'vacant' as const 
           });
         }
-        
-        // Nova propriedade fica ocupada
-        if (updates.propertyId && updates.propertyId !== oldTenant.propertyId) {
-          await propertiesActions.update(updates.propertyId, { 
-            status: 'rented' as const 
-          });
-        }
+      },
+      {
+        loading: { title: 'Removendo inquilino...', message: 'Removendo inquilino e liberando propriedade' },
+        success: { title: 'Inquilino removido!', message: tenant ? `${tenant.name} foi removido com sucesso` : 'Inquilino removido com sucesso' },
+        error: { title: 'Erro ao remover inquilino', message: 'Não foi possível remover o inquilino' }
       }
-    } catch (error) {
-      console.error('Erro ao atualizar inquilino:', error);
-    }
-  }, [tenantsActions, tenants, propertiesActions]);
-
-  const deleteTenant = useCallback(async (id: string) => {
-    try {
-      const tenant = tenants.find(t => t.id === id);
-      await tenantsActions.delete(id);
-      
-      // Marcar propriedade como vaga
-      if (tenant?.propertyId) {
-        await propertiesActions.update(tenant.propertyId, { 
-          status: 'vacant' as const 
-        });
-      }
-    } catch (error) {
-      console.error('Erro ao deletar inquilino:', error);
-    }
-  }, [tenantsActions, tenants, propertiesActions]);
+    );
+  }, [tenantsActions, tenants, propertiesActions, handleAsync]);
 
   // Callbacks memoizados para outras funções
   const addTransaction = useCallback(async (transactionData: Omit<Transaction, 'id'>) => {
