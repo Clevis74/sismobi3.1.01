@@ -82,10 +82,7 @@ export const CardHeader: React.FC<CardHeaderProps> = ({
   </div>
 );
 
-interface CardBodyProps extends HTMLAttributes<HTMLDivElement> {
-  // This interface extends HTMLAttributes but doesn't add new properties
-  // It's used for type safety and future extensibility
-}
+type CardBodyProps = HTMLAttributes<HTMLDivElement>;
 
 export const CardBody: React.FC<CardBodyProps> = ({
   children,
