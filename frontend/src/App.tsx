@@ -224,39 +224,56 @@ const AppContent: React.FC = () => {
     return (): void => clearInterval(interval);
   }, []);
 
-  // Callbacks memoizados para funções de propriedades
+  // ⚡ CALLBACKS COM NOTIFICAÇÕES UNIFICADAS - Propriedades
   const addProperty = useCallback(async (propertyData: Omit<Property, 'id' | 'createdAt'>) => {
-    try {
-      const newProperty: Omit<Property, 'id'> = {
-        ...propertyData,
-        createdAt: new Date()
-      };
-      await propertiesActions.create(newProperty);
-    } catch (error) {
-      console.error('Erro ao adicionar propriedade:', error);
-    }
-  }, [propertiesActions]);
+    await handleAsync(
+      async () => {
+        const newProperty: Omit<Property, 'id'> = {
+          ...propertyData,
+          createdAt: new Date()
+        };
+        await propertiesActions.create(newProperty);
+      },
+      {
+        loading: { title: 'Salvando propriedade...', message: 'Adicionando nova propriedade ao sistema' },
+        success: { title: 'Propriedade criada!', message: `${propertyData.name} foi adicionada com sucesso` },
+        error: { title: 'Erro ao criar propriedade', message: 'Não foi possível salvar a propriedade. Tente novamente.' }
+      }
+    );
+  }, [propertiesActions, handleAsync]);
 
   const updateProperty = useCallback(async (id: string, updates: Partial<Property>) => {
-    try {
-      await propertiesActions.update(id, updates);
-    } catch (error) {
-      console.error('Erro ao atualizar propriedade:', error);
-    }
-  }, [propertiesActions]);
+    await handleAsync(
+      async () => {
+        await propertiesActions.update(id, updates);
+      },
+      {
+        loading: { title: 'Atualizando propriedade...' },
+        success: { title: 'Propriedade atualizada!', message: 'As alterações foram salvas com sucesso' },
+        error: { title: 'Erro ao atualizar propriedade', message: 'Não foi possível salvar as alterações' }
+      }
+    );
+  }, [propertiesActions, handleAsync]);
 
   const deleteProperty = useCallback(async (id: string) => {
-    try {
-      await propertiesActions.delete(id);
-      // Também limpar transações relacionadas
-      const relatedTransactions = transactions.filter(t => t.propertyId === id);
-      for (const transaction of relatedTransactions) {
-        await transactionsActions.delete(transaction.id);
+    const property = properties.find(p => p.id === id);
+    
+    await handleAsync(
+      async () => {
+        await propertiesActions.delete(id);
+        // Também limpar transações relacionadas
+        const relatedTransactions = transactions.filter(t => t.propertyId === id);
+        for (const transaction of relatedTransactions) {
+          await transactionsActions.delete(transaction.id);
+        }
+      },
+      {
+        loading: { title: 'Removendo propriedade...', message: 'Removendo propriedade e dados relacionados' },
+        success: { title: 'Propriedade removida!', message: property ? `${property.name} foi removida com sucesso` : 'Propriedade removida com sucesso' },
+        error: { title: 'Erro ao remover propriedade', message: 'Não foi possível remover a propriedade' }
       }
-    } catch (error) {
-      console.error('Erro ao deletar propriedade:', error);
-    }
-  }, [propertiesActions, transactions, transactionsActions]);
+    );
+  }, [propertiesActions, transactions, transactionsActions, properties, handleAsync]);
 
   // Callbacks memoizados para funções de inquilinos
   const addTenant = useCallback(async (tenantData: Omit<Tenant, 'id'>) => {
