@@ -186,9 +186,9 @@ export function useHybridData<T>(
     }
   }, [key, state.isOnline, localData, defaultValue, apiService, apiRequestWithRetry, setLocalData, enableOfflineMode]);
 
-  // Update refresh callback once loadData is available
+  // Update refresh reference once loadData is available
   useEffect(() => {
-    refresh.current = async () => {
+    refreshRef.current = async () => {
       await loadData(true);
     };
   }, [loadData]);
