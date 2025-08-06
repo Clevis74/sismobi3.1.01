@@ -182,9 +182,11 @@ export function useHybridData<T>(
     }
   }, [key, state.isOnline, localData, defaultValue, apiService, apiRequestWithRetry, setLocalData, enableOfflineMode]);
 
-  // Função de refresh manual
-  const refresh = useCallback(async (): Promise<void> => {
-    await loadData(true);
+  // Update refresh callback once loadData is available
+  useEffect(() => {
+    refresh.current = async () => {
+      await loadData(true);
+    };
   }, [loadData]);
 
   // Função para criar item
