@@ -233,7 +233,7 @@ export function useHybridData<T>(
   // Função para atualizar item
   const update = useCallback(async (id: string, updates: Partial<T>): Promise<void> => {
     try {
-      if (state.isOnline && !id.startsWith('temp_')) {
+      if (navigator.onLine && !id.startsWith('temp_')) {
         // Tenta atualizar via API
         const updatedItem = await apiRequestWithRetry(() => apiService.update(id, updates));
         
@@ -243,7 +243,7 @@ export function useHybridData<T>(
           (item as any).id === id ? updatedItem : item
         ) as T;
         setLocalData(updatedData);
-        setState(prev => ({ ...prev, data: updatedData, lastSync: new Date(), source: 'api' }));
+        setState(prev => ({ ...prev, data: updatedData, lastSync: new Date(), source: 'api', isOnline: true }));
       } else if (enableOfflineMode) {
         // Modo offline - atualiza localmente
         const currentData = Array.isArray(state.data) ? state.data : [];
@@ -251,15 +251,15 @@ export function useHybridData<T>(
           (item as any).id === id ? { ...item, ...updates, _pendingSync: true } : item
         ) as T;
         setLocalData(updatedData);
-        setState(prev => ({ ...prev, data: updatedData, source: 'localStorage' }));
+        setState(prev => ({ ...prev, data: updatedData, source: 'localStorage', isOnline: navigator.onLine }));
       } else {
         throw new Error('Operação requer conexão com internet');
       }
     } catch (error) {
-      setState(prev => ({ ...prev, error: error instanceof Error ? error.message : 'Erro ao atualizar item' }));
+      setState(prev => ({ ...prev, error: error instanceof Error ? error.message : 'Erro ao atualizar item', isOnline: navigator.onLine }));
       throw error;
     }
-  }, [state.data, state.isOnline, apiService, apiRequestWithRetry, setLocalData, enableOfflineMode]);
+  }, [state.data, apiService, apiRequestWithRetry, setLocalData, enableOfflineMode]);
 
   // Função para deletar item
   const deleteItem = useCallback(async (id: string): Promise<void> => {
