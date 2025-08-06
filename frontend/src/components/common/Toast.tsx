@@ -25,6 +25,15 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast, onDismiss }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
 
+  const handleDismiss = (): void => {
+    if (!toast.dismissible && toast.type === 'loading') return;
+    
+    setIsExiting(true);
+    setTimeout(() => {
+      onDismiss(toast.id);
+    }, 300);
+  };
+
   useEffect(() => {
     // Mostrar toast com animação
     setIsVisible(true);
@@ -35,18 +44,9 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast, onDismiss }) => {
         handleDismiss();
       }, toast.duration);
 
-      return () => clearTimeout(timer);
+      return (): void => clearTimeout(timer);
     }
-  }, [toast.duration, toast.type]);
-
-  const handleDismiss = () => {
-    if (!toast.dismissible && toast.type === 'loading') return;
-    
-    setIsExiting(true);
-    setTimeout(() => {
-      onDismiss(toast.id);
-    }, 300);
-  };
+  }, [toast.duration, toast.type, handleDismiss]);
 
   const getToastStyles = () => {
     const baseStyles = "min-w-[320px] max-w-md bg-white shadow-lg rounded-lg border-l-4 transform transition-all duration-300 ease-in-out";
