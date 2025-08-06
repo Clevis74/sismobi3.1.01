@@ -288,7 +288,7 @@ export function useHybridData<T>(
 
   // Sincronizar dados pendentes para API
   const syncToApi = useCallback(async (): Promise<void> => {
-    if (!state.isOnline || !enableOfflineMode) return;
+    if (!navigator.onLine || !enableOfflineMode) return;
 
     try {
       const currentData = Array.isArray(state.data) ? state.data : [];
@@ -308,11 +308,13 @@ export function useHybridData<T>(
       }
 
       // Recarregar dados da API após sincronização
-      await refresh();
+      if (refreshRef.current) {
+        await refreshRef.current();
+      }
     } catch (error) {
       console.warn('Falha na sincronização:', error);
     }
-  }, [state.data, state.isOnline, apiService, apiRequestWithRetry, refresh, enableOfflineMode]);
+  }, [state.data, apiService, apiRequestWithRetry, enableOfflineMode]);
 
   // Auto-sync periódico
   useEffect(() => {
