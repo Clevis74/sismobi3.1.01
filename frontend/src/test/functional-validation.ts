@@ -33,14 +33,14 @@ testScenarios.forEach(scenario => {
       // Esta linha causava o erro original
       // const length = alertMetrics.cacheKeys.length; // TypeError!
       // console.log('    - alertMetrics.cacheKeys.length teria causado TypeError');
-    } catch (e) {
+    } catch (_e) {
       // console.log(`    - Erro capturado: ${e}`);
     }
     
     // Validações com a correção aplicada
     // console.log('  ✅ Código corrigido:');
-    const alertCacheSize = alertMetrics?.alertCacheSize ?? 0;
-    const cacheKeysLength = safeArrayAccess(alertMetrics?.cacheKeys).length;
+    const _alertCacheSize = alertMetrics?.alertCacheSize ?? 0;
+    const _cacheKeysLength = safeArrayAccess(alertMetrics?.cacheKeys).length;
     
     // console.log(`    - alertCacheSize: ${alertCacheSize}`);
     // console.log(`    - cacheKeys.length: ${cacheKeysLength}`);
