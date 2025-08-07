@@ -220,7 +220,9 @@ export function useHybridData<T>(
         // Atualiza dados locais
         const currentData = Array.isArray(state.data) ? state.data : [];
         const updatedData = [...currentData, newItem] as T;
-        setLocalData(updatedData);
+        if (setLocalDataRef.current) {
+          setLocalDataRef.current(updatedData);
+        }
         setState(prev => ({ ...prev, data: updatedData, lastSync: new Date(), source: 'api', isOnline: true }));
       } else if (enableOfflineMode) {
         // Modo offline - salva localmente com ID temporário
@@ -232,7 +234,9 @@ export function useHybridData<T>(
         
         const currentData = Array.isArray(state.data) ? state.data : [];
         const updatedData = [...currentData, tempItem] as T;
-        setLocalData(updatedData);
+        if (setLocalDataRef.current) {
+          setLocalDataRef.current(updatedData);
+        }
         setState(prev => ({ ...prev, data: updatedData, source: 'localStorage', isOnline: false }));
       } else {
         throw new Error('Operação requer conexão com internet');
