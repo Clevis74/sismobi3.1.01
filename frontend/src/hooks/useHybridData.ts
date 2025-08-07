@@ -138,7 +138,9 @@ export function useHybridData<T>(
           const dataArray = Array.isArray(apiData) ? apiData : [apiData];
           
           // Sucesso na API - atualiza localStorage e estado
-          setLocalData(dataArray as T);
+          if (setLocalDataRef.current) {
+            setLocalDataRef.current(dataArray as T);
+          }
           setState(prev => ({
             ...prev,
             data: dataArray as T,
