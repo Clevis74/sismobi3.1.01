@@ -101,17 +101,21 @@ const AppContent: React.FC = () => {
   const stablePropertiesRef = useRef<Property[]>([]);
   const stableTransactionsRef = useRef<Transaction[]>([]);
   
-  // Atualizar refs apenas quando dados mudarem estruturalmente
+  // Atualizar refs apenas quando dados mudarem estruturalmente - VERSÃO OTIMIZADA
+  const propertiesHashRef = useRef<string>('');
+  const transactionsHashRef = useRef<string>('');
+  
   useEffect(() => {
     const propsStringified = JSON.stringify(properties);
     const transStringified = JSON.stringify(transactions);
-    const stablePropsStringified = JSON.stringify(stablePropertiesRef.current);
-    const stableTransStringified = JSON.stringify(stableTransactionsRef.current);
     
-    if (propsStringified !== stablePropsStringified) {
+    // Só atualizar se o hash realmente mudou
+    if (propsStringified !== propertiesHashRef.current) {
+      propertiesHashRef.current = propsStringified;
       stablePropertiesRef.current = properties;
     }
-    if (transStringified !== stableTransStringified) {
+    if (transStringified !== transactionsHashRef.current) {
+      transactionsHashRef.current = transStringified;
       stableTransactionsRef.current = transactions;
     }
   }, [properties, transactions]);
