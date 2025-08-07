@@ -162,12 +162,13 @@ export function useHybridData<T>(
 
       // Fallback para localStorage
       if (enableOfflineMode) {
+        const currentLocalData = localDataRef.current;
         setState(prev => ({
           ...prev,
-          data: localData,
+          data: currentLocalData,
           loading: false,
           error: navigator.onLine ? 'API temporariamente indisponível, usando dados locais' : null,
-          source: localData !== defaultValue ? 'localStorage' : 'default',
+          source: currentLocalData !== defaultValue ? 'localStorage' : 'default',
           isOnline: navigator.onLine
         }));
         isInitializedRef.current = true;
