@@ -187,7 +187,9 @@ const AppContent: React.FC = () => {
   }, [automaticAlerts, alerts, alertsActions]);
   */
 
-  // Efeito otimizado para transações recorrentes
+  // Efeito otimizado para transações recorrentes - DESABILITADO TEMPORARIAMENTE
+  // TODO: Reabilitar após correção do sistema híbrido
+  /*
   useEffect(() => {
     if (recurringTransactions.length > 0) {
       // Criar transações recorrentes usando a API híbrida
@@ -200,6 +202,7 @@ const AppContent: React.FC = () => {
       });
     }
   }, [recurringTransactions, transactionsActions]);
+  */
 
   // Limpar cache periodicamente
   useEffect(() => {
