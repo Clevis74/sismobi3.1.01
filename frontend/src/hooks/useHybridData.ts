@@ -245,7 +245,7 @@ export function useHybridData<T>(
       setState(prev => ({ ...prev, error: error instanceof Error ? error.message : 'Erro ao criar item', isOnline: navigator.onLine }));
       throw error;
     }
-  }, [state.data, apiService, apiRequestWithRetry, setLocalData, enableOfflineMode]);
+  }, [state.data, apiService, apiRequestWithRetry, enableOfflineMode]);
 
   // Função para atualizar item
   const update = useCallback(async (id: string, updates: Partial<T>): Promise<void> => {
