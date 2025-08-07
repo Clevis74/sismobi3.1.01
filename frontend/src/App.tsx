@@ -141,13 +141,30 @@ const AppContent: React.FC = () => {
     return waterBills.map(b => `${b.id}-${b.groupId}`).join('|');
   }, [waterBills]);
 
-  // Summary com dependências estáveis
+  // Summary com dependências estáveis - VERSÃO CORRIGIDA PARA EVITAR LOOPS
+  const summaryRef = useRef<any>(null);
   const summary = useMemo(() => {
+    // Só recalcular se os dados realmente mudaram
+    const currentPropsHash = JSON.stringify(stablePropertiesRef.current);
+    const currentTransHash = JSON.stringify(stableTransactionsRef.current);
+    const previousHash = summaryRef.current?.hash;
+    const currentHash = currentPropsHash + currentTransHash;
+    
+    if (summaryRef.current && previousHash === currentHash) {
+      return summaryRef.current.data;
+    }
+    
     performanceMonitor.startTimer('financial-calculation');
     const result = calculateFinancialSummary(stablePropertiesRef.current, stableTransactionsRef.current);
     performanceMonitor.endTimer('financial-calculation');
+    
+    summaryRef.current = {
+      data: result,
+      hash: currentHash
+    };
+    
     return result;
-  }, []); // Using stable refs, no dependencies needed
+  }, [stablePropertiesRef.current, stableTransactionsRef.current]); // Dependências explícitas
 
   // Alertas automáticos com dependências hash
   const automaticAlerts = useMemo(() => {
