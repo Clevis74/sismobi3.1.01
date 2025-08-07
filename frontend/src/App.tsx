@@ -105,6 +105,11 @@ const AppContent: React.FC = () => {
   const propertiesHashRef = useRef<string>('');
   const transactionsHashRef = useRef<string>('');
   
+  // ===== TEMPORARY LOOP FIX - DISABLE PROBLEMATIC USEEFFECTS =====
+  // Desabilitando temporariamente useEffects que causam loop infinito
+  // para estabilizar sistema e proceder com backend implementation
+  
+  /*
   // Usar useCallback para estabilizar as atualizações de ref
   const updateRefs = useCallback(() => {
     const propsStringified = JSON.stringify(properties);
@@ -135,6 +140,13 @@ const AppContent: React.FC = () => {
       }
     };
   }, [updateRefs]);
+  */
+  
+  // SIMPLIFIED VERSION - No automatic updates to break the loop
+  useEffect(() => {
+    stablePropertiesRef.current = properties;
+    stableTransactionsRef.current = transactions;
+  }, []); // Empty dependencies to run only once
 
   // Hash para dependências estáveis do useMemo (not used after ref optimization)
   const _propertiesHash = useMemo(() => {
