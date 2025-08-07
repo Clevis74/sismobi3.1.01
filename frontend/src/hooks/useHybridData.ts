@@ -293,7 +293,9 @@ export function useHybridData<T>(
       // Remove dos dados locais (offline ou após sucesso da API)
       const currentData = Array.isArray(state.data) ? state.data : [];
       const updatedData = currentData.filter(item => (item as any).id !== id) as T;
-      setLocalData(updatedData);
+      if (setLocalDataRef.current) {
+        setLocalDataRef.current(updatedData);
+      }
       setState(prev => ({ 
         ...prev, 
         data: updatedData, 
@@ -305,7 +307,7 @@ export function useHybridData<T>(
       setState(prev => ({ ...prev, error: error instanceof Error ? error.message : 'Erro ao deletar item', isOnline: navigator.onLine }));
       throw error;
     }
-  }, [state.data, apiService, apiRequestWithRetry, setLocalData]);
+  }, [state.data, apiService, apiRequestWithRetry]);
 
   // Sincronizar dados pendentes para API
   const syncToApi = useCallback(async (): Promise<void> => {
