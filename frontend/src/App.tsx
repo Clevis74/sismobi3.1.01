@@ -76,7 +76,8 @@ const AppContent: React.FC = () => {
   // Estado de loading geral
   const isLoading = propertiesState.loading || tenantsState.loading || transactionsState.loading;
   
-  // Exibir erros não críticos
+  // Exibir erros não críticos - VERSÃO OTIMIZADA PARA EVITAR LOOPS
+  const errorsRef = useRef<string[]>([]);
   useEffect(() => {
     const errors = [
       propertiesState.error,
@@ -85,7 +86,12 @@ const AppContent: React.FC = () => {
       alertsState.error
     ].filter(Boolean);
 
-    if (errors.length > 0) {
+    // Só executar se os erros realmente mudaram
+    const errorsStringified = JSON.stringify(errors);
+    const previousErrors = JSON.stringify(errorsRef.current);
+    
+    if (errorsStringified !== previousErrors && errors.length > 0) {
+      errorsRef.current = [...errors];
       console.warn('Avisos do sistema híbrido:', errors);
       // Aqui você pode adicionar notificações para o usuário se necessário
     }
