@@ -165,7 +165,9 @@ const AppContent: React.FC = () => {
     return result;
   }, []); // Removed unnecessary dependency as it uses ref
 
-  // Efeito otimizado para alertas automáticos
+  // Efeito otimizado para alertas automáticos - DESABILITADO TEMPORARIAMENTE
+  // TODO: Reabilitar após correção do sistema híbrido
+  /*
   useEffect(() => {
     if (automaticAlerts.length > 0) {
       const existingAlertIds = new Set(alerts.map(a => a.id));
@@ -183,6 +185,7 @@ const AppContent: React.FC = () => {
       }
     }
   }, [automaticAlerts, alerts, alertsActions]);
+  */
 
   // Efeito otimizado para transações recorrentes
   useEffect(() => {
