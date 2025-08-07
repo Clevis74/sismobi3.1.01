@@ -52,6 +52,10 @@ export function useHybridData<T>(
   // localStorage como backup/cache
   const [localData, setLocalData] = useOptimizedLocalStorage<T>(key, defaultValue);
   
+  // Refs estáveis para evitar circular dependencies
+  const localDataRef = useRef<T>(defaultValue);
+  const setLocalDataRef = useRef<(value: T) => void>();
+  
   // Estado da aplicação
   const [state, setState] = useState<HybridDataState<T>>({
     data: defaultValue,
@@ -68,6 +72,12 @@ export function useHybridData<T>(
 
   // Função de refresh manual (definida antes do useEffect para evitar temporal dead zone)
   const refreshRef = useRef<() => Promise<void>>();
+
+  // Update refs when localStorage values change
+  useEffect(() => {
+    localDataRef.current = localData;
+    setLocalDataRef.current = setLocalData;
+  }, [localData, setLocalData]);
   
   const refresh = useCallback(async (): Promise<void> => {
     if (refreshRef.current) {
