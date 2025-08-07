@@ -166,8 +166,19 @@ const AppContent: React.FC = () => {
     return result;
   }, [stablePropertiesRef.current, stableTransactionsRef.current]); // Dependências explícitas
 
-  // Alertas automáticos com dependências hash
+  // Alertas automáticos com dependências estabilizadas - VERSÃO CORRIGIDA
+  const alertsRef = useRef<any>(null);
   const automaticAlerts = useMemo(() => {
+    // Criar hash estável para evitar recálculos desnecessários
+    const tenantsHash = JSON.stringify(tenants);
+    const energyHash = JSON.stringify(energyBills);
+    const waterHash = JSON.stringify(waterBills);
+    const currentHash = tenantsHash + energyHash + waterHash;
+    
+    if (alertsRef.current && alertsRef.current.hash === currentHash) {
+      return alertsRef.current.data;
+    }
+    
     performanceMonitor.startTimer('alert-generation');
     const result = generateAutomaticAlerts(
       stablePropertiesRef.current, 
@@ -177,8 +188,14 @@ const AppContent: React.FC = () => {
       waterBills
     );
     performanceMonitor.endTimer('alert-generation');
+    
+    alertsRef.current = {
+      data: result,
+      hash: currentHash
+    };
+    
     return result;
-  }, [tenants, energyBills, waterBills]); // Only include direct dependencies, refs are stable
+  }, [tenants, energyBills, waterBills]);
 
   // Transações recorrentes com dependências hash
   const recurringTransactions = useMemo(() => {
