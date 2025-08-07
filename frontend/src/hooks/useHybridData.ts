@@ -259,7 +259,9 @@ export function useHybridData<T>(
         const updatedData = currentData.map(item => 
           (item as any).id === id ? updatedItem : item
         ) as T;
-        setLocalData(updatedData);
+        if (setLocalDataRef.current) {
+          setLocalDataRef.current(updatedData);
+        }
         setState(prev => ({ ...prev, data: updatedData, lastSync: new Date(), source: 'api', isOnline: true }));
       } else if (enableOfflineMode) {
         // Modo offline - atualiza localmente
@@ -267,7 +269,9 @@ export function useHybridData<T>(
         const updatedData = currentData.map(item => 
           (item as any).id === id ? { ...item, ...updates, _pendingSync: true } : item
         ) as T;
-        setLocalData(updatedData);
+        if (setLocalDataRef.current) {
+          setLocalDataRef.current(updatedData);
+        }
         setState(prev => ({ ...prev, data: updatedData, source: 'localStorage', isOnline: navigator.onLine }));
       } else {
         throw new Error('Operação requer conexão com internet');
