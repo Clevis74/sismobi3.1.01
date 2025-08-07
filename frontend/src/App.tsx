@@ -105,7 +105,8 @@ const AppContent: React.FC = () => {
   const propertiesHashRef = useRef<string>('');
   const transactionsHashRef = useRef<string>('');
   
-  useEffect(() => {
+  // Usar useCallback para estabilizar as atualizações de ref
+  const updateRefs = useCallback(() => {
     const propsStringified = JSON.stringify(properties);
     const transStringified = JSON.stringify(transactions);
     
@@ -118,7 +119,22 @@ const AppContent: React.FC = () => {
       transactionsHashRef.current = transStringified;
       stableTransactionsRef.current = transactions;
     }
-  }, [properties, transactions]);
+  }, [JSON.stringify(properties), JSON.stringify(transactions)]);
+  
+  // Usar timeout para evitar atualizações muito frequentes
+  const updateTimeoutRef = useRef<NodeJS.Timeout>();
+  useEffect(() => {
+    if (updateTimeoutRef.current) {
+      clearTimeout(updateTimeoutRef.current);
+    }
+    updateTimeoutRef.current = setTimeout(updateRefs, 100);
+    
+    return () => {
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current);
+      }
+    };
+  }, [updateRefs]);
 
   // Hash para dependências estáveis do useMemo (not used after ref optimization)
   const _propertiesHash = useMemo(() => {
