@@ -198,7 +198,7 @@ export function useHybridData<T>(
       }));
       isInitializedRef.current = true;
     }
-  }, [key, localData, defaultValue, apiService, apiRequestWithRetry, setLocalData, enableOfflineMode]);
+  }, [key, defaultValue, apiService, apiRequestWithRetry, enableOfflineMode]);
 
   // Update refresh reference once loadData is available
   useEffect(() => {
