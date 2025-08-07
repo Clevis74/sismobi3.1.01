@@ -168,7 +168,7 @@ const AppContent: React.FC = () => {
     };
     
     return result;
-  }, [stablePropertiesRef.current, stableTransactionsRef.current]); // Dependências explícitas
+  }, []); // Remove dependencies do ref - ele já tem hash interno para controlar mudanças
 
   // Alertas automáticos com dependências estabilizadas - VERSÃO CORRIGIDA
   const alertsRef = useRef<any>(null);
