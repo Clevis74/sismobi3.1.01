@@ -651,6 +651,8 @@ const AppContent: React.FC = () => {
             <OptimizedTenantManager
               tenants={tenants}
               properties={properties}
+              energyBills={energyBills}
+              waterBills={waterBills}
               showValues={showValues}
               onAddTenant={addTenant}
               onUpdateTenant={updateTenant}
