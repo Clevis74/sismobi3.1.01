@@ -80,6 +80,16 @@ async def get_alerts():
     """Get all alerts"""
     return {"data": [], "total": 0}
 
+@app.get("/api/v1/energy-bills")
+async def get_energy_bills():
+    """Get all energy bills"""
+    return {"data": [], "total": 0}
+
+@app.get("/api/v1/water-bills")
+async def get_water_bills():
+    """Get all water bills"""
+    return {"data": [], "total": 0}
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
