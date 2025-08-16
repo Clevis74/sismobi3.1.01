@@ -307,6 +307,18 @@ export const OptimizedTenantManager: React.FC<{
           </p>
         </div>
       )}
+
+      {/* Modal de Consumo */}
+      <TenantConsumptionModal
+        isOpen={showConsumptionModal}
+        onClose={handleCloseConsumptionModal}
+        tenant={selectedTenantForConsumption}
+        properties={properties}
+        energyBills={energyBills}
+        waterBills={waterBills}
+        onRefresh={handleRefreshData}
+        showValues={showValues}
+      />
     </div>
   );
 };
