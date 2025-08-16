@@ -4,86 +4,37 @@ Simplified FastAPI server for quick deployment
 """
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from datetime import datetime
 
 # Create FastAPI application
-app = FastAPI(
-    title="SISMOBI API",
-    description="Sistema de Gestão Imobiliária - Backend API",
-    version="3.2.0",
-)
+app = FastAPI(title="SISMOBI API", version="3.2.0")
 
 # CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins for development
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Basic endpoints
 @app.get("/")
-async def root():
-    """Root endpoint"""
-    return {
-        "message": "SISMOBI API 3.2.0 is running", 
-        "status": "active", 
-        "timestamp": datetime.now().isoformat()
-    }
+def root():
+    return {"message": "SISMOBI API is running"}
 
-@app.get("/api/health")
-async def health_check():
-    """Health check endpoint"""
-    return {
-        "status": "healthy",
-        "service": "SISMOBI Backend",
-        "version": "3.2.0",
-        "timestamp": datetime.now().isoformat(),
-        "database": "connected"
-    }
-
-@app.get("/api/v1/dashboard/summary")
-async def get_dashboard_summary():
-    """Dashboard summary endpoint"""
-    return {
-        "total_properties": 0,
-        "total_tenants": 0,
-        "total_revenue": 0.0,
-        "total_expenses": 0.0,
-        "occupancy_rate": 0.0,
-        "last_updated": datetime.now().isoformat()
-    }
-
-# Mock API endpoints for frontend compatibility with trailing slash support
-@app.get("/api/v1/properties/{path_param:path}")
-async def handle_properties(path_param: str = ""):
-    """Handle properties with or without trailing slash"""
+@app.get("/api/v1/properties")
+def get_properties():
     return {"data": [], "total": 0}
 
-@app.get("/api/v1/tenants/{path_param:path}")
-async def handle_tenants(path_param: str = ""):
-    """Handle tenants with or without trailing slash"""
+@app.get("/api/v1/tenants")
+def get_tenants():
     return {"data": [], "total": 0}
 
-@app.get("/api/v1/transactions/{path_param:path}")
-async def handle_transactions(path_param: str = ""):
-    """Handle transactions with or without trailing slash"""
+@app.get("/api/v1/energy-bills")
+def get_energy_bills():
     return {"data": [], "total": 0}
 
-@app.get("/api/v1/alerts/{path_param:path}")
-async def handle_alerts(path_param: str = ""):
-    """Handle alerts with or without trailing slash"""
-    return {"data": [], "total": 0}
-
-@app.get("/api/v1/energy-bills/{path_param:path}")
-async def handle_energy_bills(path_param: str = ""):
-    """Handle energy bills with or without trailing slash"""
-    return {"data": [], "total": 0}
-
-@app.get("/api/v1/water-bills/{path_param:path}")
-async def handle_water_bills(path_param: str = ""):
-    """Handle water bills with or without trailing slash"""
+@app.get("/api/v1/water-bills")
+def get_water_bills():
     return {"data": [], "total": 0}
 
 if __name__ == "__main__":
