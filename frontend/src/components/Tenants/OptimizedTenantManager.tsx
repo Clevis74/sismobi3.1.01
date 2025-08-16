@@ -160,6 +160,23 @@ export const OptimizedTenantManager: React.FC<{
   const [showForm, setShowForm] = useState(false);
   const [editingTenant, setEditingTenant] = useState<Tenant | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showConsumptionModal, setShowConsumptionModal] = useState(false);
+  const [selectedTenantForConsumption, setSelectedTenantForConsumption] = useState<Tenant | null>(null);
+
+  // Função para verificar se o inquilino atende às condições para exibir o botão de consumo
+  const shouldShowConsumptionButton = useCallback((tenant: Tenant): boolean => {
+    // Etapa 1: Condições de exibição
+    // 1. Status = active
+    if (tenant.status !== 'active') return false;
+    
+    // 2. Propriedade vinculada
+    if (!tenant.propertyId) return false;
+    
+    // 3. CPF válido (≠ "000.000.000-00")
+    if (!tenant.cpf || tenant.cpf === '000.000.000-00') return false;
+    
+    return true;
+  }, []);
 
   // Memoizar inquilinos filtrados
   const filteredTenants = useMemo(() => {
