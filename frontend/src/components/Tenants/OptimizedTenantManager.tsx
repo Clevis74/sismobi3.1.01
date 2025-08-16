@@ -281,6 +281,7 @@ export const OptimizedTenantManager: React.FC<{
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredTenants.map((tenant) => {
           const linkedProperty = linkedProperties.get(tenant.propertyId);
+          const showConsumption = shouldShowConsumptionButton(tenant);
           return (
             <TenantCard
               key={tenant.id}
@@ -289,6 +290,8 @@ export const OptimizedTenantManager: React.FC<{
               showValues={showValues}
               onEdit={handleEditTenant}
               onDelete={onDeleteTenant}
+              onViewConsumption={handleViewConsumption}
+              shouldShowConsumptionButton={showConsumption}
             />
           );
         })}
