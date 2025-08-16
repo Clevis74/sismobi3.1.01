@@ -61,31 +61,37 @@ async def get_dashboard_summary():
 
 # Mock API endpoints for frontend compatibility
 @app.get("/api/v1/properties")
+@app.get("/api/v1/properties/")
 async def get_properties():
     """Get all properties"""
     return {"data": [], "total": 0}
 
 @app.get("/api/v1/tenants") 
+@app.get("/api/v1/tenants/")
 async def get_tenants():
     """Get all tenants"""
     return {"data": [], "total": 0}
 
 @app.get("/api/v1/transactions")
+@app.get("/api/v1/transactions/")
 async def get_transactions():
     """Get all transactions"""
     return {"data": [], "total": 0}
 
 @app.get("/api/v1/alerts")
+@app.get("/api/v1/alerts/")
 async def get_alerts():
     """Get all alerts"""
     return {"data": [], "total": 0}
 
 @app.get("/api/v1/energy-bills")
+@app.get("/api/v1/energy-bills/")
 async def get_energy_bills():
     """Get all energy bills"""
     return {"data": [], "total": 0}
 
 @app.get("/api/v1/water-bills")
+@app.get("/api/v1/water-bills/")
 async def get_water_bills():
     """Get all water bills"""
     return {"data": [], "total": 0}
