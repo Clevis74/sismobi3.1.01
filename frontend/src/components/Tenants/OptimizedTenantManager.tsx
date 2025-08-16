@@ -24,13 +24,17 @@ const TenantCard = React.memo(({
   linkedProperty, 
   showValues, 
   onEdit, 
-  onDelete 
+  onDelete,
+  onViewConsumption,
+  shouldShowConsumptionButton
 }: {
   tenant: Tenant;
-  linkedProperty: unknown;
+  linkedProperty: Property | undefined;
   showValues: boolean;
   onEdit: (tenant: Tenant) => void;
   onDelete: (id: string) => void;
+  onViewConsumption: (tenant: Tenant) => void;
+  shouldShowConsumptionButton: boolean;
 }) => {
   const getStatusColor = (status: string) => {
     switch (status) {
