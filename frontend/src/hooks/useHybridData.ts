@@ -73,11 +73,11 @@ export function useHybridData<T>(
   // Função de refresh manual (definida antes do useEffect para evitar temporal dead zone)
   const refreshRef = useRef<() => Promise<void>>();
 
-  // Update refs when localStorage values change
+  // Update refs when localStorage values change - FIXED: removed circular dependencies
   useEffect(() => {
     localDataRef.current = localData;
     setLocalDataRef.current = setLocalData;
-  }, [localData, setLocalData]);
+  }, []); // Empty dependencies to avoid infinite loop
   
   const refresh = useCallback(async (): Promise<void> => {
     if (refreshRef.current) {
