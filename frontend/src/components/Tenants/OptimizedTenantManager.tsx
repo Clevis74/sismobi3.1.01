@@ -195,6 +195,24 @@ export const OptimizedTenantManager: React.FC<{
     return propertyMap;
   }, [properties]);
 
+  // Callbacks para o modal de consumo
+  const handleViewConsumption = useCallback((tenant: Tenant) => {
+    setSelectedTenantForConsumption(tenant);
+    setShowConsumptionModal(true);
+  }, []);
+
+  const handleCloseConsumptionModal = useCallback(() => {
+    setShowConsumptionModal(false);
+    setSelectedTenantForConsumption(null);
+  }, []);
+
+  // Callback para atualizar dados (pode ser conectado com refresh da API)
+  const handleRefreshData = useCallback(() => {
+    // Aqui poderia ser implementada a lógica para atualizar os dados
+    // Por enquanto, apenas fecha e reabre o modal para reprocessar
+    console.log('Atualizando dados de consumo...');
+  }, []);
+
   // Callbacks memoizados
   const handleAddTenant = useCallback((tenantData: Omit<Tenant, 'id'>) => {
     onAddTenant(tenantData);
