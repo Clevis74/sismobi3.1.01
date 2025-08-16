@@ -56,40 +56,34 @@ async def get_dashboard_summary():
     }
 
 # Mock API endpoints for frontend compatibility with trailing slash support
-@app.get("/api/v1/properties")
-@app.get("/api/v1/properties/")
-async def get_properties():
-    """Get all properties"""
+@app.get("/api/v1/properties/{path_param:path}")
+async def handle_properties(path_param: str = ""):
+    """Handle properties with or without trailing slash"""
     return {"data": [], "total": 0}
 
-@app.get("/api/v1/tenants") 
-@app.get("/api/v1/tenants/")
-async def get_tenants():
-    """Get all tenants"""
+@app.get("/api/v1/tenants/{path_param:path}")
+async def handle_tenants(path_param: str = ""):
+    """Handle tenants with or without trailing slash"""
     return {"data": [], "total": 0}
 
-@app.get("/api/v1/transactions")
-@app.get("/api/v1/transactions/")
-async def get_transactions():
-    """Get all transactions"""
+@app.get("/api/v1/transactions/{path_param:path}")
+async def handle_transactions(path_param: str = ""):
+    """Handle transactions with or without trailing slash"""
     return {"data": [], "total": 0}
 
-@app.get("/api/v1/alerts")
-@app.get("/api/v1/alerts/")
-async def get_alerts():
-    """Get all alerts"""
+@app.get("/api/v1/alerts/{path_param:path}")
+async def handle_alerts(path_param: str = ""):
+    """Handle alerts with or without trailing slash"""
     return {"data": [], "total": 0}
 
-@app.get("/api/v1/energy-bills")
-@app.get("/api/v1/energy-bills/")
-async def get_energy_bills():
-    """Get all energy bills"""
+@app.get("/api/v1/energy-bills/{path_param:path}")
+async def handle_energy_bills(path_param: str = ""):
+    """Handle energy bills with or without trailing slash"""
     return {"data": [], "total": 0}
 
-@app.get("/api/v1/water-bills")
-@app.get("/api/v1/water-bills/")
-async def get_water_bills():
-    """Get all water bills"""
+@app.get("/api/v1/water-bills/{path_param:path}")
+async def handle_water_bills(path_param: str = ""):
+    """Handle water bills with or without trailing slash"""
     return {"data": [], "total": 0}
 
 if __name__ == "__main__":
