@@ -37,6 +37,18 @@ def get_energy_bills():
 def get_water_bills():
     return {"data": [], "total": 0}
 
+@app.get("/api/v1/transactions")
+def get_transactions():
+    return {"data": [], "total": 0}
+
+@app.get("/api/v1/alerts")
+def get_alerts():
+    return {"data": [], "total": 0}
+
+@app.get("/api/v1/auth/verify")
+def auth_verify():
+    return {"valid": False, "user": None}
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
