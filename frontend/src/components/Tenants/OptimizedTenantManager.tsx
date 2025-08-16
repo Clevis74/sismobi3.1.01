@@ -9,7 +9,9 @@ import { useDebouncedCallback } from '../../utils/debounceUtils';
 
 interface _OptimizedTenantManagerProps {
   tenants: Tenant[];
-  properties: unknown[];
+  properties: Property[];
+  energyBills: EnergyBill[];
+  waterBills: WaterBill[];
   showValues: boolean;
   onAddTenant: (tenant: Omit<Tenant, 'id'>) => void;
   onUpdateTenant: (id: string, tenant: Partial<Tenant>) => void;
