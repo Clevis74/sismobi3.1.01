@@ -108,7 +108,7 @@
 **Date**: August 1, 2025  
 **Agent**: Testing Sub-Agent (Backend Specialist)  
 **Focus**: Complete technical analysis and validation of SISMOBI backend 3.2.0
-**Backend URL**: https://14cd1f93-550c-4800-ac60-39195504d5ec.preview.emergentagent.com
+**Backend URL**: https://tenant-consumption.preview.emergentagent.com
 **Test Scope**: Full production-level validation as requested
 
 ### VALIDATION RESULTS: ✅ **COMPLETELY SUCCESSFUL**
@@ -905,7 +905,7 @@ The SISMOBI FastAPI backend now has complete API coverage:
 **Date**: August 1, 2025  
 **Agent**: Testing Sub-Agent (Backend Specialist)  
 **Focus**: Validação rápida do backend após correções de qualidade de código no frontend  
-**Backend URL**: https://14cd1f93-550c-4800-ac60-39195504d5ec.preview.emergentagent.com  
+**Backend URL**: https://tenant-consumption.preview.emergentagent.com  
 **Test Scope**: Smoke testing para confirmar que correções de ESLint não impactaram o backend  
 
 ### VALIDATION RESULTS: ✅ **COMPLETELY SUCCESSFUL**
@@ -1024,7 +1024,7 @@ The SISMOBI FastAPI backend 3.2.0 remains fully operational after frontend ESLin
 **Date**: August 1, 2025  
 **Agent**: Testing Sub-Agent (Backend Specialist)  
 **Focus**: Smoke test rápido após implementação da Phase 3 (Accessibility Testing)  
-**Backend URL**: https://14cd1f93-550c-4800-ac60-39195504d5ec.preview.emergentagent.com  
+**Backend URL**: https://tenant-consumption.preview.emergentagent.com  
 **Test Scope**: Quick validation to confirm accessibility testing changes didn't impact backend  
 
 ### VALIDATION RESULTS: ✅ **COMPLETELY SUCCESSFUL**
