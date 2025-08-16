@@ -107,6 +107,15 @@ const TenantCard = React.memo(({
         </div>
 
         <div className="flex justify-end space-x-2">
+          {shouldShowConsumptionButton && (
+            <button
+              onClick={() => onViewConsumption(tenant)}
+              className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+              title="Ver consumo de energia e água"
+            >
+              <FileText className="w-4 h-4" />
+            </button>
+          )}
           <button
             onClick={() => onEdit(tenant)}
             className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
