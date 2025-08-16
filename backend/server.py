@@ -55,7 +55,7 @@ async def get_dashboard_summary():
         "last_updated": datetime.now().isoformat()
     }
 
-# Mock API endpoints for frontend compatibility
+# Mock API endpoints for frontend compatibility with trailing slash support
 @app.get("/api/v1/properties")
 @app.get("/api/v1/properties/")
 async def get_properties():
